@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block styles %}
+    <style>
+        .container {
+            max-width:545px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <form action="#" method="post" autocomplete="off">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-12 col-xs-12">
+                <div class="col-md-12 col-xs-12">
+                    <div class="center-block SSO mk-shadow" style="max-width:450px;">
+                        <div class="row text-center top-logo" style="">
+                            <a href="#"><img class="signin-logo" src="{% static 'stats_logo.png' %}" style="height:100px;"></a>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="email">البريد الالكتروني</label>
+                                <input class="focus form-control" data-val="true" data-val-email="الرجاء ادخال بريد الكتروني صحيح" data-val-required="الرجاء إدخال البريد الالكتروني" id="email" name="email" type="email" required>
+                            </div>
+                            <div class="form-group col-sm-12">
+                                <label for="fullname">الاسم بالكامل</label>
+                                <input class="focus form-control" data-val="true" data-val-required="الرجاء إدخال الاسم بالكامل" id="fullname" name="fullname" type="text" required>
+                            </div>
+                            <div class="form-group col-sm-12">
+                                <label for="password">كلمة المرور</label>
+                                <input class="form-control" data-val="true" required data-val-required="الرجاء إدخال كلمة المرور" id="password" name="password" type="password" data-val-equalto-other="password_confirm">
+                                <span class="field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+                            </div>
+                            <div class="form-group col-sm-12">
+                                <label for="password_confirm">تأكيد كلمة المرور</label>
+                                <input class="form-control" data-val="true" required data-val-required="الرجاء إدخال كلمة المرور مرة أخرى" id="password_confirm" name="password_confirm" placeholder="" type="password" data-val-equalto-other="password" data-val-equalto="كلمة المرور غير متطابقة">
+                                <span class="field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+                            </div>
+                        </div>
+                        <br class="clearfix">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button class="btn btn-default btn-block" type="submit">تسجيل</button>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom:35px;">
+                            <div class="col-xs-12 bord text-center">
+                                <span>لديك حساب؟ <a href="{% url 'main:login' %}">تسجيل الدخول</a></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12" style="margin-bottom:35px;">
+                                <div class="validation-summary-valid text-danger9" data-valmsg-summary="true">
+                                    <ul>
+                                        <li style="display:none"></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            AOS.init();
+
+            $('.material-form input').focus(function (ele) {
+                $(this).addClass('borderAnimy');
+                $('label[for="' + $(this).attr('id') + '"]').addClass('active')
+            });
+
+            $('.material-form input').blur(function (ele) {
+                if ($(this).val() == '') {
+                    $(this).removeClass('borderAnimy');
+                    $('label[for="' + $(this).attr('id') + '"]').removeClass('active')
+                }
+            });
+
+            $('.material-form input').change(function (ele) {
+                if ($(this).val() == '') {
+                    $(this).removeClass('borderAnimy');
+                    $('label[for="' + $(this).attr('id') + '"]').removeClass('filled')
+                } else {
+                    $(this).addClass('borderAnimy');
+                    $('label[for="' + $(this).attr('id') + '"]').addClass('filled')
+                }
+            });
+
+            {% comment %}$('form').submit(function(e){
+                $('.confirm-msg').remove();
+                if ($('#password').val() != $('#password_confirm').val()){
+                    $('.validation-summary-errors > ul').append('<li class="confirm_msg">كلمة المرور غير متطابقة</li>');
+                    e.preventDefault();
+                    return false;
+                }
+            });{% endcomment %}
+        });
+    </script>
+{% endblock %}

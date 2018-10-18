@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12 col-xs-12">
+            <div class="col-md-12 col-xs-12">
+                <div class="center-block SSO mk-shadow">
+                    <div class="row text-center top-logo" style="">
+                        <a href="#"><img class="signin-logo" src="{% static 'stats_logo.png' %}" style="height:100px;"></a>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <h4>تسجيل أفراد</h4>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom:35px;">
+                        <div class="col-xs-12 bord text-left">
+                            <span><a href="#!">تسجيل الخروج</a></span>
+                        </div>
+                    </div>
+
+                    <form action="#" method="post" autocomplete="off">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label for="fullname">الاسم بالكامل</label>
+                                <input class="focus form-control" data-val="true" data-val-required="الرجاء إدخال الاسم بالكامل" id="fullname" name="fullname" type="text" required>
+                            </div>
+                            
+                            <div class="form-group col-sm-12">
+                                <label for="gender">الجنس</label>
+                                <select name="gender" id="gender" class="form-control">
+                                    <option value="1">ذكر</option>
+                                    <option value="2">أنثى</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group col-sm-12">
+                                <label for="nationality">الجنسية</label>
+                                <select name="nationality" id="nationality" class="form-control">
+                                    <option value="1">سعودي</option>
+                                    <option value="0">غير سعودي</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group col-sm-12 org-name-row" style="display: none;">
+                                <label for="org_name">تسجيل اسم المنشأة</label>
+                                <input class="focus form-control" data-val="true" id="org_name" name="org_name" type="text" data-val-required="برجاء ادخال اسم المنشأة">
+                            </div>
+                            <div class="form-group col-sm-12 national-id-row">
+                                <label for="national_id">رقم الهوية / الجواز</label>
+                                <input class="focus form-control" data-val="true" id="national_id" name="national_id" type="text" data-val-required="الرجاء ادخال رقم الهوية">
+                            </div>
+
+                            <div class="form-group col-sm-12">
+                                <label for="birthdate">تاريخ الميلاد</label>
+                                <input class="focus form-control" data-val="true" id="birthdate" name="birthdate" type="date" data-val-required="الرجاء اختيار تاريخ الميلاد">
+                            </div>
+
+                        </div>
+
+                        <br class="clearfix">
+
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button class="btn btn-default btn-block" type="submit">الدخول</button>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom:35px;">
+                            <div class="col-xs-6 bord text-left">
+                                <a href="{% url 'main:reset_password' %}">إستعادة كلمة المرور </a>
+                            </div>
+                            <div class="col-xs-6 bord text-right">
+                                <span>مستخدم جديد؟ <a href="{% url 'main:register' %}">تسجيل</a></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12" style="margin-bottom:35px;">
+                                <div class="validation-summary-valid text-danger9" data-valmsg-summary="true">
+                                    <ul>
+                                        <li style="display:none"></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            AOS.init();
+
+            $('.material-form input').focus(function (ele) {
+                $(this).addClass('borderAnimy');
+                $('label[for="' + $(this).attr('id') + '"]').addClass('active')
+            });
+
+            $('.material-form input').blur(function (ele) {
+                if ($(this).val() == '') {
+                    $(this).removeClass('borderAnimy');
+                    $('label[for="' + $(this).attr('id') + '"]').removeClass('active')
+                }
+            });
+
+            $('.material-form input').change(function (ele) {
+                if ($(this).val() == '') {
+                    $(this).removeClass('borderAnimy');
+                    $('label[for="' + $(this).attr('id') + '"]').removeClass('filled')
+                } else {
+                    $(this).addClass('borderAnimy');
+                    $('label[for="' + $(this).attr('id') + '"]').addClass('filled')
+                }
+            });
+
+            $('#nationality').change(function(){
+                if (this.value === '0') {
+                    $('.org-name-row > input')[0].required = true;
+                    $('.org-name-row > input').attr('data-val-required', 'برجاء ادخال اسم المنشأة');
+                    $('.org-name-row').show();
+                }
+                else {
+                    $('.org-name-row > input')[0].required = false;
+                    $('.org-name-row > input').attr('data-val-required', null);
+                    $('.org-name-row').hide();
+                }
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12 col-xs-12">
+            <div class="col-md-12 col-xs-12">
+                <div class="center-block SSO mk-shadow">
+                    <div class="row text-center top-logo" style="">
+                        <a href="#"><img class="signin-logo" src="{% static 'stats_logo.png' %}" style="height:100px;"></a>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <h4>هل تريد التقديم على رخصة أفراد أم منشآت؟</h4>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12" style="padding-top: 20px;">
+                            <a href="{% url 'main:individual_signup' %}" class="license-type-link"><div class="license-type-item"><i class="fa fa-user"></i> أفراد</div></a>
+
+                            <a href="#" class="license-type-link"><div class="license-type-item"><i class="fa fa-building"></i> منشآت</div></a>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row" style="margin-bottom:35px;">
+                        <div class="col-xs-12 bord text-center">
+                            <span><a href="#!">تسجيل الخروج</a></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            AOS.init();
+
+            $('.material-form input').focus(function (ele) {
+                $(this).addClass('borderAnimy');
+                $('label[for="' + $(this).attr('id') + '"]').addClass('active')
+            });
+
+            $('.material-form input').blur(function (ele) {
+                if ($(this).val() == '') {
+                    $(this).removeClass('borderAnimy');
+                    $('label[for="' + $(this).attr('id') + '"]').removeClass('active')
+                }
+            });
+
+            $('.material-form input').change(function (ele) {
+                if ($(this).val() == '') {
+                    $(this).removeClass('borderAnimy');
+                    $('label[for="' + $(this).attr('id') + '"]').removeClass('filled')
+                } else {
+                    $(this).addClass('borderAnimy');
+                    $('label[for="' + $(this).attr('id') + '"]').addClass('filled')
+                }
+            });
+        });
+    </script>
+{% endblock %}
