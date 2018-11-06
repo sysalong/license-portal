@@ -1,0 +1,21 @@
+@font-face {
+    font-family: "frutiger";
+    src:          url("../fonts/FrutigerLight.woff") format("woff");
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "frutiger";
+    src:          url("../fonts/FrutigerRoman.woff") format("woff");
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "frutiger";
+    src:          url("../fonts/FrutigerBold.woff") format("woff");
+    font-weight: bold;
+    font-style: normal;
+}
+

@@ -1,93 +1,15 @@
-{% extends 'base.html' %}
+{% extends 'layout/base.html' %}
+
 {% load static %}
 
-
-{% block styles %}
-    <style>
-        .container {
-            max-width:545px;
-        }
-    </style>
-{% endblock %}
-
 {% block content %}
-    <form action="#" method="post" autocomplete="off">
-        {% csrf_token %}
-        <div class="row">
-            <div class="col-md-12 col-xs-12">
-                <div class="col-md-12 col-xs-12">
-                    <div class="center-block SSO mk-shadow" style="max-width:450px;">
-                        <div class="row text-center top-logo" style="">
-                            <a href="#"><img class="signin-logo" src="{% static 'stats_logo.png' %}" style="height:100px;"></a>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-sm-12">
-                                <label for="email">البريد الالكتروني</label>
-                                <input class="focus form-control" data-val="true" data-val-email="الرجاء ادخال بريد الكتروني صحيح" data-val-required="الرجاء إدخال البريد الالكتروني" id="email" name="email" type="email" required>
-                            </div>
-                            <div class="form-group col-sm-12">
-                                <label for="password">كلمة المرور</label>
-                                <input class="form-control" data-val="true" required data-val-required="الرجاء إدخال كلمة المرور" id="password" name="password" type="password">
-                                <span class="field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
-                            </div>
-                        </div>
-                        <br class="clearfix">
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <button class="btn btn-default btn-block" type="submit">الدخول</button>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-bottom:35px;">
-                            <div class="col-xs-6 bord text-left">
-                                <a href="{% url 'main:reset_password' %}">إستعادة كلمة المرور </a>
-                            </div>
-                            <div class="col-xs-6 bord text-right">
-                                <span>مستخدم جديد؟ <a href="{% url 'main:register' %}">تسجيل</a></span>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-sm-12" style="margin-bottom:35px;">
-                                <div class="validation-summary-valid text-danger9" data-valmsg-summary="true">
-                                    <ul>
-                                        <li style="display:none"></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+  <div class="row" style="display: flex; justify-content: center;">
 
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-{% endblock %}
+		<div class="login-form">
+			<p>لتتمكن من الاستفادة من هذه الخدمة يجب تسجيل الدخول أولاً باستخدام حساب ملفك الالكتروني</p>
+			<a href="{{ oauth_url }}" style="background-color: #353C43;margin: 10px;" class="btn" ripple="ripple">تسجيل الدخول</a>
+			<img src="{% static 'img/meras_reverse.svg' %}" alt="MERAS">
+		</div>
 
-{% block scripts %}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            AOS.init();
-
-            $('.material-form input').focus(function (ele) {
-                $(this).addClass('borderAnimy');
-                $('label[for="' + $(this).attr('id') + '"]').addClass('active')
-            });
-
-            $('.material-form input').blur(function (ele) {
-                if ($(this).val() == '') {
-                    $(this).removeClass('borderAnimy');
-                    $('label[for="' + $(this).attr('id') + '"]').removeClass('active')
-                }
-            });
-
-            $('.material-form input').change(function (ele) {
-                if ($(this).val() == '') {
-                    $(this).removeClass('borderAnimy');
-                    $('label[for="' + $(this).attr('id') + '"]').removeClass('filled')
-                } else {
-                    $(this).addClass('borderAnimy');
-                    $('label[for="' + $(this).attr('id') + '"]').addClass('filled')
-                }
-            });
-        });
-    </script>
+  </div>
 {% endblock %}

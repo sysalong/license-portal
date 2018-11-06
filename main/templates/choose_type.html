@@ -1,69 +1,41 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends 'layout/base.html' %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-md-12 col-xs-12">
-            <div class="col-md-12 col-xs-12">
-                <div class="center-block SSO mk-shadow">
-                    <div class="row text-center top-logo" style="">
-                        <a href="#"><img class="signin-logo" src="{% static 'stats_logo.png' %}" style="height:100px;"></a>
-                    </div>
+    	<div>
+			<div class="stepsWizard-h">
+				<span class="pull-right visible-xs visible-sm">4 من 6</span>
+				<div class="clearfix visible-xs visible-sm"></div>
 
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <h4>هل تريد التقديم على رخصة أفراد أم منشآت؟</h4>
-                        </div>
-                    </div>
+				<ul>
+					<!-- classes: success - inprogress  -->
+					 <li class="success"><i>1</i><span>الشروط والأحكام</span></li>
+					 <li class="inprogress"><i>2</i> <span>تحديد نوع الترخيص</span></li>
+					 <li><i>3</i> <span>إستكمال البيانات</span></li>
+					 <li><i>4</i> <span>مراجعة</span></li>
 
-                    <div class="row">
-                        <div class="col-xs-12" style="padding-top: 20px;">
-                            <a href="{% url 'main:individual_signup' %}" class="license-type-link"><div class="license-type-item"><i class="fa fa-user"></i> أفراد</div></a>
+				</ul>
+				<div class="clearfix"></div>
+			</div>
+	</div>
 
-                            <a href="#" class="license-type-link"><div class="license-type-item"><i class="fa fa-building"></i> منشآت</div></a>
-                        </div>
-                    </div>
+  <div class="row" style="display: flex; justify-content: center;">
 
-                    <hr>
+		<div class="panel-form-narrow">
+			<h4> اختر نوع الترخيص </h4>
 
-                    <div class="row" style="margin-bottom:35px;">
-                        <div class="col-xs-12 bord text-center">
-                            <span><a href="#!">تسجيل الخروج</a></span>
-                        </div>
-                    </div>
+			<p> هل تريد التقديم على ترخيص أفراد أم منشآت؟ </p>
+			<div style="margin-top: 15px">
+				<a href="/individual_signup.html" style="background-color: #353C43;margin: 10px;" class="btn type-btn" ripple="ripple">
+					<i class="fa fa-user"></i>
+					 أفراد
+				 </a>
+				<a href="/company_signup.html" style="background-color: #353C43;margin: 10px;" class="btn type-btn" ripple="ripple">
+					<i class="fa fa-building"></i>
+					 منشآت
+				 </a>
+			</div>
 
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock %}
+		</div>
 
-{% block scripts %}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            AOS.init();
-
-            $('.material-form input').focus(function (ele) {
-                $(this).addClass('borderAnimy');
-                $('label[for="' + $(this).attr('id') + '"]').addClass('active')
-            });
-
-            $('.material-form input').blur(function (ele) {
-                if ($(this).val() == '') {
-                    $(this).removeClass('borderAnimy');
-                    $('label[for="' + $(this).attr('id') + '"]').removeClass('active')
-                }
-            });
-
-            $('.material-form input').change(function (ele) {
-                if ($(this).val() == '') {
-                    $(this).removeClass('borderAnimy');
-                    $('label[for="' + $(this).attr('id') + '"]').removeClass('filled')
-                } else {
-                    $(this).addClass('borderAnimy');
-                    $('label[for="' + $(this).attr('id') + '"]').addClass('filled')
-                }
-            });
-        });
-    </script>
+  </div>
 {% endblock %}

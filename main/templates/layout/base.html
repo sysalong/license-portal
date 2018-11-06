@@ -1,0 +1,255 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html dir="rtl" lang="ar-sa">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block page_title %}Statistical License System{% endblock %}</title>
+    <!-- Bootstrap Core CSS -->
+    <!-- Custom Fonts -->
+{#    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">#}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-rtl.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/meras-1.4-rtl.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'fonts/meras/css/fonts.css' %}">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    {% block styles %}
+
+    {% endblock %}
+
+    <style type="text/css">
+		.breadcrumb {
+		    padding: 0;
+		    margin-bottom: 20px;
+		    list-style: none;
+		    background: none;
+		    border-radius: 0;
+		    border-bottom: 1px solid #e4e4e4;
+		    padding-bottom: 14px;
+		}
+	</style>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+
+<div class="top-header bg-primary">
+    <div class="container"><div class="row">
+        <nav>
+            <button type="button" class="navbar-toggle collapsed " data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+                aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar bg-white"></span>
+                <span class="icon-bar bg-white"></span>
+                <span class="icon-bar bg-white"></span>
+            </button>
+            <a class="navbar-brand  hidden-lg hidden-md hidden-sm text-white" href="#">قائمة مراس</a>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class=" pull-left list-inline">
+                    <li>
+                        <a target="_blank" href="https://meras.gov.sa/Home/AboutUs"> عن مِراس </a>
+                    </li>
+                    <li>
+                        <a  target="_blank"href="https://meras.gov.sa/Home/ServicesLinks"> دليل الخدمات </a>
+                    </li>
+                    <li>
+                        <a target="_blank" href="https://meras.gov.sa/Home/MerasCenter"> مركز مِراس </a>
+                    </li>
+                    <li>
+                        <a  target="_blank"href="http://ic.meras.gov.sa/ar/licenses/" target="_blank"> التراخيص والأنشطة </a>
+                    </li>
+                    <li>
+                        <a  target="_blank"href="https://meras.gov.sa/Home/FAQ"> أسئلة شائعة </a>
+                    </li>
+                    <li>
+                        <a  target="_blank"href="https://meras.gov.sa/Home/ContactUs"> اتصل بنا </a>
+                    </li>
+
+                </ul>
+                <ul class="pull-right list-inline">
+
+                    {% if request.session.user_id %}
+                        <li class="dropdown">
+                            <a href="#!" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ request.session.user_fullname }} <span class="caret"></span></a>
+                            <ul class="dropdown-menu pull-right">
+                                <li>
+                                    <a href="{% url 'main:logout' %}">تسجيل الخروج</a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% endif %}
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-th" aria-hidden="true"></span>
+                            <span class="hidden-lg hidden-md hidden-sm">خدمات منصة مراس</span>
+                        </a>
+                        <ul class="dropdown-menu pull-right">
+                            <li class="dropdown-header h5 hidden-xs">خدمات منصة مراس</li>
+
+                            <li>
+                                <a href="#">اسم النظام</a>
+                            </li>
+                            <li>
+                                <a href="#">اسم النظام</a>
+                            </li>
+                            <li>
+                                <a href="#">اسم النظام</a>
+                            </li>
+                            <li>
+                                <a href="#">اسم النظام</a>
+                            </li>
+
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <!--/.nav-collapse -->
+        </nav>
+
+
+    </div></div>
+</div>
+<header class="main-header">
+    <div class="container">
+      <div class="row">
+        <div class="clearfix logos-container">
+            <a class="pull-left logo" href="index.html">
+                <img src="https://cdn.frontify.com/api/screen/thumbnail/gKLENBMNhGJ5miJwg212vCvfp2s_SSZKa1IsZ_pTuiJNPmm5gGTjrVh4c69vytAIOgp7NPSYbDQ3mDi1c2U40A/1368">
+            </a>
+            <a class="pull-right visionlogo" href="#" target="_blank">
+                <img style="height: 48px;" src="{% static 'img/stats_logo.png' %}">
+            </a>
+        </div>
+
+
+
+        <nav>
+            <button type="button" class="navbar-toggle collapsed " data-toggle="collapse" data-target="#navbar2" aria-expanded="false"
+                aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar bg-primary"></span>
+                <span class="icon-bar bg-primary"></span>
+                <span class="icon-bar bg-primary"></span>
+            </button>
+            <a class="navbar-brand  hidden-lg hidden-md hidden-sm text-primary" href="#">القائمة الرئيسية</a>
+            <div id="navbar2" class="navbar-collapse collapse">
+                <ul class="  list-inline">
+                    <li class="active">
+                        <a href="/Home/AboutUs"> الرئيسية </a>
+                    </li>
+                    <li class="">
+                        <a href="#"> قائمة </a>
+                    </li>
+                    <li class="">
+                        <a href="#"> قائمة </a>
+                    </li>
+
+                    <li>
+                        <a href="#"> قائمة </a>
+                    </li>
+                    <li class="">
+                        <a href="#"> قائمة </a>
+                    </li>
+                   <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">قائمة منسدلة لليمين <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="#">عنصر</a>
+                            </li>
+                           <li>
+                                <a href="#">عنصر</a>
+                            </li>
+                           <li>
+                                <a href="#">عنصر</a>
+                            </li>
+                           <li>
+                                <a href="#">عنصر</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">قائمة منسدلة لليسار <span class="caret"></span></a>
+                        <ul class="dropdown-menu pull-left">
+                            <li>
+                                <a href="#">عنصر</a>
+                            </li>
+                           <li>
+                                <a href="#">عنصر</a>
+                            </li>
+                           <li>
+                                <a href="#">عنصر</a>
+                            </li>
+                           <li>
+                                <a href="#">عنصر</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+
+            </div>
+            <!--/.nav-collapse -->
+        </nav>
+    </div> </div>
+</header>
+
+<div class="container">
+
+    {% block content %}
+    {% endblock %}
+
+</div>
+
+<footer class=" bg-primary">
+  <div class="container">
+    <div class="row">
+       <nav >
+
+          <div>
+            <ul class=" navbar-left list-inline">
+       <li>
+                        <a target="_blank" href="https://meras.gov.sa/Home/Privacy">سياسة الخصوصية</a>
+              </li> <span class="separator">|</span>
+                    <li>
+                        <a target="_blank" href="https://meras.gov.sa/Home/Policy">الاستخدام و إخلاء المسؤولية</a>
+                    </li> <span class="separator">|</span>
+                    <li>
+                        <a target="_blank" href="https://meras.gov.sa/Home/Customer">ميثاق العملاء</a>
+                    </li>
+            </ul>
+            <ul class="navbar-right list-inline social">
+                            <li><a href="#">الخدمة مدارة بواسطة <i>الهيئة العامة للإحصاء</i></a></li> <span class="separator">|</span>
+
+              <li><a href="https://twitter.com/meras_sa"><i class="fa fa-twitter h4" ></i></a></li>
+              <li><a href="https://www.youtube.com/watch?v=dAgC6oMmS9w&feature=youtu.be"><i class="fa fa-youtube h4" ></i></a></li>
+
+            </ul>
+          </div><!--/.nav-collapse -->
+      </nav>
+
+
+    </div>
+  </div>
+</footer>
+
+<script src="{% static 'js/jquery.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+{% block scripts %}
+
+{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,98 @@
+.panel-form-wide {
+    background-color: #fff;
+    width: 100%;
+    max-width: 960px;
+    padding: 20px;
+    margin: 0px 5px 15px 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    /* color: white; */
+    box-shadow: 0px 0px 5px 0px #ccc;
+}
+.panel-form-narrow {
+    background-color: #fff;
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+    margin: 0px 5px 15px 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    /* color: white; */
+    box-shadow: 0px 0px 5px 0px #ccc;
+}
+.panel-form img {
+    width: 90px;
+    margin-top: 20px;
+}
+.panel-form a.btn {
+    display: inline-block;
+}
+.panel-form a.btn > i {
+    display: block;
+    font-size: 28px;
+    margin: 10px;
+}
+form.signup-form {
+    width: 100%;
+    max-width: 600px;
+    padding: 10px;
+}
+form.terms-form {
+    width: 100%;
+    max-width: 630px;
+    padding: 10px;
+}
+select.form-control {
+    padding: 0px 12px;
+}
+textarea{
+    resize: none;
+}
+
+.result-icon{
+    font-size: 90px;
+    margin-bottom: 15px;
+}
+
+.terms-container {
+    direction: rtl;
+    text-align: justify;
+    background: white;
+    height: 350px;
+    overflow-y: scroll;
+    width: 100%;
+    color: black;
+    padding: 5px 8px;
+    border: 2px solid #ccc;
+}
+.bold-font {
+    font-weight: bold;
+}
+.terms-container ul {
+    list-style: none;
+}
+.agreement-check {
+    margin-top: 15px;
+}
+
+.login-form {
+    background-color: #333333;
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+    margin: 0px 5px 15px 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+    box-shadow: 0px 0px 5px 0px #ccc;
+}
+.login-form img {
+    width: 90px;
+    margin-top: 20px;
+}

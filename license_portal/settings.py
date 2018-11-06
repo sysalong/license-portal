@@ -25,7 +25,7 @@ SECRET_KEY = '^0_c%m*frdv5tr(4dmt)m7w(74!l&yvk!4b4#8=)9$6d858_9q'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', 'statspp.licenses.meras.gov.sa']
 
 
 # Application definition
@@ -76,8 +76,11 @@ WSGI_APPLICATION = 'license_portal.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'license_portal',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': '127.0.0.1',
     }
 }
 
@@ -120,3 +123,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'main', 'static')
+
+EFILE_URL = 'https://efilepp.mci.gov.sa'
+EFILE_WEBSERVICE_URL = EFILE_URL + '/WServices/EFileService.svc?WSDL'
+
+MERAS_CLIENT_ID = '5A036A93-60A0-44B5-AF3B-B6D3419AB8E5'
+MERAS_CLIENT_SECRET = 'secret12345'
+MERAS_RETURN_URL = '/terms'
+
+WATHIQ_URL = 'https://wathiqprep.thiqah.sa/3.1/WathiqService.svc'
+WATHIQ_USERNAME = 'WathiqSTATSPP'
+WATHIQ_PASSWORD = 'bFGT776&UYTRE123'
