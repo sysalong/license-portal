@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main.apps.MainConfig',
+    'moderation.apps.ModerationConfig',
 ]
 
 MIDDLEWARE = [
@@ -107,15 +108,15 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ar-sa'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Riyadh'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -124,13 +125,16 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'main', 'static')
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 EFILE_URL = 'https://efilepp.mci.gov.sa'
 EFILE_WEBSERVICE_URL = EFILE_URL + '/WServices/EFileService.svc?WSDL'
 
 MERAS_CLIENT_ID = '5A036A93-60A0-44B5-AF3B-B6D3419AB8E5'
 MERAS_CLIENT_SECRET = 'secret12345'
-MERAS_RETURN_URL = '/terms'
+MERAS_RETURN_URL = '/dashboard'
 
-WATHIQ_URL = 'https://wathiqprep.thiqah.sa/3.1/WathiqService.svc'
+WATHIQ_URL = 'https://wathiqprep.thiqah.sa/3.1/WathiqService.svc?WSDL'
 WATHIQ_USERNAME = 'WathiqSTATSPP'
 WATHIQ_PASSWORD = 'bFGT776&UYTRE123'

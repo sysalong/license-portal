@@ -1,0 +1,61 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+	<div>
+			<div class="stepsWizard-h">
+				<span class="pull-right visible-xs visible-sm">3 من 4</span>
+				<div class="clearfix visible-xs visible-sm"></div>
+
+				<ul>
+					<!-- classes: success - inprogress  -->
+					 <li class="success"><i>1</i><span>الشروط والأحكام</span></li>
+					 <li class="success"><i>2</i> <span>تحديد نوع الترخيص</span></li>
+					 <li class="success"><i>3</i> <span>إستكمال البيانات</span></li>
+					 <li class="inprogress"><i>4</i> <span>مراجعة</span></li>
+
+				</ul>
+				<div class="clearfix"></div>
+			</div>
+	</div>
+
+  <div class="row" style="display: flex; justify-content: center;">
+
+		<div class="panel-form-wide">
+			<div style="margin-bottom: 15px; text-align: right; width: 100%">
+				<a href="{% url 'main:individual_signup' %}" class="btn btn-primary" ripple="ripple"><i class="fa fa-chevron-right"></i> رجوع </a>
+			</div>
+			<h4> مراجعة البيانات </h4>
+			<p> <i class="fa fa-info-circle"></i> في حالة وجود بيانات قديمة أو غير صحيحة برجاء إعادة تسجيل الدخول والمحاولة مرة أخرى </p>
+
+			<form class="signup-form review-form" method="post">
+                {% csrf_token %}
+
+			</form>
+
+
+		</div>
+
+  </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $('.browse-button').click(function(){
+            var that = this;
+            var host = $(this).siblings('input[type=file]');
+            if (host.length) {
+                host.change(function(){
+                    var files = this.files;
+                    if (files.length) {
+                        $(that).children('.file-name-holder')[0].value = files[0].name;
+                    }
+                    else{
+                        $(that).children('.file-name-holder')[0].value = '';
+                    }
+                });
+                host.trigger('click');
+            }
+        });
+        $('form').validate();
+    </script>
+{% endblock %}

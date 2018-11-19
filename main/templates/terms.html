@@ -3,7 +3,7 @@
 {% block content %}
     	<div>
 			<div class="stepsWizard-h">
-				<span class="pull-right visible-xs visible-sm">4 من 6</span>
+				<span class="pull-right visible-xs visible-sm">1 من 4</span>
 				<div class="clearfix visible-xs visible-sm"></div>
 
 				<ul>
@@ -24,7 +24,8 @@
 			<h4> الشروط والأحكام </h4>
 			<p> <i class="fa fa-info-circle"></i> يجب الموافقة على الشروط الأتية لاستكمال التسجيل </p>
 
-			<form class="terms-form" action="#" method="post">
+			<form class="terms-form" method="post">
+                {% csrf_token %}
 				<div class="terms-container">
 					<p class="bold-font"> الشروط والأحكام للرخص الإحصائية (حسب لائحة التراخيص الإحصائية والرقابة عليها)‬ </p>
 
@@ -78,14 +79,15 @@
 				</div>
 
 				<div class="agreement-check">
-					<input type="checkbox" name="terms_agree" id="terms_agree"> <label for="terms_agree"> لقت قرأت الشروط  والأحكام كاملة وأوافق عليها </label>
+					<input type="checkbox" disabled name="terms_agree" id="terms_agree"> <label for="terms_agree"> لقت قرأت الشروط  والأحكام كاملة وأوافق عليها </label>
 				</div>
 				<p class="agreement-error" style="display: none;color: darkorange"> لا يمكنك المتابعة قبل الموافقة على الشروط والأحكام </p>
+
+                <div class="form-submission-wrapper" style="margin-top: 15px; text-align: center">
+                    <button type="submit" class="btn btn-success agreement-btn" disabled ripple="ripple"> متابعة <i class="fa fa-chevron-left"></i></button>
+                </div>
 			</form>
 
-			<div style="margin-bottom: 15px;">
-				<button type="button" class="btn btn-success agreement-btn" disabled ripple="ripple"> متابعة <i class="fa fa-chevron-left"></i></button>
-			</div>
 
 		</div>
 
@@ -104,13 +106,10 @@
             }
         });
 
-        $('.agreement-btn').click(function(){
-            if ($('#terms_agree')[0].checked) {
-                $('.agreement-error').hide();
-                window.location.href = '/choose_type.html';
-            }
-            else {
-                $('.agreement-error').show();
+        $('.terms-container').scroll(function(e){
+            var el = e.target;
+            if (el.scrollTop >= (el.scrollHeight - $(el).height() - 20)) {
+                $('#terms_agree')[0].disabled = false;
             }
         });
 

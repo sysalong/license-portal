@@ -3,7 +3,7 @@
 {% block content %}
 	<div>
 			<div class="stepsWizard-h">
-				<span class="pull-right visible-xs visible-sm">4 من 6</span>
+				<span class="pull-right visible-xs visible-sm">3 من 4</span>
 				<div class="clearfix visible-xs visible-sm"></div>
 
 				<ul>
@@ -22,7 +22,7 @@
 
 		<div class="panel-form-wide">
 			<div style="margin-bottom: 15px; text-align: right; width: 100%">
-				<button type="button" class="btn btn-primary" ripple="ripple"><i class="fa fa-chevron-right"></i> رجوع </button>
+				<a href="{% url 'main:choose_type' %}" class="btn btn-primary" ripple="ripple"><i class="fa fa-chevron-right"></i> رجوع </a>
 			</div>
 			<h4> تسجيل منشآت </h4>
 			<p> <i class="fa fa-info-circle"></i> يرجى ملئ البيانات التالية ببيانات صحيحة وكاملة </p>
@@ -52,7 +52,7 @@
 					<div class="help-block"></div>
 				</div> -->
 
-				<div style="margin-bottom: 15px; text-align: center">
+				<div class="form-submission-wrapper" style="margin-bottom: 15px; text-align: center">
 					<button type="submit" class="btn btn-success" ripple="ripple" onclick="javascript:window.location.href='/request_success.html';return false;"><i class="fa fa-paper-plane"></i> تقديم الطلب </button>
 					<!-- <button type="button" class="btn btn-warning" ripple="ripple"><i class="fa fa-paper-plane"></i> حفظ </button> -->
 				</div>

@@ -3,14 +3,17 @@ from requests import Session
 from zeep.transports import Transport
 from zeep import Client as ZeepClient
 
-from license_portal.settings import EFILE_WEBSERVICE_URL, MERAS_CLIENT_ID, MERAS_CLIENT_SECRET
+from license_portal.settings import DEBUG, EFILE_WEBSERVICE_URL, MERAS_CLIENT_ID, MERAS_CLIENT_SECRET
 
 
 def make_client():
-    session = Session()
-    session.verify = False
+    if DEBUG:
+        session = Session()
+        session.verify = False
 
-    client = ZeepClient(EFILE_WEBSERVICE_URL, transport=Transport(session=session))
+        client = ZeepClient(EFILE_WEBSERVICE_URL, transport=Transport(session=session))
+    else:
+        client = ZeepClient(EFILE_WEBSERVICE_URL)
 
     return client
 
@@ -47,8 +50,8 @@ class EFileService:
 
         try:
             return client.service.Logout(access_token)
-        except:
-            return False
+        except Exception as e:
+            return e
 
     @staticmethod
     def get_person_by_nid(national_id):
@@ -58,3 +61,12 @@ class EFileService:
             return client.service.GetPersonByNID(national_id, MERAS_CLIENT_ID, MERAS_CLIENT_SECRET)
         except:
             return False
+
+    @staticmethod
+    def authenticated(national_id):
+        client = make_client()
+
+        try:
+            return client.service.Authenticated(MERAS_CLIENT_ID, MERAS_CLIENT_SECRET, national_id)
+        except Exception as e:
+            return e

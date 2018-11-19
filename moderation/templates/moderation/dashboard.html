@@ -2,11 +2,22 @@
 
 {% block content %}
 
-  <div class="row" style="display: flex; justify-content: center;">
+  <div class="row" style="display: flex; justify-content: center; flex-direction: column;">
+
+{% if error %}
+    <div class="alert alert-danger alert-dismissible" role="alert" style="direction: rtl;max-width: 960px;">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="fa fa-times"></i></button>
+        {{ error }}
+    </div>
+{% elif success %}
+    <div class="alert alert-success alert-dismissible" role="alert" style="direction: rtl;max-width: 960px;">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="fa fa-times"></i></button>
+        {{ success }}
+    </div>
+{% endif %}
 
 		<div class="panel-form-wide">
-			<h3> حالة طلبك </h3>
-			<p> <i class="fa fa-info-circle"></i> إذا كانت حالة طلبكم تحت الإجراء، فبرجاء الانتظار حتى يتم الانتهاء من مراجعته وسيتم إرسال بريد الكتروني لكم. </p>
+			<h3> الطلبات </h3>
 
 			<div style="margin-bottom: 15px; margin-top: 15px; width: 100%;">
 
@@ -17,7 +28,7 @@
                             <th>تاريخ الإنشاء</th>
                             <th>حالة الطلب</th>
                             <th>تعليقات</th>
-                            <th style="padding: 0px;"></th>
+                            <th>عرض</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -27,9 +38,7 @@
                             <td>{{ application.created_at|date }}</td>
                             <td>{{ application.status.name }}</td>
                             <td>{{ application.comments.count }}</td>
-                            {% if application.status.value == ApplicationStatus.RETURNED %}
-                                <td><a href="{% url 'main:view_application' application.id %}" class="btn btn-warning" ripple="ripple"><i class="fa fa-eye"></i> عرض</a></td>
-                            {% endif %}
+                            <td><a href="{% url 'moderation:view_application' application.id %}" class="btn btn-primary" ripple="ripple"><i class="fa fa-eye"></i> عرض</a></td>
                         </tr>
                     {% endfor %}
                     </tbody>

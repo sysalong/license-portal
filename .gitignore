@@ -9,4 +9,4 @@ __pycache__/
 .settings/
 *.sublime-workspace
 .vscode/*
-
+license_portal/settings.py

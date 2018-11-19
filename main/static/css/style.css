@@ -1,9 +1,28 @@
+html, body {
+    height: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+}
+body > div.container {
+    flex-grow: 1;
+}
+
+@media only screen and (max-width: 768px) {
+    footer ul li {
+        margin: 0 !important;
+        padding-right: 9px !important;
+    }
+}
+
 .panel-form-wide {
     background-color: #fff;
     width: 100%;
     max-width: 960px;
     padding: 20px;
-    margin: 0px 5px 15px 5px;
+    /*margin: 0px 5px 15px 5px;*/
+    margin: 0px 0px 15px 0px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,13 +35,17 @@
     width: 100%;
     max-width: 450px;
     padding: 20px;
-    margin: 0px 5px 15px 5px;
+    /*margin: 0px 5px 15px 5px;*/
+    margin: 0px 0px 15px 0px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     /* color: white; */
     box-shadow: 0px 0px 5px 0px #ccc;
+}
+.panel-form-narrower {
+    max-width: 300px;
 }
 .panel-form img {
     width: 90px;
@@ -31,10 +54,19 @@
 .panel-form a.btn {
     display: inline-block;
 }
-.panel-form a.btn > i {
-    display: block;
-    font-size: 28px;
+.panel-type a.btn > i {
+    /*display: block;*/
+    /*font-size: 12px;*/
     margin: 10px;
+}
+.panel-type a.btn > span {
+    font-size: 10pt;
+}
+.panel-form .type-btn {
+    display: block;
+    width: 100%;
+    background-color: #5F72C4;
+    /*padding: 15px 5px;*/
 }
 form.signup-form {
     width: 100%;
@@ -95,4 +127,300 @@ textarea{
 .login-form img {
     width: 90px;
     margin-top: 20px;
+}
+
+.moderation-login-form {
+    /*background-color: #333333;*/
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+    margin: 0px 5px 15px 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    /*color: white;*/
+    /*box-shadow: 0px 0px 5px 0px #ccc;*/
+}
+.moderation-login-form img {
+    width: 90px;
+    margin-top: 20px;
+}
+.moderation-login-form form {
+    width: 100%;
+    margin-top: 30px;
+    text-align: center;
+    background-color: #fff;
+    padding: 20px;
+}
+
+.stepsWizard-h ul {
+    display: flex;
+    justify-content: center;
+}
+
+.form-head {
+    width: 100%;
+}
+.form-head h4, .form-head p {
+    text-align: center;
+}
+
+.signup-form input[type=file] {
+    width:0px;
+    height:0px;
+}
+.input-group.browse-button > input[type=text][readonly] {
+    background-color: #fff;
+    cursor: pointer;
+}
+.signup-form input[type=file] + .input-group > input[type=text][readonly]:active, .signup-form input[type=file] + .input-group > input[type=text][readonly]:focus {
+    outline: none;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    border: 1px solid #ECECEE;
+}
+
+label.error {
+    color: #E52B20;
+}
+
+.review-form input[readonly] {
+    background-color: #fff;
+}
+
+.form-submission-wrapper {
+    margin-top: 20px;
+}
+
+.required-indicator {
+    color: red;
+    font-size: 7pt;
+}
+
+.browse-button button i {
+    background-color: #333;
+    border-radius: 3px;
+}
+
+.alert-danger:before {
+    float: left;
+}
+.alert:before {
+    margin-left: 0px;
+    margin-right: 10px;
+    width: auto;
+}
+.alert:before:hover {
+    color: #333333;
+    cursor: pointer;
+}
+.alert-danger button.close {
+    width: 17px;
+    height: 21px;
+    top: 16px;
+    left: 14px;
+    color: transparent;
+}
+.alert-danger button.close:hover {
+    cursor: pointer;
+    color: transparent;
+}
+
+.type-title {
+    font-weight: bold;
+}
+
+.panel-type {
+    margin-left: 10px;
+    margin-right: 10px;
+    padding: 0px;
+}
+.type-panel-content {
+    padding: 20px;
+    flex-grow: 1;
+    text-align: center;
+}
+.type-panel-content p {
+    margin-top: 15px;
+    margin-bottom: 40px;
+    color: #525252;
+}
+.type-icon-large {
+    display: inline-flex;
+    height: 90px;
+    width: 90px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    background-color: #EBEEFC;
+    color: #697AC8;
+    font-size: 35px;
+    border-radius: 100%;
+}
+
+.container-panel {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.panel-title {
+    margin-bottom: 20px;
+}
+
+.application-document-icon {
+    border-radius: 10px;
+    height: 85px;
+    background-color: #f7f7f7;
+    margin-top: 10px;
+    margin-left: 6px;
+    margin-right: 6px;
+    border: 1px solid #e0e0e0;
+    cursor: pointer;
+    transition: all 0.3s ease-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+.application-document-icon:hover {
+    box-shadow: 0px 0px 8px 0px #e0e0e0;
+}
+.application-document-icon-img {
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.application-document-icon-pdf i {
+    font-size: 30px;
+}
+
+.file-preview-description {
+    position: absolute;
+    width: 100%;
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    bottom: 0px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    padding: 2px;
+    font-size: 9pt;
+}
+
+.file-viewer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: fixed;
+    overflow-y: auto;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+}
+
+.viewer-top-bar {
+    color: #fff;
+    background: rgba(0,0,0,1);
+    width: 100%;
+    height: 50px;
+    align-items: center;
+    display: flex;
+}
+.viewer-option-button {
+    display: inline-flex;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 2px;
+    margin-left: 10px;
+}
+.viewer-file-description {
+    flex: 1;
+    text-align: center;
+}
+.viewer-file-content {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-y: auto;
+    width: 100%;
+}
+.viewer-file-content img {
+    max-width: 95%;
+}
+.viewer-file-content object, .viewer-file-content embed {
+    width: 95%;
+    height: 100%;
+}
+
+.file-viewer-info-panel {
+    width: 100%;
+    color: #fff;
+    background: rgba(0,0,0,1);
+    padding: 10px 10px 5px 10px;
+    text-align: center;
+}
+.file-viewer-info-panel .info-item {
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.action-panel {
+    display: flex;
+    background: #fff;
+    padding: 8px;
+    align-items: center;
+    /*position: fixed;*/
+    bottom: 50px;
+    width: 100%;
+    max-width: 960px;
+    box-shadow: 0px 0px 5px 0px #ccc;
+    flex-direction: column;
+}
+
+.action-panel .actions-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.action-panel-title {
+    font-weight: bold;
+}
+
+.action-message {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    margin-bottom: 15px;
+    padding: 15px;
+}
+
+.action-bottom-content {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+@media(max-width: 768px) {
+    body > div.container {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+}
+
+td.history-name-field {
+    width: 160px;
+}
+td.history-date-field {
+    width: 145px;
 }

@@ -1,39 +1,13 @@
 {% extends 'layout/base.html' %}
 
 {% block content %}
-	<div>
-			<div class="stepsWizard-h">
-				<span class="pull-right visible-xs visible-sm">3 من 4</span>
-				<div class="clearfix visible-xs visible-sm"></div>
-
-				<ul>
-					<!-- classes: success - inprogress  -->
-					 <li class="success"><i>1</i><span>الشروط والأحكام</span></li>
-					 <li class="success"><i>2</i> <span>تحديد نوع الترخيص</span></li>
-					 <li class="inprogress data-entry-step"><i>3</i> <span>إستكمال البيانات</span></li>
-					 <li class="review-step"><i>4</i> <span>مراجعة</span></li>
-
-				</ul>
-				<div class="clearfix"></div>
-			</div>
-	</div>
 
   <div class="row" style="display: flex; justify-content: center;">
 
 		<div class="panel-form-wide">
             <div class="form-head main-form-head">
-                <div style="margin-bottom: 15px; text-align: right; width: 100%">
-                    <a href="{% url 'main:choose_type' %}" class="btn btn-primary" ripple="ripple"><i class="fa fa-chevron-right"></i> رجوع </a>
-                </div>
-                <h4> تسجيل أفراد </h4>
-                <p> <i class="fa fa-info-circle"></i> يرجى ملئ البيانات التالية ببيانات صحيحة وكاملة </p>
-            </div>
-            <div class="form-head review-form-head" style="display: none">
-                <div style="margin-bottom: 15px; text-align: right; width: 100%">
-                    <a href="#!" class="btn btn-primary" ripple="ripple"><i class="fa fa-chevron-right"></i> رجوع </a>
-                </div>
-                <h4> مراجعة البيانات </h4>
-                <p> <i class="fa fa-info-circle"></i> في حالة وجود بيانات قديمة أو غير صحيحة برجاء إعادة تسجيل الدخول والمحاولة مرة أخرى </p>
+                <h4> تعديل الطلب </h4>
+                <p style="color: red;"> <i class="fa fa-info-circle"></i> يرجى تحديث البيانات والمستندات التالية ببيانات صحيحة وكاملة حتى لا يرد طلبك مرة أخرى </p>
             </div>
 
             {% if error %}
@@ -43,13 +17,20 @@
                 </div>
             {% endif %}
 
-			<form class="signup-form" method="post" enctype="multipart/form-data">
+			<form class="signup-form" action="{% url 'main:individual_signup' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
+                <input type="hidden" name="_updating" value="true">
                 <div class="main-form">
                     <div class="form-group">
                         <label class="control-label"> مدة الخدمة المطلوبة </label>
                         <input type="text" class="form-control" id="duration-value" readonly value="سنتين">
+                        <div class="help-block"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label"> تم رد طلبك بسبب </label>
+                        <textarea class="form-control" readonly style="width: 100%;background-color: white;" rows="4">{{ application.return_reason }}</textarea>
                         <div class="help-block"></div>
                     </div>
 
@@ -122,59 +103,9 @@
                         <div class="help-block"></div>
                     </div> -->
 
-                    <div class="form-submission-wrapper" style="margin-bottom: 15px; text-align: center">
-                        <button type="button" id="main-form-submit" class="btn btn-primary" ripple="ripple"> إنهاء <i class="fa fa-chevron-left"></i> </button>
-                        <!-- <button type="button" class="btn btn-warning" ripple="ripple"><i class="fa fa-paper-plane"></i> حفظ </button> -->
-                    </div>
-                </div>
-
-                <div class="review-form" style="display: none">
-                    <div class="form-group">
-                        <label class="control-label"> رقم الهوية </label>
-                        <input type="text" class="form-control" value="{{ request.session.user_id }}" readonly>
-                        <div class="help-block"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label"> الاسم بالكامل </label>
-                        <input type="text" class="form-control" value="{{ request.session.user_fullname }}" readonly>
-                        <div class="help-block"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label"> البريد الالكتروني <i class="fa fa-question-circle" data-toggle="tooltip" data-title="سيتم استخدام هذا البريد الالكتروني للتواصل معكم"></i> </label>
-                        <input type="text" class="form-control" value="{{ request.session.user_email }}" readonly>
-                        <div class="help-block"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label"> رقم الجوال <i class="fa fa-question-circle" data-toggle="tooltip" data-title="سيتم استخدام هذا الرقم للتواصل معكم"></i> </label>
-                        <div style="display: flex; flex-direction: row;">
-                            <input type="text" class="form-control" value="+{{ request.session.user_phonecodeid }}" readonly style="width: 60px; margin-left: 6px"> <input type="text" class="form-control" value="{{ request.session.user_mobile }}" readonly>
-                        </div>
-                        <div class="help-block"></div>
-                    </div>
-
-                    <hr>
-
-                    <div class="form-group">
-                        <label class="control-label"> الخدمة المطلوبة </label>
-                        <input type="text" class="form-control" value="التقديم على رخصة إحصائية جديدة" readonly>
-                        <div class="help-block"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label"> مدة الخدمة المطلوبة </label>
-                        <input type="text" class="form-control" id="service-period-value" value="" readonly>
-                        <div class="help-block"></div>
-                    </div>
-
-                    <p>
-                        <i class="fa fa-asterisk"></i> <strong> بالضغظ على زر "تقديم الطلب" أقر بأن البيانات أعلاه والمستندات المرفقة صحيحة وكاملة </strong>
-                    </p>
 
                     <div class="form-submission-wrapper" style="margin-bottom: 15px; text-align: center">
-                        <button type="submit" class="btn btn-success" ripple="ripple"><i class="fa fa-paper-plane"></i> تقديم الطلب </button>
+                        <button type="submit" class="btn btn-success" ripple="ripple"><i class="fa fa-paper-plane"></i> تحديث الطلب </button>
                         <!-- <button type="button" class="btn btn-warning" ripple="ripple"><i class="fa fa-paper-plane"></i> حفظ </button> -->
                     </div>
                 </div>

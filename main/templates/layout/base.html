@@ -155,50 +155,10 @@
                     <li class="">
                         <a href="#"> قائمة </a>
                     </li>
-
-                    <li>
-                        <a href="#"> قائمة </a>
-                    </li>
                     <li class="">
                         <a href="#"> قائمة </a>
                     </li>
-                   <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">قائمة منسدلة لليمين <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="#">عنصر</a>
-                            </li>
-                           <li>
-                                <a href="#">عنصر</a>
-                            </li>
-                           <li>
-                                <a href="#">عنصر</a>
-                            </li>
-                           <li>
-                                <a href="#">عنصر</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">قائمة منسدلة لليسار <span class="caret"></span></a>
-                        <ul class="dropdown-menu pull-left">
-                            <li>
-                                <a href="#">عنصر</a>
-                            </li>
-                           <li>
-                                <a href="#">عنصر</a>
-                            </li>
-                           <li>
-                                <a href="#">عنصر</a>
-                            </li>
-                           <li>
-                                <a href="#">عنصر</a>
-                            </li>
-                        </ul>
-                    </li>
-
                 </ul>
-
             </div>
             <!--/.nav-collapse -->
         </nav>
@@ -230,7 +190,7 @@
                     </li>
             </ul>
             <ul class="navbar-right list-inline social">
-                            <li><a href="#">الخدمة مدارة بواسطة <i>الهيئة العامة للإحصاء</i></a></li> <span class="separator">|</span>
+                            <li><a href="#">الخدمة مدارة بواسطة الهيئة العامة للإحصاء</a></li> <span class="separator">|</span>
 
               <li><a href="https://twitter.com/meras_sa"><i class="fa fa-twitter h4" ></i></a></li>
               <li><a href="https://www.youtube.com/watch?v=dAgC6oMmS9w&feature=youtu.be"><i class="fa fa-youtube h4" ></i></a></li>
@@ -246,6 +206,13 @@
 
 <script src="{% static 'js/jquery.js' %}"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
 
 {% block scripts %}
 

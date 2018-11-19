@@ -1,6 +1,7 @@
-from django.urls import path
+from django.urls import path, include
 
 from . import views
+
 
 app_name = 'main'
 
@@ -16,4 +17,6 @@ urlpatterns = [
     path('choose_type', views.choose_type, name='choose_type'),
     path('individual_signup', views.individual_signup, name='individual_signup'),
     path('company_signup', views.company_signup, name='company_signup'),
+    path('success', views.success, name='success'),
+    path('application/view/<int:id>', views.view_application, name='view_application'),
 ]
