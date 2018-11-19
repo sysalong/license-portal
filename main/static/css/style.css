@@ -424,3 +424,7 @@ td.history-name-field {
 td.history-date-field {
     width: 145px;
 }
+
+.disabled[disabled] {
+    pointer-events: none;
+}

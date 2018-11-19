@@ -3,7 +3,7 @@ from django.http.response import HttpResponseBadRequest
 from django.contrib import messages
 
 from license_portal.settings import EFILE_URL, MERAS_CLIENT_ID, MERAS_RETURN_URL
-from .decorators import requires_login, terms_agreed, requires_finished_with_success, user_has_no_applications
+from .decorators import requires_meras_login, terms_agreed, requires_finished_with_success, user_has_no_applications
 from .helpers import load_user_data, internal_logout, sessdata, verify_image, verify_pdf, action_history_log
 from .services import EFileService
 from .models import *
@@ -27,8 +27,8 @@ def oauth_return(request):
 
     has_applications = Application.objects.filter(applicant__id_number=sessdata(request, 'user_id')).exists()
 
-    if return_url and return_url == reverse('moderation:index'):  # remove this line after development is done
-        return redirect(reverse('moderation:index'))  # remove this line after development is done
+    if return_url and return_url == reverse('moderation:index'):  # TODO: remove this line after development is done
+        return redirect(reverse('moderation:index'))  # TODO: remove this line after development is done
 
     if not has_applications:
         if return_url and return_url == reverse('moderation:index'):
@@ -39,7 +39,7 @@ def oauth_return(request):
     return redirect(MERAS_RETURN_URL)
 
 
-@requires_login
+@requires_meras_login
 def index(request):
     return redirect(reverse('main:dashboard'))
     # access_token = request.session.get('access_token')
@@ -56,13 +56,15 @@ def index(request):
     #         return redirect(reverse('main:login'))
 
 
-@requires_login
+@requires_meras_login
 def dashboard(request):
     access_token = sessdata(request, 'access_token')
     if access_token:
         user_authenticated = EFileService.is_authenticated(access_token)
         if user_authenticated:
-            user = Applicant.objects.get(userid=sessdata(request, 'user_userid'))
+            user = Applicant.objects.filter(userid=sessdata(request, 'user_userid')).first()
+            if not user:
+                return redirect(reverse('main:terms'))
             return render(request, 'dashboard.html', {'applications': user.applications.all(), 'ApplicationStatus': ApplicationStatus})
         else:
             return internal_logout(request)
@@ -97,7 +99,7 @@ def logout(request):
     return redirect(reverse('main:login'))
 
 
-@requires_login
+@requires_meras_login
 @user_has_no_applications
 def terms(request):
     # access_token = request.session.get('access_token')
@@ -111,14 +113,14 @@ def terms(request):
     return render(request, 'terms.html')
 
 
-@requires_login
+@requires_meras_login
 @terms_agreed
 @user_has_no_applications
 def choose_type(request):
     return render(request, 'choose_type.html')
 
 
-@requires_login
+@requires_meras_login
 @terms_agreed
 @user_has_no_applications
 def individual_signup(request):
@@ -289,7 +291,7 @@ def individual_signup(request):
     return render(request, template_name, {'error': msgs[0] if msgs else None})
 
 
-@requires_login
+@requires_meras_login
 @terms_agreed
 @user_has_no_applications
 def company_signup(request):
@@ -299,7 +301,7 @@ def company_signup(request):
     return render(request, 'company_signup.html')
 
 
-@requires_login
+@requires_meras_login
 @requires_finished_with_success
 def success(request):
     applicant_type = request.session.get('finished_with_success')
@@ -307,10 +309,10 @@ def success(request):
     return render(request, 'request_success.html', {'applicant_type': applicant_type, 'ApplicantType': ApplicantType})
 
 
-@requires_login
+@requires_meras_login
 def view_application(request, id):
     application = Application.objects.filter(id=id, applicant=Applicant.objects.filter(id_number=sessdata(request, 'user_id')).first()).first()
-    if not application:
+    if not application or application and application.status.value != ApplicationStatus.RETURNED:
         return redirect(reverse('main:index'))
 
     return render(request, 'individual_view.html', {'application': application})

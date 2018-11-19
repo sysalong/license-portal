@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.shortcuts import redirect, reverse
 from django.contrib.auth.models import User
+from django.contrib.auth.views import logout
 
 from PIL import Image
 from PyPDF2 import PdfFileReader
@@ -51,6 +52,13 @@ def load_user_data(request, access_token):
 
 
 def internal_logout(request):
+    if request.user:
+        logout(request)
+
+    access_token = request.GET.get('access_token')
+    if access_token:
+        EFileService.logout(access_token)
+
     request.session.clear()
     request.session.flush()
 

@@ -143,44 +143,6 @@
             });
 
             $('form').validate();
-
-            function showReviewForm(){
-                setTimeout(function(){
-                    $('.main-form').hide();
-                    $('.main-form-head').hide();
-                    $('.alert.alert-dismissible').hide();
-
-                    var licenseDurationEl = $('#duration-value')[0];
-                    $('#service-period-value').val(licenseDurationEl.value);
-                    $('.data-entry-step').removeClass('inprogress').addClass('success');
-                    $('.review-step').addClass('inprogress');
-                    $('.review-form').show();
-                    $('.review-form-head').show();
-                    window.scrollTo(0,0);
-                }, 300);
-            }
-
-            function showMainForm(){
-                setTimeout(function(){
-                    $('.review-form').hide();
-                    $('.review-form-head').hide();
-
-                    $('.review-step').removeClass('inprogress');
-                    $('.data-entry-step').removeClass('success').addClass('inprogress');
-                    $('.main-form').show();
-                    $('.main-form-head').show();
-                    window.scrollTo(0,0);
-                }, 300);
-            }
-
-            $('#main-form-submit').click(function(){
-                if ($('form').valid()) {
-                    showReviewForm();
-                }
-            });
-            $('.review-form-head a.btn').click(function(){
-                showMainForm();
-            });
         });
     </script>
 {% endblock %}

@@ -116,6 +116,7 @@ class Application(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='applications', default=None)
     return_reason = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    paid_on = models.DateTimeField(null=True)
 
     @property
     def action_history(self):
