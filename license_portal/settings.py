@@ -10,6 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
+# TODO: set cronjob command on staging server
+# TODO: set cronjob command on production server
+
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -39,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main.apps.MainConfig',
     'moderation.apps.ModerationConfig',
+    'django_cron',
 ]
 
 MIDDLEWARE = [
@@ -135,6 +139,10 @@ MERAS_CLIENT_ID = '5A036A93-60A0-44B5-AF3B-B6D3419AB8E5'
 MERAS_CLIENT_SECRET = 'secret12345'
 MERAS_RETURN_URL = '/dashboard'
 
-WATHIQ_URL = 'https://wathiqprep.thiqah.sa/3.1/WathiqService.svc?WSDL'
+WATHIQ_URL = 'https://wathiqprep.thiqah.sa/3.1/WathiqService.svc?wsdl'
 WATHIQ_USERNAME = 'WathiqSTATSPP'
 WATHIQ_PASSWORD = 'bFGT776&UYTRE123'
+
+CRON_CLASSES = [
+    "main.cronjobs.DeleteExpiredJob",
+]

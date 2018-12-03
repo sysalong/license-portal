@@ -14,9 +14,12 @@ urlpatterns = [
     path('logout', views.logout, name='logout'),
     path('dashboard', views.dashboard, name='dashboard'),
     path('terms', views.terms, name='terms'),
-    path('choose_type', views.choose_type, name='choose_type'),
-    path('individual_signup', views.individual_signup, name='individual_signup'),
-    path('company_signup', views.company_signup, name='company_signup'),
+    path('choose-type', views.choose_type, name='choose_type'),
+    path('individual-signup', views.individual_signup, name='individual_signup'),
+    path('company-signup', views.company_signup, name='company_signup'),
     path('success', views.success, name='success'),
     path('application/view/<int:id>', views.view_application, name='view_application'),
+    path('application/payment/<int:id>', views.payment_directions, name='payment_directions'),
+
+    path('api/', include('main.apiurls')),
 ]

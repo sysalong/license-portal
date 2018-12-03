@@ -12,7 +12,6 @@
 					 <li class="success"><i>2</i> <span>تحديد نوع الترخيص</span></li>
 					 <li class="inprogress data-entry-step"><i>3</i> <span>إستكمال البيانات</span></li>
 					 <li class="review-step"><i>4</i> <span>مراجعة</span></li>
-
 				</ul>
 				<div class="clearfix"></div>
 			</div>
@@ -30,7 +29,7 @@
             </div>
             <div class="form-head review-form-head" style="display: none">
                 <div style="margin-bottom: 15px; text-align: right; width: 100%">
-                    <a href="#!" class="btn btn-primary" ripple="ripple"><i class="fa fa-chevron-right"></i> رجوع </a>
+                    <a href="#" class="btn btn-primary" ripple="ripple"><i class="fa fa-chevron-right"></i> رجوع </a>
                 </div>
                 <h4> مراجعة البيانات </h4>
                 <p> <i class="fa fa-info-circle"></i> في حالة وجود بيانات قديمة أو غير صحيحة برجاء إعادة تسجيل الدخول والمحاولة مرة أخرى </p>
@@ -56,7 +55,7 @@
                     <fieldset>
                         <legend>المستندات المطلوبة</legend>
                         <div class="form-group">
-                            <label class="control-label" for="select-period"> صورة الهوية <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
+                            <label class="control-label"> صورة الهوية <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
                             <div class="input-group browse-button">
                               <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
                               <span class="input-group-btn">
@@ -68,7 +67,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label" for="select-period"> صورة المؤهل الأكاديمي <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
+                            <label class="control-label"> صورة المؤهل الأكاديمي <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
                             <div class="input-group browse-button">
                               <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
                               <span class="input-group-btn">
@@ -80,7 +79,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label" for="select-period"> شهادات الخبرات (متعددة)   <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملفات من صيغة PDF"></i> <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
+                            <label class="control-label"> شهادات الخبرات (متعددة)   <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملفات من صيغة PDF"></i> <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
                             <div class="input-group browse-button">
                               <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
                               <span class="input-group-btn">
@@ -92,7 +91,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label" for="select-period"> السيرة الذاتية   <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملف من صيغة PDF"></i> <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
+                            <label class="control-label"> السيرة الذاتية   <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملف من صيغة PDF"></i> <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
                             <div class="input-group browse-button">
                               <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
                               <span class="input-group-btn">
@@ -104,7 +103,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label" for="select-period"> مستندات إضافية   <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملف مجمع من صيغة PDF"></i> </label>
+                            <label class="control-label"> مستندات إضافية   <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملف مجمع من صيغة PDF"></i> </label>
                             <div class="input-group browse-button">
                               <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
                               <span class="input-group-btn">
@@ -115,12 +114,6 @@
                             <div class="help-block"></div>
                         </div>
                     </fieldset>
-
-                    <!-- <div class="form-group">
-                        <label class="control-label" for="textarea-comments"> ملاحظات </label>
-                        <textarea class="form-control" id="textarea-comments" rows="5"></textarea>
-                        <div class="help-block"></div>
-                    </div> -->
 
                     <div class="form-submission-wrapper" style="margin-bottom: 15px; text-align: center">
                         <button type="button" id="main-form-submit" class="btn btn-primary" ripple="ripple"> إنهاء <i class="fa fa-chevron-left"></i> </button>
@@ -188,7 +181,14 @@
 
 {% block scripts %}
     <script>
+        document.addEventListener('DOMContentLoaded', function(e){
+            if (window.location.hash !== '' || window.location.hash !== '#') {
+                clearWindowHash();
+            }
+        });
+
         $(document).ready(function(){
+            var $form = $('form');
             $('.browse-button').click(function(){
                 var that = this;
                 var host = $(this).siblings('input[type=file]');
@@ -211,10 +211,45 @@
                 }
             });
 
-            $('form').validate();
+            $form.validate();
+
+            function navigate(route) {
+                window.location.hash = route;
+            }
+
+            window.clearWindowHash = function(){
+                window.location.hash = '';
+            };
+
+            var inReview = false;
+
+            window.addEventListener('hashchange', function(e) {
+                var hashValue = window.location.hash.replace('#', '').trim();
+                var allowed = ['review'];
+
+                if (hashValue !== '') {
+                    if (allowed.indexOf(hashValue) > -1) {
+                        e.preventDefault();
+
+                        if (hashValue === 'review') {
+                            if ($form.valid()) {
+                                showReviewForm();
+                            }
+                            else {
+                                clearWindowHash();
+                            }
+                        }
+                    }
+                }
+                else {
+                    showMainForm();
+                }
+            });
 
             function showReviewForm(){
+                inReview = true;
                 setTimeout(function(){
+                    window.scrollTo(0,0);
                     $('.main-form').hide();
                     $('.main-form-head').hide();
                     $('.alert.alert-dismissible').hide();
@@ -225,12 +260,13 @@
                     $('.review-step').addClass('inprogress');
                     $('.review-form').show();
                     $('.review-form-head').show();
-                    window.scrollTo(0,0);
                 }, 300);
             }
 
             function showMainForm(){
+                inReview = false;
                 setTimeout(function(){
+                    window.scrollTo(0,0);
                     $('.review-form').hide();
                     $('.review-form-head').hide();
 
@@ -238,17 +274,24 @@
                     $('.data-entry-step').removeClass('success').addClass('inprogress');
                     $('.main-form').show();
                     $('.main-form-head').show();
-                    window.scrollTo(0,0);
                 }, 300);
             }
 
             $('#main-form-submit').click(function(){
-                if ($('form').valid()) {
-                    showReviewForm();
+                if ($form.valid()) {
+                    //showReviewForm();
+                    navigate('review');
                 }
             });
             $('.review-form-head a.btn').click(function(){
                 showMainForm();
+            });
+
+            $form.submit(function(e){
+                if (!$form.valid() || !inReview) {
+                    e.preventDefault();
+                    return false;
+                }
             });
         });
     </script>

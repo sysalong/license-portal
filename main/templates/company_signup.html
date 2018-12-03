@@ -1,4 +1,5 @@
 {% extends 'layout/base.html' %}
+{% load static %}
 
 {% block content %}
 	<div>
@@ -10,9 +11,8 @@
 					<!-- classes: success - inprogress  -->
 					 <li class="success"><i>1</i><span>الشروط والأحكام</span></li>
 					 <li class="success"><i>2</i> <span>تحديد نوع الترخيص</span></li>
-					 <li class="inprogress"><i>3</i> <span>إستكمال البيانات</span></li>
-					 <li><i>4</i> <span>مراجعة</span></li>
-
+					 <li class="inprogress data-entry-step"><i>3</i> <span>إستكمال البيانات</span></li>
+					 <li class="review-step"><i>4</i> <span>مراجعة</span></li>
 				</ul>
 				<div class="clearfix"></div>
 			</div>
@@ -21,45 +21,444 @@
   <div class="row" style="display: flex; justify-content: center;">
 
 		<div class="panel-form-wide">
-			<div style="margin-bottom: 15px; text-align: right; width: 100%">
-				<a href="{% url 'main:choose_type' %}" class="btn btn-primary" ripple="ripple"><i class="fa fa-chevron-right"></i> رجوع </a>
-			</div>
-			<h4> تسجيل منشآت </h4>
-			<p> <i class="fa fa-info-circle"></i> يرجى ملئ البيانات التالية ببيانات صحيحة وكاملة </p>
+			<div class="form-head main-form-head">
+                <div style="margin-bottom: 15px; text-align: right; width: 100%">
+                    <a href="{% url 'main:choose_type' %}" class="btn btn-primary" ripple="ripple"><i class="fa fa-chevron-right"></i> رجوع </a>
+                </div>
+                <h4> تسجيل منشآت </h4>
+                {% if has_cr and crs %}
+                    <p> <i class="fa fa-info-circle"></i> يرجى ملئ البيانات التالية ببيانات صحيحة وكاملة </p>
+                {% endif %}
+            </div>
+            <div class="form-head review-form-head" style="display: none">
+                <div style="margin-bottom: 15px; text-align: right; width: 100%">
+                    <a href="#" class="btn btn-primary" ripple="ripple"><i class="fa fa-chevron-right"></i> رجوع </a>
+                </div>
+                <h4> مراجعة البيانات </h4>
+                <p> <i class="fa fa-info-circle"></i> في حالة وجود بيانات قديمة أو غير صحيحة برجاء إعادة تسجيل الدخول والمحاولة مرة أخرى </p>
+            </div>
 
-			<form class="signup-form" action="#" method="post">
-				<!-- <div class="form-group">
-					<label class="control-label" for="input-name"> ادخل الاسم </label>
-					<input class="form-control" type="text" id="input-name">
-					<div class="help-block"></div>
-				</div> -->
+            {% if error %}
+                <div class="alert alert-danger alert-dismissible" role="alert" style="direction: rtl">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+                    {{ error }}
+                </div>
+            {% endif %}
 
-				<div class="form-group">
-					<label class="control-label" for="select-period"> مدة الخدمة المطلوبة </label>
-					<select class="form-control" id="select-period">
-					  <option> سنة </option>
-						<option> سنتين </option>
-						<option> ثلاث سنوات </option>
-						<option> أربع سنوات </option>
-						<option> خمس سنوات </option>
-					</select>
-					<div class="help-block"></div>
-				</div>
+            {% if not has_cr or not crs %}
+                <div class="row" style="display: flex; justify-content: center;">
 
-				<!-- <div class="form-group">
-					<label class="control-label" for="textarea-comments"> ملاحظات </label>
-					<textarea class="form-control" id="textarea-comments" rows="5"></textarea>
-					<div class="help-block"></div>
-				</div> -->
+                    <div style="margin-bottom: 20px;margin-top: 20px;text-align: center;">
+                        <i class="fa fa-times-circle result-icon" style="color:#E52B20"></i>
+{# TODO: ask:: ASK THEM FOR A SUPPORT EMAIL #}
+                        <p> عذراً، لا يمكنك المتابعة </p>
+                        <p>
+                            يجب أن يتوفر لديك سجل تجاري مسجل لتتمكن من التقديم على رخصة منشآت.
+                            <br>
+                            إذا كنت ترى أن هذه الرسالة لا يفترض أن تظهر لك، برجاء التواصل معنا عن طريق البريد الإلكتروني <span style="font-weight:bold">support@email.com</span>
+                        </p>
+                    </div>
 
-				<div class="form-submission-wrapper" style="margin-bottom: 15px; text-align: center">
-					<button type="submit" class="btn btn-success" ripple="ripple" onclick="javascript:window.location.href='/request_success.html';return false;"><i class="fa fa-paper-plane"></i> تقديم الطلب </button>
-					<!-- <button type="button" class="btn btn-warning" ripple="ripple"><i class="fa fa-paper-plane"></i> حفظ </button> -->
-				</div>
+              </div>
+            {% else %}
+
+			<form class="signup-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="main-form">
+                    <div class="form-group">
+                        <label class="control-label"> مدة الخدمة المطلوبة </label>
+                        <input type="text" class="form-control" id="duration-value" readonly value="سنتين">
+                        <div class="help-block"></div>
+                    </div>
+
+                    <hr>
+
+                    <div class="form-group">
+                        <label class="control-label"> رقم السجل التجاري <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i></label>
+                        <div class="cr-reader-wrapper">
+                            <div class="cr-reader">
+                                <input type="text" class="form-control" id="cr-value" value="" placeholder=" أدخل رقم السجل التجاري " data-rule-required="true" data-msg-required="برجاء ادخال رقم السجل التجاري" data-rule-pattern="[0-9]{10}" data-msg-pattern="أدخل رقم سجل تجاري صحيح" maxlength="10">
+                                <i class="fa fa-check-circle input-verified" style="display: none;"></i>
+                                <img src="{% static 'img/ajax-loader.gif' %}" alt=" " class="input-loader" style="display: none">
+                            </div>
+                            <button type="button" class="btn btn-primary cr-read-btn">تحقق</button>
+                        </div>
+                        <div class="help-block cr-help-block"></div>
+                    </div>
+
+
+                    <div id="docs" style="display: none">
+                        <table id="cr-info" class="table">
+                                <thead>
+                                    <tr>
+                                        <th>رقم السجل التجاري</th>
+                                        <th>نوع المنشأة</th>
+                                        <th>المنصب</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+
+                        <fieldset>
+                            <legend>المستندات المطلوبة</legend>
+                            <div class="form-group">
+                                <label class="control-label"> صورة السجل التجاري <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
+                                <div class="input-group browse-button">
+                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-photo-o"></i> اختر</button>
+                                  </span>
+                                </div><!-- /input-group -->
+                                <input type="file" name="doc-cr" accept="image/*" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
+                                <div class="help-block"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label"> صورة عقد التأسيس <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
+                                <div class="input-group browse-button">
+                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-photo-o"></i> اختر</button>
+                                  </span>
+                                </div><!-- /input-group -->
+                                <input type="file" name="doc-est" accept="image/*" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
+                                <div class="help-block"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label"> صورة شهادة السعودة <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
+                                <div class="input-group browse-button">
+                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-pdf-o"></i> اختر</button>
+                                  </span>
+                                </div><!-- /input-group -->
+                                <input type="file" name="doc-saudiation" accept="image/*" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
+                                <div class="help-block"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label"> صورة الهيكل التنظيمي <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
+                                <div class="input-group browse-button">
+                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-pdf-o"></i> اختر</button>
+                                  </span>
+                                </div><!-- /input-group -->
+                                <input type="file" name="doc-manhierarchy" accept="image/*" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
+                                <div class="help-block"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label"> مستند بالمشاريع السابقة <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
+                                <div class="input-group browse-button">
+                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-pdf-o"></i> اختر</button>
+                                  </span>
+                                </div><!-- /input-group --> {# TODO: ask:: ASK NAWAF-> WHAT TYPE OF FILE IS THIS FIELD #}
+                                <input type="file" name="doc-prevproj" accept="image/*" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
+                                <div class="help-block"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label"> صورة شهادة من الزكاة والدخل <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
+                                <div class="input-group browse-button">
+                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-pdf-o"></i> اختر</button>
+                                  </span>
+                                </div><!-- /input-group -->
+                                <input type="file" name="doc-income" accept="image/*" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
+                                <div class="help-block"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label"> مستندات إضافية <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملف مجمع من صيغة PDF"></i> </label>
+                                <div class="input-group browse-button">
+                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-pdf-o"></i> اختر</button>
+                                  </span>
+                                </div><!-- /input-group -->
+                                <input type="file" name="doc-additional" accept="application/pdf">
+                                <div class="help-block"></div>
+                            </div>
+                        </fieldset>
+
+                        <div class="form-submission-wrapper" style="margin-bottom: 15px; text-align: center">
+                            <button type="button" id="main-form-submit" class="btn btn-primary" ripple="ripple"> إنهاء <i class="fa fa-chevron-left"></i> </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-form" style="display: none">
+                    <fieldset>
+                        <legend>البيانات الشخصية</legend>
+                        <div class="form-group-half">
+                            <label class="control-label"> رقم الهوية </label>
+                            <input type="text" class="form-control" value="{{ request.session.user_id }}" readonly>
+                            <div class="help-block"></div>
+                        </div>
+
+                        <div class="form-group-half">
+                            <label class="control-label"> الاسم بالكامل </label>
+                            <input type="text" class="form-control" value="{{ request.session.user_fullname }}" readonly>
+                            <div class="help-block"></div>
+                        </div>
+
+                        <div class="form-group-half">
+                            <label class="control-label"> البريد الالكتروني <i class="fa fa-question-circle" data-toggle="tooltip" data-title="سيتم استخدام هذا البريد الالكتروني للتواصل معكم"></i> </label>
+                            <input type="text" class="form-control" value="{{ request.session.user_email }}" readonly>
+                            <div class="help-block"></div>
+                        </div>
+
+                        <div class="form-group-half">
+                            <label class="control-label"> رقم الجوال <i class="fa fa-question-circle" data-toggle="tooltip" data-title="سيتم استخدام هذا الرقم للتواصل معكم"></i> </label>
+                            <div style="display: flex; flex-direction: row;">
+                                <input type="text" class="form-control" value="+{{ request.session.user_phonecodeid }}" readonly style="width: 60px; margin-left: 6px"> <input type="text" class="form-control" value="{{ request.session.user_mobile }}" readonly>
+                            </div>
+                            <div class="help-block"></div>
+                        </div>
+                    </fieldset>
+
+
+
+                    <fieldset>
+                        <legend>بيانات السجل التجاري</legend>
+                        <table id="review-cr-info" class="table">
+                            <thead>
+                                <tr>
+                                    <th>رقم السجل التجاري</th>
+                                    <th>نوع المنشأة</th>
+                                    <th>المنصب</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+
+                    </fieldset>
+
+                    <hr>
+
+                    <div class="form-group">
+                        <label class="control-label"> الخدمة المطلوبة </label>
+                        <input type="text" class="form-control" value="التقديم على رخصة إحصائية جديدة" readonly>
+                        <div class="help-block"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label"> مدة الخدمة المطلوبة </label>
+                        <input type="text" class="form-control" id="service-period-value" value="" readonly>
+                        <div class="help-block"></div>
+                    </div>
+
+                    <p>
+                        <i class="fa fa-asterisk"></i> <strong> بالضغظ على زر "تقديم الطلب" أقر بأن البيانات أعلاه والمستندات المرفقة صحيحة وكاملة </strong>
+                    </p>
+
+                    <div class="form-submission-wrapper" style="margin-bottom: 15px; text-align: center">
+                        <input type="hidden" name="_crno">
+                        <button type="submit" class="btn btn-success" ripple="ripple"><i class="fa fa-paper-plane"></i> تقديم الطلب </button>
+                        <!-- <button type="button" class="btn btn-warning" ripple="ripple"><i class="fa fa-paper-plane"></i> حفظ </button> -->
+                    </div>
+                </div>
 			</form>
 
+        {% endif %}
 
 		</div>
 
   </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function(e){
+            if (window.location.hash !== '' || window.location.hash !== '#') {
+                clearWindowHash();
+            }
+            updateInputVerifyIcon();
+        });
+
+        $(document).ready(function(){
+            var $form = $('form');
+            $('.browse-button').click(function(){
+                var that = this;
+                var host = $(this).siblings('input[type=file]');
+                if (host.length) {
+                    host.change(function(){
+                        var files = this.files;
+                        if (files.length) {
+                            if (host.attr('multiple')){
+                                $(that).children('.file-name-holder')[0].value = 'تم اختيار عدد (' + files.length + ') ملفات';
+                            }
+                            else {
+                                $(that).children('.file-name-holder')[0].value = files[0].name;
+                            }
+                        }
+                        else{
+                            $(that).children('.file-name-holder')[0].value = '';
+                        }
+                    });
+                    host.trigger('click');
+                }
+            });
+
+            $form.validate();
+
+            function navigate(route) {
+                window.location.hash = route;
+            }
+
+            window.clearWindowHash = function(){
+                window.location.hash = '';
+            };
+
+            var crValid = false;
+            var inReview = false;
+
+            window.addEventListener('hashchange', function(e) {
+                var hashValue = window.location.hash.replace('#', '').trim();
+                var allowed = ['review'];
+
+                if (hashValue !== '') {
+                    if (allowed.indexOf(hashValue) > -1) {
+                        e.preventDefault();
+
+                        if (hashValue === 'review') {
+                            if ($form.valid()) {
+                                showReviewForm();
+                            }
+                            else {
+                                clearWindowHash();
+                            }
+                        }
+                    }
+                }
+                else {
+                    showMainForm();
+                }
+            });
+
+            window.updateInputVerifyIcon = function(){
+                if (crValid) {
+                    $('.input-verified').show();
+                    $('.input-loader').hide();
+                }
+                else {
+                    $('.input-verified').hide();
+                }
+            };
+
+            function showReviewForm(){
+                inReview = true;
+                setTimeout(function(){
+                    window.scrollTo(0,0);
+                    $('.main-form').hide();
+                    $('.main-form-head').hide();
+                    $('.alert.alert-dismissible').hide();
+
+                    var licenseDurationEl = $('#duration-value')[0];
+                    $('#service-period-value').val(licenseDurationEl.value);
+                    $('.data-entry-step').removeClass('inprogress').addClass('success');
+                    $('.review-step').addClass('inprogress');
+                    $('.review-form').show();
+                    $('.review-form-head').show();
+                }, 300);
+            }
+
+            function showMainForm(){
+                inReview = false;
+                setTimeout(function(){
+                    window.scrollTo(0,0);
+                    $('.review-form').hide();
+                    $('.review-form-head').hide();
+
+                    $('.review-step').removeClass('inprogress');
+                    $('.data-entry-step').removeClass('success').addClass('inprogress');
+                    $('.main-form').show();
+                    $('.main-form-head').show();
+                }, 300);
+            }
+
+            function crValidate() {
+                $('.cr-help-block').html('');
+
+                if ($('#cr-value').valid()){
+                    $('.input-loader').show();
+                    fetch('{% url 'main:api:cr_validate' %}', { method: 'POST', body: JSON.stringify({ 'crno': $('#cr-value').val() }), headers: { 'X-CSRFToken': '{{ csrf_token }}' } })
+                        .then(function(res){
+                            return res.json();
+                        })
+                        .then(function(res){
+                            if (res.status == 0){
+                                $('.cr-help-block').html(res.msg);
+                                $('.input-loader').hide();
+                            }
+                            else if (res.status == 1){
+                                var cr = res.data.cr;
+                                $('#cr-value')[0].readonly = true;
+                                $('#cr-value').attr('readonly', 'readonly');
+                                $('[name=_crno]').val(cr.CR);
+                                crValid = true;
+                                $('.cr-read-btn').hide();
+                                $('.cr-read-btn').attr('disabled', 'disabled');
+                                $('#cr-info').find('tbody').html('<tr>' +
+                                    '<td>' + cr.CR + '</td>' +
+                                    '<td>' + cr.BusType + '</td>' +
+                                    '<td>' + cr.RelationName + '</td>' +
+                                    '</tr>');
+                                $('#review-cr-info').find('tbody').html('<tr>' +
+                                    '<td>' + cr.CR + '</td>' +
+                                    '<td>' + cr.BusType + '</td>' +
+                                    '<td>' + cr.RelationName + '</td>' +
+                                    '</tr>');
+                                $('#docs').slideDown('fast');
+                                updateInputVerifyIcon();
+                            }
+                        });
+                }
+            }
+
+            $('#cr-value').on('input change blur', function(){
+                $('.cr-help-block').html('');
+            });
+
+            $('.cr-read-btn').click(function(){
+                crValidate();
+            });
+
+            $('.review-form-head a.btn').click(function(){
+                showMainForm();
+            });
+
+            $('#cr-value').keyup(function(e){
+                if (e.keyCode == 13) {
+                    crValidate();
+                }
+            });
+
+            $('#main-form-submit').click(function(){
+                if ($form.valid() && $('[name=_crno]').val() != '' && crValid) {
+                    //showReviewForm();
+                    navigate('review');
+                }
+            });
+
+            $form.submit(function(e){
+                updateInputVerifyIcon();
+                if (!$form.valid() || $('[name=_crno]').val() == '' || !crValid || !inReview) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
 {% endblock %}

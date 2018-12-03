@@ -6,8 +6,12 @@
 
 		<div class="panel-form-wide">
             <div class="form-head main-form-head">
-                <h4> تعديل الطلب </h4>
-                <p style="color: red;"> <i class="fa fa-info-circle"></i> يرجى تحديث البيانات والمستندات التالية ببيانات صحيحة وكاملة حتى لا يرد طلبك مرة أخرى </p>
+                {% if application.status.value == ApplicationStatus.REJECTED %}
+                    <h4> عرض الطلب </h4>
+                {% else %}
+                    <h4> تحديث الطلب </h4>
+                    <p style="color: red;"> <i class="fa fa-info-circle"></i> يرجى تحديث البيانات والمستندات التالية ببيانات صحيحة وكاملة حتى لا يرد طلبك مرة أخرى </p>
+                {% endif %}
             </div>
 
             {% if error %}
@@ -17,100 +21,107 @@
                 </div>
             {% endif %}
 
-			<form class="signup-form" action="{% url 'main:individual_signup' %}" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
+            {% if application.status.value != ApplicationStatus.REJECTED %}
+                <form class="signup-form" action="{% url 'main:individual_signup' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
 
-                <input type="hidden" name="_updating" value="true">
-                <div class="main-form">
+                    <input type="hidden" name="_updating" value="true">
+            {% endif %}
+                <div class="main-form"
+                    {% if application.status.value == ApplicationStatus.REJECTED %}
+                        style="width:100%; max-width:600px"
+                    {% endif %}
+                >
                     <div class="form-group">
                         <label class="control-label"> مدة الخدمة المطلوبة </label>
-                        <input type="text" class="form-control" id="duration-value" readonly value="سنتين">
+                        <input type="text" class="form-control" id="duration-value" readonly value="{{ application.duration_text }}">
                         <div class="help-block"></div>
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label"> تم رد طلبك بسبب </label>
+                        {% if application.status.value == ApplicationStatus.REJECTED %}
+                            <label class="control-label"><i class="fa fa-exclamation-triangle"></i> تم رفض طلبك بسبب </label>
+                        {% else %}
+                            <label class="control-label"><i class="fa fa-exclamation-triangle"></i> تم رد طلبك بسبب </label>
+                        {% endif %}
                         <textarea class="form-control" readonly style="width: 100%;background-color: white;" rows="4">{{ application.return_reason }}</textarea>
                         <div class="help-block"></div>
                     </div>
 
-                    <fieldset>
-                        <legend>المستندات المطلوبة</legend>
-                        <div class="form-group">
-                            <label class="control-label" for="select-period"> صورة الهوية <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
-                            <div class="input-group browse-button">
-                              <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
-                              <span class="input-group-btn">
-                                <button class="btn btn-primary" type="button"><i class="fa fa-file-photo-o"></i> اختر</button>
-                              </span>
-                            </div><!-- /input-group -->
-                            <input type="file" name="doc-id" accept="image/*" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
-                            <div class="help-block"></div>
+                    {% if application.status.value != ApplicationStatus.REJECTED %}
+                        <fieldset>
+                            <legend>المستندات المطلوبة</legend>
+                            <div class="form-group">
+                                <label class="control-label"> صورة الهوية <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
+                                <div class="input-group browse-button">
+                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-photo-o"></i> اختر</button>
+                                  </span>
+                                </div><!-- /input-group -->
+                                <input type="file" name="doc-id" accept="image/*" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
+                                <div class="help-block"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label"> صورة المؤهل الأكاديمي <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
+                                <div class="input-group browse-button">
+                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-photo-o"></i> اختر</button>
+                                  </span>
+                                </div><!-- /input-group -->
+                                <input type="file" name="doc-graduation" accept="image/*" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
+                                <div class="help-block"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label"> شهادات الخبرات (متعددة)   <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملفات من صيغة PDF"></i> <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
+                                <div class="input-group browse-button">
+                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-pdf-o"></i> اختر</button>
+                                  </span>
+                                </div><!-- /input-group -->
+                                <input type="file" name="doc-expertise" multiple accept="application/pdf" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
+                                <div class="help-block"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label"> السيرة الذاتية   <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملف من صيغة PDF"></i> <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
+                                <div class="input-group browse-button">
+                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-pdf-o"></i> اختر</button>
+                                  </span>
+                                </div><!-- /input-group -->
+                                <input type="file" name="doc-resume" accept="application/pdf" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
+                                <div class="help-block"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label"> مستندات إضافية   <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملف مجمع من صيغة PDF"></i> </label>
+                                <div class="input-group browse-button">
+                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-pdf-o"></i> اختر</button>
+                                  </span>
+                                </div><!-- /input-group -->
+                                <input type="file" name="doc-additional" accept="application/pdf">
+                                <div class="help-block"></div>
+                            </div>
+                        </fieldset>
+
+                        <div class="form-submission-wrapper" style="margin-bottom: 15px; text-align: center">
+                            <button type="submit" class="btn btn-success" ripple="ripple"><i class="fa fa-paper-plane"></i> تحديث الطلب </button>
+                            <!-- <button type="button" class="btn btn-warning" ripple="ripple"><i class="fa fa-paper-plane"></i> حفظ </button> -->
                         </div>
+                    {% endif %}
 
-                        <div class="form-group">
-                            <label class="control-label" for="select-period"> صورة المؤهل الأكاديمي <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
-                            <div class="input-group browse-button">
-                              <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
-                              <span class="input-group-btn">
-                                <button class="btn btn-primary" type="button"><i class="fa fa-file-photo-o"></i> اختر</button>
-                              </span>
-                            </div><!-- /input-group -->
-                            <input type="file" name="doc-graduation" accept="image/*" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
-                            <div class="help-block"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="control-label" for="select-period"> شهادات الخبرات (متعددة)   <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملفات من صيغة PDF"></i> <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
-                            <div class="input-group browse-button">
-                              <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
-                              <span class="input-group-btn">
-                                <button class="btn btn-primary" type="button"><i class="fa fa-file-pdf-o"></i> اختر</button>
-                              </span>
-                            </div><!-- /input-group -->
-                            <input type="file" name="doc-expertise" multiple accept="application/pdf" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
-                            <div class="help-block"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="control-label" for="select-period"> السيرة الذاتية   <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملف من صيغة PDF"></i> <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
-                            <div class="input-group browse-button">
-                              <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
-                              <span class="input-group-btn">
-                                <button class="btn btn-primary" type="button"><i class="fa fa-file-pdf-o"></i> اختر</button>
-                              </span>
-                            </div><!-- /input-group -->
-                            <input type="file" name="doc-resume" accept="application/pdf" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
-                            <div class="help-block"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="control-label" for="select-period"> مستندات إضافية   <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملف مجمع من صيغة PDF"></i> </label>
-                            <div class="input-group browse-button">
-                              <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
-                              <span class="input-group-btn">
-                                <button class="btn btn-primary" type="button"><i class="fa fa-file-pdf-o"></i> اختر</button>
-                              </span>
-                            </div><!-- /input-group -->
-                            <input type="file" name="doc-additional" accept="application/pdf">
-                            <div class="help-block"></div>
-                        </div>
-                    </fieldset>
-
-                    <!-- <div class="form-group">
-                        <label class="control-label" for="textarea-comments"> ملاحظات </label>
-                        <textarea class="form-control" id="textarea-comments" rows="5"></textarea>
-                        <div class="help-block"></div>
-                    </div> -->
-
-
-                    <div class="form-submission-wrapper" style="margin-bottom: 15px; text-align: center">
-                        <button type="submit" class="btn btn-success" ripple="ripple"><i class="fa fa-paper-plane"></i> تحديث الطلب </button>
-                        <!-- <button type="button" class="btn btn-warning" ripple="ripple"><i class="fa fa-paper-plane"></i> حفظ </button> -->
-                    </div>
                 </div>
-			</form>
-
+            {% if application.status.value != ApplicationStatus.REJECTED %}
+                </form>
+            {% endif %}
 
 		</div>
 

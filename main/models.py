@@ -1,7 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.db import models
 from django.contrib.auth.models import User
+
+from .lookups import BUSINESS_TYPE, RELATION_TYPE
 
 
 OFFICER = 'officer'
@@ -11,7 +13,7 @@ PRESIDENT = 'president'
 
 def application_docs_upload_to(instance, filename):
     today = datetime.today()
-    return 'documents/%s/%s/%s/%s/%s' % (today.year, today.month, today.day, instance.application.id, filename)
+    return 'documents/%s/%s-%s-%s/%s' % (instance.application.id, today.year, today.month, today.day, filename)
 
 
 class ApplicantType(models.Model):
@@ -23,6 +25,25 @@ class ApplicantType(models.Model):
         (INDIVIDUAL, 'Individual'),
         (COMPANY, 'Company'),
     ))
+
+
+class CommercialRecord(models.Model):
+    number = models.CharField(max_length=20)
+    business_type_id = models.IntegerField()
+
+    @property
+    def business_type_text(self):
+        return BUSINESS_TYPE[self.business_type_id]
+
+
+class ApplicantCommercialRecord(models.Model):
+    applicant = models.ForeignKey('Applicant', on_delete=models.CASCADE, related_name='applicant_crs')
+    commercial_record = models.ForeignKey(CommercialRecord, on_delete=models.DO_NOTHING)
+    relation_id = models.IntegerField()
+
+    @property
+    def relation_text(self):
+        return RELATION_TYPE[self.relation_id]
 
 
 class Applicant(models.Model):
@@ -44,7 +65,9 @@ class Applicant(models.Model):
     gender = models.CharField(max_length=10)
     has_wasel_account = models.BooleanField(default=False)
 
-    usertype = models.ForeignKey(ApplicantType, on_delete=models.SET_NULL, null=True)
+    type = models.ForeignKey(ApplicantType, on_delete=models.SET_NULL, null=True)  # TODO: ask:: can one person have both INDIVIDUAL and COMPANY licenses at the same time? FMTM: if answered yes, then this type field can't exist here on the applicant and needs to be moved to the Application model...
+
+    commercial_records = models.ManyToManyField(CommercialRecord, related_name='related', through=ApplicantCommercialRecord)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
@@ -57,7 +80,8 @@ class Applicant(models.Model):
 
     @property
     def birthdatehijri_dateformat(self):
-        return datetime.strptime(self.birthdatehijri, '%Y-%m-%d')
+        # return datetime.strptime(self.birthdatehijri, '%Y-%m-%d')
+        return self.birthdatehijri
 
     @property
     def gender_text(self):
@@ -65,10 +89,14 @@ class Applicant(models.Model):
 
     @property
     def type_text(self):
-        return 'طلب أفراد' if self.usertype.value == ApplicantType.INDIVIDUAL else 'طلب منشآت'
+        return 'طلب أفراد' if self.type.value == ApplicantType.INDIVIDUAL else 'طلب منشآت'
 
 
 class ApplicationStatus(models.Model):
+    """
+    Don't forget to update statuses manually to the DB after adding or changing here
+    """
+
     NEW = 1
     IN_REVISION = 2
     IN_MANAGER = 3
@@ -78,7 +106,8 @@ class ApplicationStatus(models.Model):
     FINISHED = 7  # for after payment
     ON_HOLD = 8  # for when the application is suspended
     PENDING_PAYMENT = 9  # approved but awaiting payment
-    RETURNED_REVISION = 10  # is when an application is commented on by a higher employee and returned to the officer
+    RETURNED_REVISION = 10  # is when an application is commented on by the manager and returned to the officer
+    RETURNED_MANAGER = 11  # is when an application is commented on by the president and returned to the manager
 
     name = models.CharField(max_length=255)
     value = models.IntegerField(choices=(
@@ -92,6 +121,7 @@ class ApplicationStatus(models.Model):
         (ON_HOLD, 'On hold'),
         (PENDING_PAYMENT, 'Pending payment'),
         (RETURNED_REVISION, 'Returned to revision'),
+        (RETURNED_MANAGER, 'Returned to manager'),
     ), unique=True)
 
 
@@ -118,10 +148,24 @@ class Application(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     paid_on = models.DateTimeField(null=True)
 
+    commercial_record = models.ForeignKey(CommercialRecord, on_delete=models.CASCADE, null=True)
+
     @property
     def action_history(self):
         entries = ActionHistoryEntry.objects.filter(target=self.id, target_type=TargetType.objects.get(value=TargetType.APPLICATION))
         return entries.order_by('-created_at').all()
+
+    @property
+    def duration_text(self):
+        if self.service.type == Service.NEW:
+            return 'سنتين'
+        elif self.service.type == Service.RENEW:
+            return 'خمس سنوات'
+
+    @property
+    def expiration_date(self):
+        six_months = 6 * 30
+        return self.created_at + timedelta(days=six_months)
 
 
 class ApplicationComment(models.Model):

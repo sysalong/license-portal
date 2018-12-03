@@ -428,3 +428,41 @@ td.history-date-field {
 .disabled[disabled] {
     pointer-events: none;
 }
+
+.form-group-half {
+    margin-bottom: 5px;
+    width: 50%;
+    display: inline-block;
+    float: right;
+    padding: 0px 5px;
+}
+
+.cr-reader-wrapper {
+    display: flex;
+}
+
+.cr-reader {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    position: relative;
+}
+
+.cr-reader input {
+    display: flex;
+    flex-grow: 1;
+}
+
+.cr-reader-wrapper button {
+    height: 34px;
+}
+
+.input-verified, .input-loader {
+    position: absolute;
+    left: 8px;
+    top: 9px;
+}
+.input-verified {
+    color: #2FA35D;
+    font-size: 16px;
+}

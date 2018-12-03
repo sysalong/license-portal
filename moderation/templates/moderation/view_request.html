@@ -33,7 +33,7 @@
         <div class="row" style="width: 100%">
             <div class="col-md-6 col-sm-12">
                 <label>تاريخ الميلاد:</label>
-                <p>{{ application.applicant.birthdate|date }} ({{ application.applicant.birthdatehijri_dateformat|date }})</p>
+                <p>{{ application.applicant.birthdate|date }} ({{ application.applicant.birthdatehijri_dateformat }} هجري)</p>
             </div>
             <div class="col-md-6 col-sm-12">
                 <label>الجنس:</label>
@@ -47,11 +47,52 @@
                 <p>{{ application.applicant.countryid }}</p>
             </div>
         </div>
+
+        {% if applicant_type == ApplicantType.COMPANY %}
+            <div class="row" style="width: 100%">
+                <div class="col-md-6 col-sm-12">
+                    <label>بيانات السجل التجاري:</label>
+                    <p>
+                        <table id="review-cr-info" class="table">
+                            <thead>
+                                <tr>
+                                    <th>رقم السجل التجاري</th>
+                                    <th>نوع المنشأة</th>
+                                    <th>منصب المتقدم</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{ CR.number }}</td>
+                                    <td>{{ CR.business_type_text }}</td>
+                                    <td>{{ applicant_application_cr.relation_text }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+
     </div>
 
     <hr>
     <label class="panel-title">تفاصيل الطلب</label>
     <div class="panel-form-wide">
+        {% if application.return_reason %}
+            <div class="row" style="width: 100%;margin-bottom: 10px">
+                <div class="col-sm-12">
+                    {% if application.status.value == ApplicationStatus.REJECTED %}
+                        <label><i class="fa fa-exclamation-triangle"></i> سبب رفض الطلب:</label>
+                    {% else %}
+                        <label><i class="fa fa-exclamation-triangle"></i> سبب رد الطلب:</label>
+                    {% endif %}
+
+                    <textarea class="form-control" rows="4" readonly style="background-color: white">{{ application.return_reason }}</textarea>
+                </div>
+            </div>
+        {% endif %}
+
         <div class="row" style="width: 100%">
             <div class="col-md-6 col-sm-12">
                 <label>نوع الطلب:</label>
@@ -132,7 +173,7 @@
         </div>
     </div>
 
-{% if user_role == 'officer' and application.status.value <= ApplicationStatus.IN_REVISION or user_role == 'officer' and application.status.value == ApplicationStatus.RETURNED_REVISION or user_role == 'manager' and application.status.value == ApplicationStatus.IN_MANAGER or user_role == 'president' and application.status.value == ApplicationStatus.IN_PRESIDENT %}
+{% if user_role == 'officer' and application.status.value <= ApplicationStatus.IN_REVISION or user_role == 'officer' and application.status.value == ApplicationStatus.RETURNED_REVISION or user_role == 'manager' and application.status.value == ApplicationStatus.IN_MANAGER or user_role == 'manager' and application.status.value == ApplicationStatus.RETURNED_MANAGER or user_role == 'president' and application.status.value == ApplicationStatus.IN_PRESIDENT %}
     <div class="action-panel">
         <form action="{% url 'moderation:action_application' application.id %}" method="POST" style="width: 100%">
             {% csrf_token %}
@@ -142,11 +183,25 @@
 
                     {% if user_role == 'officer' %}
                         <small>سيتم إرجاع الطلب للمتقدم به مع ذكر السبب</small>
-                    {% else %}
+                    {% elif user_role == 'manager' %}
                         <small>سيتم إرجاع الطلب لمسؤول التراخيص للمراجعة مع ذكر السبب</small>
+                    {% elif user_role == 'president' %}
+                        <small>سيتم إرجاع الطلب لمدير الأكاديمية للمراجعة مع ذكر السبب</small>
                     {% endif %}
                 </p>
                 <textarea class="form-control" name="reason" rows="5" data-rule-required="true" data-msg-required="أدخل سبب الرفض"></textarea>
+
+                <small>(اضغط موافقة مرة أخرى للتأكيد)</small>
+            </div>
+
+            <div class="action-message action-message-reject-completely" style="display: none;">
+                <p>
+                    <strong>من فضلك أدخل السبب</strong><br>
+
+                    <small>سيتم رفض الطلب نهائياً ورده للمتقدم مع ذكر السبب</small>
+
+                </p>
+                <textarea class="form-control" name="reason-completely" rows="5" data-rule-required="true" data-msg-required="أدخل سبب الرفض"></textarea>
 
                 <small>(اضغط موافقة مرة أخرى للتأكيد)</small>
             </div>
@@ -170,7 +225,8 @@
                 <span class="actions-wrapper">
                     <input type="hidden" name="_action">
                     <button type="button" class="btn btn-success action-approve-btn" data-action=""> <i class="fa fa-check"></i> موافقة</button>
-                    <button type="button" class="btn btn-danger action-reject-btn"> <i class="fa fa-times"></i> <span>رفض</span></button>
+                    <button type="button" class="btn btn-warning action-reject-btn"> <i class="fa fa-times"></i> <span>رد الطلب</span></button>
+                    <button type="button" class="btn btn-danger action-reject-completely-btn"> <i class="fa fa-times"></i> <span>رفض نهائي</span></button>
                 </span>
             </div>
         </form>
@@ -209,17 +265,31 @@
 
             <div class="info-item">
                 <label>تاريخ الميلاد:</label>
-                <p>{{ application.applicant.birthdate|date }} ({{ application.applicant.birthdatehijri_dateformat|date }})</p>
+                <p>{{ application.applicant.birthdate|date }} ({{ application.applicant.birthdatehijri_dateformat }} هجري)</p>
             </div>
             <div class="info-item">
                 <label>الجنس:</label>
                 <p>{{ application.applicant.gender_text }}</p>
             </div>
-
             <div class="info-item">
                 <label>كود الدولة:</label>
                 <p>{{ application.applicant.countryid }}</p>
             </div>
+
+            {% if applicant_type == ApplicantType.COMPANY %}
+                <div class="info-item">
+                    <label>رقم السجل التجاري:</label>
+                    <p>{{ CR.number }}</p>
+                </div>
+                <div class="info-item">
+                    <label>نوع المنشأة:</label>
+                    <p>{{ CR.business_type_text }}</p>
+                </div>
+                <div class="info-item">
+                    <label>منصب المتقدم:</label>
+                    <p>{{ applicant_application_cr.relation_text }}</p>
+                </div>
+            {% endif %}
         </div>
     </div>
 
@@ -256,7 +326,7 @@
 
             <div class="info-item">
                 <label>تاريخ الميلاد:</label>
-                <p>{{ application.applicant.birthdate|date }} ({{ application.applicant.birthdatehijri_dateformat|date }})</p>
+                <p>{{ application.applicant.birthdate|date }} ({{ application.applicant.birthdatehijri_dateformat }} هجري)</p>
             </div>
             <div class="info-item">
                 <label>الجنس:</label>
@@ -267,6 +337,21 @@
                 <label>كود الدولة:</label>
                 <p>{{ application.applicant.countryid }}</p>
             </div>
+
+            {% if applicant_type == ApplicantType.COMPANY %}
+                <div class="info-item">
+                    <label>رقم السجل التجاري:</label>
+                    <p>{{ CR.number }}</p>
+                </div>
+                <div class="info-item">
+                    <label>نوع المنشأة:</label>
+                    <p>{{ CR.business_type_text }}</p>
+                </div>
+                <div class="info-item">
+                    <label>منصب المتقدم:</label>
+                    <p>{{ applicant_application_cr.relation_text }}</p>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -327,76 +412,134 @@
                 showViewerInfo();
             }
         }
+    </script>
 
-        function focusActionBar() {
-            $('html, body').animate({
-                scrollTop: actionPanel.offset().top
-            }, 200);
-        }
+    {% if user_role == 'officer' and application.status.value <= ApplicationStatus.IN_REVISION or user_role == 'officer' and application.status.value == ApplicationStatus.RETURNED_REVISION or user_role == 'manager' and application.status.value == ApplicationStatus.IN_MANAGER or user_role == 'manager' and application.status.value == ApplicationStatus.RETURNED_MANAGER or user_role == 'president' and application.status.value == ApplicationStatus.IN_PRESIDENT %}
+        <script>
+            var $rejCom = $('.action-reject-completely-btn');
 
-        function showApprovePanel() {
-            hideRejectPanel();
-            $('.action-message-approve').slideDown('fast', function(){actionAgree.attr('type', 'submit');});
-            focusActionBar();
-            actionAgree.attr('data-action', 'approve');
-            _action.val('approve');
-            $('button.action-reject-btn > span').html('إلغاء');
-        }
-
-        function hideApprovePanel() {
-            $('.action-message-approve').slideUp('fast');
-            {#focusActionBar();#}
-            actionAgree.attr('data-action', '');
-            _action.val('');
-            actionAgree.attr('type', 'button');
-            $('button.action-reject-btn > span').html('رفض');
-        }
-
-        function showRejectPanel() {
-            hideApprovePanel();
-            $('.action-message-reject').slideDown('fast', function(){actionAgree.attr('type', 'submit');});
-            focusActionBar();
-            actionAgree.attr('data-action', 'reject');
-            _action.val('reject');
-            $('button.action-reject-btn > span').html('إلغاء');
-        }
-
-        function hideRejectPanel() {
-            $('.action-message-reject').slideUp('fast');
-            {#focusActionBar();#}
-            actionAgree.attr('data-action', '');
-            _action.val('');
-            actionAgree.attr('type', 'button');
-            $('button.action-reject-btn > span').html('رفض');
-        }
-
-        var firstAction = false;
-
-        var actionPanel = $('.action-panel');
-        var actionAgree = $('.action-approve-btn');
-        var actionReject = $('.action-reject-btn');
-        var _action = $('input[name=_action]');
-
-        actionAgree.click(function(){
-            if (!firstAction){
-                showApprovePanel();
-                firstAction = true;
+            function focusActionBar() {
+                $('html, body').animate({
+                    scrollTop: actionPanel.offset().top
+                }, 200);
             }
-            else {
-                //submit approval or rejection
-            }
-        });
 
-        actionReject.click(function(){
-            if (firstAction){
+            function showApprovePanel() {
+                hideRejectPanel();
+                $('.action-message-approve').slideDown('fast', function(){actionAgree.attr('type', 'submit');});
+                focusActionBar();
+                actionAgree.attr('data-action', 'approve');
+                _action.val('approve');
+                $('button.action-reject-btn > span').html('إلغاء');
+                $('button.action-reject-btn').removeClass('btn-warning');
+                $('button.action-reject-btn').addClass('btn-danger');
+                $rejCom.hide();
+            }
+
+            function hideApprovePanel() {
+                $('.action-message-approve').slideUp('fast');
+                {#focusActionBar();#}
+                actionAgree.attr('data-action', '');
+                _action.val('');
+                actionAgree.attr('type', 'button');
+                $('button.action-reject-btn > span').html('رد الطلب');
+                $('button.action-reject-btn').removeClass('btn-danger');
+                $('button.action-reject-btn').addClass('btn-warning');
+                $rejCom.show();
+            }
+
+            function showRejectPanel() {
+                hideApprovePanel();
+                $('.action-message-reject').slideDown('fast', function(){actionAgree.attr('type', 'submit');});
+                focusActionBar();
+                actionAgree.attr('data-action', 'reject');
+                _action.val('reject');
+                $('button.action-reject-btn > span').html('إلغاء');
+                $('button.action-reject-btn').removeClass('btn-warning');
+                $('button.action-reject-btn').addClass('btn-danger');
+                $rejCom.hide();
+            }
+
+            function hideRejectPanel() {
+                $('.action-message-reject').slideUp('fast');
+                {#focusActionBar();#}
+                actionAgree.attr('data-action', '');
+                _action.val('');
+                actionAgree.attr('type', 'button');
+                $('button.action-reject-btn > span').html('رد الطلب');
+                $('button.action-reject-btn').removeClass('btn-danger');
+                $('button.action-reject-btn').addClass('btn-warning');
+                $rejCom.show();
+            }
+
+            function showRejectComPanel() {
                 hideApprovePanel();
                 hideRejectPanel();
-                firstAction = false;
+                $('.action-message-reject-completely').slideDown('fast', function(){actionAgree.attr('type', 'submit');});
+                focusActionBar();
+                actionAgree.attr('data-action', 'reject-completely');
+                _action.val('reject-completely');
+                $('button.action-reject-btn > span').html('إلغاء');
+                $('button.action-reject-btn').removeClass('btn-warning');
+                $('button.action-reject-btn').addClass('btn-danger');
+                $rejCom.hide();
             }
-            else {
-                showRejectPanel();
-                firstAction = true;
+
+            function hideRejectComPanel() {
+                $('.action-message-reject-completely').slideUp('fast');
+                {#focusActionBar();#}
+                actionAgree.attr('data-action', '');
+                _action.val('');
+                actionAgree.attr('type', 'button');
+                $('button.action-reject-btn > span').html('رد الطلب');
+                $('button.action-reject-btn').removeClass('btn-danger');
+                $('button.action-reject-btn').addClass('btn-warning');
+                $rejCom.show();
             }
-        });
-    </script>
+
+            var firstAction = false;
+
+            var actionPanel = $('.action-panel');
+            var actionAgree = $('.action-approve-btn');
+            var actionReject = $('.action-reject-btn');
+            {#var actionRejectCom = $('.action-reject-completely-btn');#}
+            var _action = $('input[name=_action]');
+
+            actionAgree.click(function(){
+                if (!firstAction){
+                    showApprovePanel();
+                    firstAction = true;
+                }
+                else {
+                    //submit approval or rejection
+                }
+            });
+
+            actionReject.click(function(){
+                if (firstAction){
+                    hideApprovePanel();
+                    hideRejectPanel();
+                    hideRejectComPanel();
+                    firstAction = false;
+                }
+                else {
+                    showRejectPanel();
+                    firstAction = true;
+                }
+            });
+
+            $rejCom.click(function(){
+                if (firstAction){
+                    hideApprovePanel();
+                    hideRejectPanel();
+                    hideRejectComPanel();
+                    firstAction = false;
+                }
+                else {
+                    showRejectComPanel();
+                    firstAction = true;
+                }
+            });
+        </script>
+    {% endif %}
 {% endblock %}

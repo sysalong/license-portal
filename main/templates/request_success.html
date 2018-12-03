@@ -21,3 +21,13 @@
 
   </div>
 {% endblock %}
+
+{% block scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function(e){
+            if (window.location.hash !== '' || window.location.hash !== '#') {
+                window.location.hash = '';
+            }
+        });
+    </script>
+{% endblock %}

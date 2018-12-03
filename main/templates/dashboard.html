@@ -16,7 +16,6 @@
                             <th>نوع الطلب</th>
                             <th>تاريخ الإنشاء</th>
                             <th>حالة الطلب</th>
-{#                            <th>تعليقات</th>#}
                             <th style="padding: 0px;"></th>
                         </tr>
                     </thead>
@@ -30,9 +29,10 @@
                             {% else %}
                                 <td>{{ application.status.name }}</td>
                             {% endif %}
-{#                            <td>{{ application.comments.count }}</td>#}
-                            {% if application.status.value == ApplicationStatus.RETURNED %}
+                            {% if application.status.value in view_statuses %}
                                 <td><a href="{% url 'main:view_application' application.id %}" class="btn btn-warning" ripple="ripple"><i class="fa fa-eye"></i> عرض</a></td>
+                            {% elif application.status.value == ApplicationStatus.PENDING_PAYMENT %}
+                                <td><a href="#!" class="btn btn-primary" ripple="ripple"><i class="fa fa-eye"></i> التعليمات</a></td>
                             {% endif %}
                         </tr>
                     {% endfor %}

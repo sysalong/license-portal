@@ -2,15 +2,15 @@
 
 {% block content %}
 
-  <div class="row" style="display: flex; justify-content: center; flex-direction: column;">
+  <div class="row" style="display: flex; justify-content: center; flex-direction: column; align-items: center;">
 
 {% if error %}
-    <div class="alert alert-danger alert-dismissible" role="alert" style="direction: rtl;max-width: 960px;">
+    <div class="alert alert-danger alert-dismissible" role="alert" style="width: 100%;direction: rtl;max-width: 960px;">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="fa fa-times"></i></button>
         {{ error }}
     </div>
 {% elif success %}
-    <div class="alert alert-success alert-dismissible" role="alert" style="direction: rtl;max-width: 960px;">
+    <div class="alert alert-success alert-dismissible" role="alert" style="width: 100%;direction: rtl;max-width: 960px;">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="fa fa-times"></i></button>
         {{ success }}
     </div>
@@ -24,25 +24,71 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <th>الخدمة المطلوبة</th>
                             <th>نوع الطلب</th>
                             <th>تاريخ الإنشاء</th>
                             <th>حالة الطلب</th>
-                            <th>تعليقات</th>
-                            <th>عرض</th>
+{#                            <th>تعليقات</th>#}
+                            <th style="width: 125px;">عرض</th>
                         </tr>
                     </thead>
                     <tbody>
-                    {% for application in applications %}
+                    {% if applications %}
+                        {% for application in applications %}
+                            <tr>
+                                <td>{{ application.service.name }}</td>
+                                <td>{{ application.applicant.type_text }}</td>
+                                <td>{{ application.created_at|date }} <i class="fa fa-info-circle" data-toggle="tooltip" data-title="تنتهي صلاحية هذا الطلب في {{ application.expiration_date|date }}"></i></td>
+                                <td>{{ application.status.name }}</td>
+{#                                <td>{{ application.comments.count }}</td>#}
+                                <td><a href="{% url 'moderation:view_application' application.id %}" class="btn btn-primary" ripple="ripple"><i class="fa fa-eye"></i> عرض</a></td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
                         <tr>
-                            <td>{{ application.service.name }}</td>
-                            <td>{{ application.created_at|date }}</td>
-                            <td>{{ application.status.name }}</td>
-                            <td>{{ application.comments.count }}</td>
-                            <td><a href="{% url 'moderation:view_application' application.id %}" class="btn btn-primary" ripple="ripple"><i class="fa fa-eye"></i> عرض</a></td>
+                            <td colspan="5" style="text-align: center;"><i>لا يوجد طلبات</i></td>
                         </tr>
-                    {% endfor %}
+                    {% endif %}
                     </tbody>
                 </table>
+
+                {% if applications %}
+                    <div style="text-align: left; border-top: 1px solid #f3f3f3">
+                        <ul class="pagination">
+                            {% if applications.has_previous %}
+                                <li>
+                                    <a href="?page={{ applications.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">«</span></a>
+                                </li>
+                            {% else %}
+                                <li class="disabled">
+                                    <a href="#!" class="disabled" aria-label="Previous" disabled="disabled"><span aria-hidden="true">«</span></a>
+                                </li>
+                            {% endif %}
+
+                            {% for i in applications.paginator.page_range %}
+                                {% if page == i %}
+                                    <li class="active">
+                                        <a href="?page={{ i }}">{{ i }} <span class="sr-only">(current)</span></a>
+                                    </li>
+                                {% else %}
+                                    <li>
+                                        <a href="?page={{ i }}">{{ i }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if applications.has_next %}
+                                <li>
+                                    <a href="?page={{ applications.next_page_number }}" aria-label="Next"><span aria-hidden="true">»</span></a>
+                                </li>
+                            {% else %}
+                                <li class="disabled">
+                                    <a href="#!" class="disabled" aria-label="Next" disabled="disabled"><span aria-hidden="true">»</span></a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
 
 			</div>
 
