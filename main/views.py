@@ -301,7 +301,7 @@ def individual_signup(request):
 
 @requires_meras_login
 @terms_agreed
-@user_has_no_applications
+# @user_has_no_applications
 def company_signup(request):
     def verify_cr(cr):
         crs = sessdata(request, 'crs')
@@ -324,6 +324,7 @@ def company_signup(request):
         nid = request.session.get('user_id')
         if nid:
             has_cr = WathiqService.has_cr_by_id(nid)
+            print('company_signup:has_cr -> ', has_cr)
             request.session['has_cr'] = has_cr
 
             if has_cr is True:
@@ -611,6 +612,7 @@ def view_application(request, id):
         return render(request, 'company_view.html', context)
 
 
+@requires_meras_login
 def payment_directions(request, id):
     applicant = Applicant.objects.filter(id_number=sessdata(request, 'user_id')).first()
     application = Application.objects.filter(id=id, applicant=applicant).first()
@@ -620,4 +622,38 @@ def payment_directions(request, id):
 
     applicant_type = applicant.type.value
 
-    return render(request, 'payment_directions.html', {'application': application})
+    if request.method == 'POST':
+        doc_receipt = request.FILES.get('doc-receipt')
+
+        all_valid = True
+
+        if not doc_receipt:
+            messages.error(request, message='برجاء ملئ جميع الحقول المطلوبة')
+            all_valid = False
+        else:
+            if not verify_image(doc_receipt):
+                messages.error(request, message='صورة الإيصال ليست في صيغة صحيحة')
+                all_valid = False
+
+        if all_valid:
+            doc_receipt_obj = ApplicationDocument(file=doc_receipt, application=application,
+                                             description='صورة إيصال الدفع', file_type=ApplicationDocument.TYPES['IMAGE'])
+            doc_receipt_obj.save()
+            if not doc_receipt_obj.id:
+                all_valid = False
+                messages.error(request, message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
+            else:
+                request.session['finished_with_success'] = applicant_type
+
+                application.return_reason = None
+                application.status = ApplicationStatus.objects.get(value=ApplicationStatus.PENDING_PAYMENT_APPROVAL)
+                application.save()
+                action_history_log(application, None, 'قام برفع صورة من إيصال الدفع')
+
+                return redirect(reverse('main:success'))
+
+    storage = messages.get_messages(request)
+    msgs = [msg for msg in storage]
+    storage.used = True
+
+    return render(request, 'payment_directions.html', {'application': application, 'error': msgs[0] if msgs else None})

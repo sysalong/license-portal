@@ -1,0 +1,124 @@
+{% extends 'layout/base.html' %}
+
+{% block styles %}
+    <style>
+        ul.payment-steps {
+            list-style: none;
+            padding: 0px;
+        }
+        ul.payment-steps li {
+            margin-bottom: 5px;
+            font-size: 12pt;
+        }
+
+        .ol-numbering {
+            display: inline-block;
+            border-radius: 100%;
+            background-color: #3366cc;
+            color: #fff;
+            width: 22px;
+            height: 22px;
+            text-align: center;
+            margin-left: 5px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+  <div class="row" style="display: flex; justify-content: center;">
+
+		<div class="panel-form-wide">
+            <div class="form-head main-form-head">
+                <h4> تعليمات الدفع </h4>
+                <p> <i class="fa fa-info-circle"></i> يرجى اتباع التعليمات التالية لاستكمال عملية اصدار رخصتك الإحصائية </p>
+            </div>
+
+            {% if error %}
+                <div class="alert alert-danger alert-dismissible" role="alert" style="direction: rtl">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+                    {{ error }}
+                </div>
+            {% endif %}
+
+			<form class="signup-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="main-form">
+                    <ul class="payment-steps">
+                        <li> <span class="ol-numbering">1</span>  قم بزيارة... </li>
+                        <li> <span class="ol-numbering">2</span> قم بدفع مبلغ <b>###</b> لحساب <b>XXXX-XXXXX-XXXX-XXX</b>... </li>
+                        <li>  <span class="ol-numbering">3</span> ثم العودة لهذه الصفحة ورفع صورة من إيصال الدفع</li>
+                    </ul>
+
+                    <hr>
+
+                    <div class="form-group">
+                        <label class="control-label"> الخدمة المطلوبة </label>
+                        <input type="text" class="form-control" id="duration-value" readonly value="{{ application.service }}">
+                        <div class="help-block"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label"> مدة الخدمة المطلوبة </label>
+                        <input type="text" class="form-control" id="duration-value" readonly value="{{ application.duration_text }}">
+                        <div class="help-block"></div>
+                    </div>
+
+                    <hr>
+
+                    <div class="form-group">
+                        <label class="control-label"> صورة الإيصال <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
+                        <div class="input-group browse-button">
+                          <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
+                          <span class="input-group-btn">
+                            <button class="btn btn-primary" type="button"><i class="fa fa-file-photo-o"></i> اختر</button>
+                          </span>
+                        </div><!-- /input-group -->
+                        <input type="file" name="doc-receipt" accept="image/*" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
+                        <div class="help-block"></div>
+                    </div>
+
+                    <div class="form-submission-wrapper" style="margin-top:30px;margin-bottom: 15px; text-align: center">
+                        <button type="submit" id="main-form-submit" class="btn btn-success" ripple="ripple"><i class="fa fa-check"></i>  إنهاء </button>
+                        <!-- <button type="button" class="btn btn-warning" ripple="ripple"><i class="fa fa-paper-plane"></i> حفظ </button> -->
+                    </div>
+                </div>
+			</form>
+
+
+		</div>
+
+  </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function(){
+            var $form = $('form');
+            $('.browse-button').click(function(){
+                var that = this;
+                var host = $(this).siblings('input[type=file]');
+                if (host.length) {
+                    host.change(function(){
+                        var files = this.files;
+                        if (files.length) {
+                            if (host.attr('multiple')){
+                                $(that).children('.file-name-holder')[0].value = 'تم اختيار عدد (' + files.length + ') ملفات';
+                            }
+                            else {
+                                $(that).children('.file-name-holder')[0].value = files[0].name;
+                            }
+                        }
+                        else{
+                            $(that).children('.file-name-holder')[0].value = '';
+                        }
+                    });
+                    host.trigger('click');
+                }
+            });
+
+            $form.validate();
+        });
+    </script>
+{% endblock %}

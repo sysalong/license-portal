@@ -108,6 +108,8 @@ class ApplicationStatus(models.Model):
     PENDING_PAYMENT = 9  # approved but awaiting payment
     RETURNED_REVISION = 10  # is when an application is commented on by the manager and returned to the officer
     RETURNED_MANAGER = 11  # is when an application is commented on by the president and returned to the manager
+    PENDING_PAYMENT_APPROVAL = 12
+    PENDING_PAYMENT_RETURNED = 13  # is when returned to applicant by officer because of payment
 
     name = models.CharField(max_length=255)
     value = models.IntegerField(choices=(
@@ -122,6 +124,8 @@ class ApplicationStatus(models.Model):
         (PENDING_PAYMENT, 'Pending payment'),
         (RETURNED_REVISION, 'Returned to revision'),
         (RETURNED_MANAGER, 'Returned to manager'),
+        (PENDING_PAYMENT_APPROVAL, 'Pending payment approval'),
+        (PENDING_PAYMENT_RETURNED, 'Pending payment returned'),
     ), unique=True)
 
 
@@ -134,6 +138,9 @@ class Service(models.Model):
         (NEW, 'New'),
         (RENEW, 'Renew'),
     ))
+
+    def __str__(self):
+        return self.name
 
 
 class Application(models.Model):

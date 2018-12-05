@@ -98,12 +98,14 @@ class EFileService:
 
 class WathiqService:
     _instance = None
+    _iattempts = 0
 
     @classmethod
     def get_instance(cls):
         if not cls._instance:
-            while not cls._instance:
+            while cls._iattempts < 10:
                 cls._instance = make_wathiq_client()
+                cls._iattempts += 1
         return cls._instance
 
     @classmethod
@@ -114,7 +116,7 @@ class WathiqService:
             return client.service.HasCRByID(nid)
         except Exception as e:
             print('EXCEPTION:has_cr_by_id -> ', e)
-            return cls.has_cr_by_id(nid)
+            return False
 
     @classmethod
     def get_crs_by_id(cls, nid):

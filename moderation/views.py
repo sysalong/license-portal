@@ -37,7 +37,7 @@ def index(request):
         applications = Application.objects.order_by('-created_at', 'status__value')
 
         if user_has_group(user, 'officer'):
-            applications = applications.filter(status__value__in=(ApplicationStatus.NEW, ApplicationStatus.IN_REVISION, ApplicationStatus.RETURNED_REVISION, ApplicationStatus.PENDING_PAYMENT, ApplicationStatus.REJECTED, ApplicationStatus.FINISHED, ApplicationStatus.ON_HOLD))
+            applications = applications.filter(status__value__in=(ApplicationStatus.NEW, ApplicationStatus.IN_REVISION, ApplicationStatus.RETURNED_REVISION, ApplicationStatus.PENDING_PAYMENT, ApplicationStatus.REJECTED, ApplicationStatus.FINISHED, ApplicationStatus.ON_HOLD, ApplicationStatus.PENDING_PAYMENT_APPROVAL))
         elif user_has_group(user, 'manager'):
             applications = applications.filter(status__value__in=(ApplicationStatus.IN_MANAGER, ApplicationStatus.RETURNED_MANAGER, ApplicationStatus.PENDING_PAYMENT, ApplicationStatus.REJECTED, ApplicationStatus.FINISHED, ApplicationStatus.ON_HOLD))
         elif user_has_group(user, 'president'):
