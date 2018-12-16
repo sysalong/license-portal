@@ -30,8 +30,8 @@
 
 		<div class="panel-form-wide">
             <div class="form-head main-form-head">
-                <h4> تعليمات الدفع </h4>
-                <p> <i class="fa fa-info-circle"></i> يرجى اتباع التعليمات التالية لاستكمال عملية اصدار رخصتك الإحصائية </p>
+                <h4> تحديث بيانات الدفع </h4>
+                <p style="color: red;"> <i class="fa fa-info-circle"></i> يرجى تحديث البيانات والمستندات التالية ببيانات صحيحة وكاملة حتى لا يرد طلبك مرة أخرى </p>
             </div>
 
             {% if error %}
@@ -41,18 +41,12 @@
                 </div>
             {% endif %}
 
-			<form class="signup-form" method="post" enctype="multipart/form-data">
+			<form class="signup-form" action="{% url 'main:payment_directions' application.id %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
+                <input type="hidden" name="_updating" value="true">
+
                 <div class="main-form">
-                    <ul class="payment-steps">
-                        <li> <span class="ol-numbering">1</span>  قم بزيارة أقرب ... </li>
-                        <li> <span class="ol-numbering">2</span> تفضل بدفع مبلغ <b>{{ price }}</b> ريال سعودي لحساب <b>(SA 20011 0000 1230 3010 00089)</b> </li>
-                        <li>  <span class="ol-numbering">3</span> ثم العودة لهذه الصفحة ورفع صورة من إيصال الدفع لاستكمال طلبكم</li>
-                    </ul>
-
-                    <hr>
-
                     <div class="form-group">
                         <label class="control-label"> الخدمة المطلوبة </label>
                         <input type="text" class="form-control" id="duration-value" readonly value="{{ application.service }}">
@@ -63,6 +57,18 @@
                         <label class="control-label"> مدة الخدمة المطلوبة </label>
                         <input type="text" class="form-control" id="duration-value" readonly value="{{ application.duration_text }}">
                         <div class="help-block"></div>
+                    </div>
+
+                    <hr>
+
+                    <div class="form-group">
+                        <label class="control-label"><i class="fa fa-exclamation-triangle"></i> تم رد طلبك بسبب </label>
+                        <textarea class="form-control" readonly style="width: 100%;background-color: white;" rows="4">{{ application.return_reason }}</textarea>
+                        <div class="help-block"></div>
+                    </div>
+
+                    <div>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".model-payment-directions">عرض تعليمات الدفع</button>
                     </div>
 
                     <hr>
@@ -81,7 +87,6 @@
 
                     <div class="form-submission-wrapper" style="margin-top:30px;margin-bottom: 15px; text-align: center">
                         <button type="submit" id="main-form-submit" class="btn btn-success" ripple="ripple"><i class="fa fa-check"></i>  إنهاء </button>
-                        <!-- <button type="button" class="btn btn-warning" ripple="ripple"><i class="fa fa-paper-plane"></i> حفظ </button> -->
                     </div>
                 </div>
 			</form>
@@ -90,6 +95,29 @@
 		</div>
 
   </div>
+
+    <div class="modal model-payment-directions" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" style="display: inline-block;">تعليمات الدفع</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <ul class="payment-steps">
+                <li> <span class="ol-numbering">1</span>  قم بزيارة أقرب ... </li>
+                <li> <span class="ol-numbering">2</span> تفضل بدفع مبلغ <b>{{ price }}</b> ريال سعودي لحساب: <br><b>(SA 20011 0000 1230 3010 00089)</b> </li>
+                <li>  <span class="ol-numbering">3</span> ثم العودة لهذه الصفحة ورفع صورة من إيصال الدفع لاستكمال طلبكم</li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
+          </div>
+        </div>
+      </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}

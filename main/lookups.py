@@ -60,10 +60,10 @@ RELATION_TYPE = {
     31: 'عضو مجلس رقابة',
 }
 
-ALLOWED_BUSINESSES = [201, 203, 206]
-ALLOWED_RELATIONS = [1, 2, 3, 5, 10, 11, 12, 13, 19, 20, 24, 25, 29]
+ALLOWED_BUSINESSES = (201, 203, 206)
+ALLOWED_RELATIONS = (1, 2, 3, 5, 10, 11, 12, 13, 19, 20, 24, 25, 29)
 
-# CR Object Sample:
+# CR Info Object Sample:
 # {
 #   'BusType': 'تــــوصية بســـيطة',
 #   'BusTypeID': 201,
@@ -72,3 +72,79 @@ ALLOWED_RELATIONS = [1, 2, 3, 5, 10, 11, 12, 13, 19, 20, 24, 25, 29]
 #   'RelationID': 3,
 #   'RelationName': 'شريك متضامن'
 # }
+
+# CR Data Object Sample:
+# {
+#     'Activities': 'تجـارة الجمله والتجزئـه في الكفـرات والأسـاتك والشـنابر ,,,,,,,',
+#     'Address': 'نجران - العريسة - شارع الملك عبدالعزيز',
+#     'BusType': 'تــــوصية بســـيطة',
+#     'BusTypeID': 201,
+#     'CR': '5950011517',
+#     'CRLocation': 'نجران',
+#     'CRLocationID': 5950,
+#     'CRNationalNO': None,
+#     'Capital': 10001600.0,
+#     'CreationDate': '14280126',
+#     'ExpiredDate': '14400126',
+#     'Fax': '0174727753',
+#     'IsMain': False,
+#     'Name': 'فرع شركة خالد عبدالله الصافي واخوانة',
+#     'POBOX': '000505',
+#     'PhoneNumber': '0174727750',
+#     'Status': 'ACTIVE',
+#     'ZipCode': '11421'
+# }
+
+# CR Managers Response Sample:
+# [{
+#     'BirthYear': '1392',
+#     'CR': '5950011517',
+#     'ID': '1033277870',
+#     'IDIssueDate': '14101224',
+#     'Name': 'خالدعيظه احمد ال صالح',
+#     'Nationality': 'السعودية',
+#     'NationalityID': 1
+# }]
+
+# CR Ownerships Response Sample:
+# [{
+#     'BirthYear': None,
+#     'CR': '5950011517',
+#     'ID': '          ',
+#     'IDIssueDate': None,
+#     'Name': None,
+#     'Nationality': 'غير معرف',
+#     'NationalityID': 0,
+#     'RelationID': 4,
+#     'RelationName': 'شريك موصى'
+# }, {
+#     'BirthYear': None,
+#     'CR': '5950011517',
+#     'ID': '          ',
+#     'IDIssueDate': None,
+#     'Name': None,
+#     'Nationality': 'غير معرف',
+#     'NationalityID': 0,
+#     'RelationID': 3,
+#     'RelationName': 'شريك متضامن'
+# }, {
+#     'BirthYear': '1377',
+#     'CR': '5950011517',
+#     'ID': '1024901843',
+#     'IDIssueDate': '13990419',
+#     'Name': 'خالد عبدالله شيخ الصافي',
+#     'Nationality': 'السعودية',
+#     'NationalityID': 1,
+#     'RelationID': 3,
+#     'RelationName': 'شريك متضامن'
+# }, {
+#     'BirthYear': '1381',
+#     'CR': '5950011517',
+#     'ID': '1024901850',
+#     'IDIssueDate': '13990419',
+#     'Name': 'مها حسن طاهر مقيبل',
+#     'Nationality': 'السعودية',
+#     'NationalityID': 2,
+#     'RelationID': 3,
+#     'RelationName': 'شريك متضامن'
+# }]

@@ -13,6 +13,7 @@ urlpatterns = [
     path('login', views.login, name='login'),
     path('logout', views.logout, name='logout'),
     path('dashboard', views.dashboard, name='dashboard'),
+    path('licenses', views.licenses, name='licenses'),
     path('terms', views.terms, name='terms'),
     path('choose-type', views.choose_type, name='choose_type'),
     path('individual-signup', views.individual_signup, name='individual_signup'),
@@ -20,6 +21,8 @@ urlpatterns = [
     path('success', views.success, name='success'),
     path('application/view/<int:id>', views.view_application, name='view_application'),
     path('application/payment/<int:id>', views.payment_directions, name='payment_directions'),
+
+    path('license/<int:id>', views.download_license, name='download_license'),
 
     path('api/', include('main.apiurls')),
 ]

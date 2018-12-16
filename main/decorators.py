@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, reverse
 from .services import EFileService
 from .helpers import internal_logout, sessdata, user_has_groups_any
-from .models import Application
+from .models import Application, OFFICER, MANAGER, PRESIDENT, FINANCE
 
 
 def requires_meras_login(func):
@@ -14,6 +14,7 @@ def requires_meras_login(func):
         else:
             if request.user and request.user.is_authenticated:
                 if user_has_groups_any(request.user, ('officer', 'manager', 'president')):
+                    request.session['user_is_moderator'] = True
                     return redirect(reverse('moderation:index'))
 
             access_token = sessdata(request, 'access_token')

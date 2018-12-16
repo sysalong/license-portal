@@ -17,47 +17,46 @@
 {% endif %}
 
 		<div class="panel-form-wide">
-			<h3> الطلبات </h3>
+			<h3> التراخيص الصادرة </h3>
 
 			<div style="margin-bottom: 15px; margin-top: 15px; width: 100%;">
 
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>الخدمة المطلوبة</th>
-                            <th>نوع الطلب</th>
-                            <th>تاريخ الإنشاء</th>
-                            <th>حالة الطلب</th>
-{#                            <th>تعليقات</th>#}
-                            <th style="width: 125px;">عرض</th>
+                            <th>نوع الترخيص</th>
+                            <th>حالة الترخيص</th>
+                            <th>تاريخ الإصدار</th>
+                            <th>تاريخ الإنتهاء</th>
+                            <th style="padding: 0px;"></th>
                         </tr>
                     </thead>
                     <tbody>
-                    {% if applications %}
-                        {% for application in applications %}
+                    {% if licenses %}
+                        {% for license in licenses %}
                             <tr>
-                                <td>{{ application.service.name }}</td>
-                                <td>{{ application.type_text }}</td>
-                                <td>{{ application.created_at|date }} <i class="fa fa-info-circle" data-toggle="tooltip" data-title="تنتهي صلاحية هذا الطلب في {{ application.expiration_date|date }}"></i></td>
-                                <td>{{ application.status.name }}</td>
-{#                                <td>{{ application.comments.count }}</td>#}
-                                <td><a href="{% url 'moderation:view_application' application.id %}" class="btn btn-primary" ripple="ripple"><i class="fa fa-eye"></i> عرض</a></td>
+                                <td>{{ license.application.type.name }}</td>
+                                <td>{{ license.status.name }}</td>
+                                <td>{{ license.created_at|date }}</td>
+                                <td>{{ license.expiration_date|date }}</td>
+                                <td><a href="{% url 'moderation:view_application' license.application.id %}" class="btn btn-primary" ripple="ripple"><i class="fa fa-eye"></i> عرض الطلب</a></td>
+
                             </tr>
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="5" style="text-align: center;"><i>لا يوجد طلبات</i></td>
+                            <td colspan="5" style="text-align: center;"><i>لا يوجد رخص صادرة</i></td>
                         </tr>
                     {% endif %}
                     </tbody>
                 </table>
 
-                {% if applications %}
+                {% if licenses %}
                     <div style="text-align: left; border-top: 1px solid #f3f3f3">
                         <ul class="pagination">
-                            {% if applications.has_previous %}
+                            {% if licenses.has_previous %}
                                 <li>
-                                    <a href="?page={{ applications.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">«</span></a>
+                                    <a href="?page={{ licenses.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">«</span></a>
                                 </li>
                             {% else %}
                                 <li class="disabled">
@@ -65,7 +64,7 @@
                                 </li>
                             {% endif %}
 
-                            {% for i in applications.paginator.page_range %}
+                            {% for i in licenses.paginator.page_range %}
                                 {% if page == i %}
                                     <li class="active">
                                         <a href="?page={{ i }}">{{ i }} <span class="sr-only">(current)</span></a>
@@ -77,9 +76,9 @@
                                 {% endif %}
                             {% endfor %}
 
-                            {% if applications.has_next %}
+                            {% if licenses.has_next %}
                                 <li>
-                                    <a href="?page={{ applications.next_page_number }}" aria-label="Next"><span aria-hidden="true">»</span></a>
+                                    <a href="?page={{ licenses.next_page_number }}" aria-label="Next"><span aria-hidden="true">»</span></a>
                                 </li>
                             {% else %}
                                 <li class="disabled">

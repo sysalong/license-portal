@@ -146,18 +146,43 @@
             <a class="navbar-brand  hidden-lg hidden-md hidden-sm text-primary" href="#">القائمة الرئيسية</a>
             <div id="navbar2" class="navbar-collapse collapse">
                 <ul class="  list-inline">
-                    <li class="active">
+                    <li>
                         <a href="/Home/AboutUs"> الرئيسية </a>
                     </li>
-                    <li class="">
-                        <a href="#"> قائمة </a>
-                    </li>
-                    <li class="">
-                        <a href="#"> قائمة </a>
-                    </li>
-                    <li class="">
-                        <a href="#"> قائمة </a>
-                    </li>
+
+                    {% if not request.session.user_is_moderator %}
+                        {% if active_link == 'applications' %}
+                            <li class="active">
+                        {% else %}
+                            <li class="">
+                        {% endif %}
+                                <a href="{% url 'main:dashboard' %}"> الطلبات </a>
+                            </li>
+                        {% if active_link == 'licenses' %}
+                            <li class="active">
+                        {% else %}
+                            <li class="">
+                        {% endif %}
+                            <a href="{% url 'main:licenses' %}"> التراخيص </a>
+                        </li>
+                    {% else %}
+                        {% if active_link == 'moderate' %}
+                            <li class="active">
+                        {% else %}
+                            <li class="">
+                        {% endif %}
+                                <a href="{% url 'moderation:index' %}"> ادارة الطلبات </a>
+                            </li>
+
+                        {% if active_link == 'licenses' %}
+                            <li class="active">
+                        {% else %}
+                            <li class="">
+                        {% endif %}
+                                <a href="{% url 'moderation:licenses' %}"> ادارة التراخيص </a>
+                            </li>
+                    {% endif %}
+
                 </ul>
             </div>
             <!--/.nav-collapse -->

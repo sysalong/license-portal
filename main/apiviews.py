@@ -4,6 +4,11 @@ from django.http.response import HttpResponseBadRequest, JsonResponse, HttpRespo
 from .helpers import sessdata
 from .lookups import ALLOWED_BUSINESSES, ALLOWED_RELATIONS
 from .models import Application
+from .services import WathiqService
+
+
+def check_if_manager_has_license(cr):
+    pass
 
 
 def cr_validate(request):
@@ -24,6 +29,9 @@ def cr_validate(request):
 
         if not hit:
             return JsonResponse({'status': 0, 'msg': 'لا يوجد لديك سجل تجاري مسجل بهذا الرقم'})
+
+        print(WathiqService.get_ownerships_by_cr(hit['CR']))
+        print(WathiqService.get_managers_by_cr(hit['CR']))
 
         not_allowed_msg = ''
         if hit['BusTypeID'] not in ALLOWED_BUSINESSES:

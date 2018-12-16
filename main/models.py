@@ -9,6 +9,7 @@ from .lookups import BUSINESS_TYPE, RELATION_TYPE
 OFFICER = 'officer'
 MANAGER = 'manager'
 PRESIDENT = 'president'
+FINANCE = 'finance'
 
 
 def application_docs_upload_to(instance, filename):
@@ -16,7 +17,10 @@ def application_docs_upload_to(instance, filename):
     return 'documents/%s/%s-%s-%s/%s' % (instance.application.id, today.year, today.month, today.day, filename)
 
 
-class ApplicantType(models.Model):
+class ApplicationType(models.Model):
+    """
+    LOOKUP CLASS
+    """
     INDIVIDUAL = 1
     COMPANY = 2
 
@@ -30,6 +34,15 @@ class ApplicantType(models.Model):
 class CommercialRecord(models.Model):
     number = models.CharField(max_length=20)
     business_type_id = models.IntegerField()
+
+    activities = models.CharField(max_length=255, null=True)
+    address = models.CharField(max_length=255, null=True)
+    is_main = models.BooleanField(default=False)
+    name = models.CharField(max_length=255, default='')
+    po_box = models.CharField(max_length=8, null=True)
+    phone = models.CharField(max_length=12, null=True)
+    status = models.CharField(max_length=20, null=True)
+    zipcode = models.CharField(max_length=8, null=True)
 
     @property
     def business_type_text(self):
@@ -65,8 +78,6 @@ class Applicant(models.Model):
     gender = models.CharField(max_length=10)
     has_wasel_account = models.BooleanField(default=False)
 
-    type = models.ForeignKey(ApplicantType, on_delete=models.SET_NULL, null=True)  # TODO: ask:: can one person have both INDIVIDUAL and COMPANY licenses at the same time? FMTM: if answered yes, then this type field can't exist here on the applicant and needs to be moved to the Application model...
-
     commercial_records = models.ManyToManyField(CommercialRecord, related_name='related', through=ApplicantCommercialRecord)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True)
@@ -88,13 +99,14 @@ class Applicant(models.Model):
         return 'ذكر' if self.gender == 'M' else 'أنثى'
 
     @property
-    def type_text(self):
-        return 'طلب أفراد' if self.type.value == ApplicantType.INDIVIDUAL else 'طلب منشآت'
+    def licenses(self):
+        return License.objects.filter(application__applicant=self)
 
 
 class ApplicationStatus(models.Model):
     """
-    Don't forget to update statuses manually to the DB after adding or changing here
+    LOOKUP CLASS
+    Don't forget to update statuses manually in the DB after adding or changing here
     """
 
     NEW = 1
@@ -103,13 +115,14 @@ class ApplicationStatus(models.Model):
     IN_PRESIDENT = 4
     RETURNED = 5  # is when an application is commented on by an officer and returned to the applicant
     REJECTED = 6  # completely rejected
-    FINISHED = 7  # for after payment
+    FINISHED = 7  # for after payment and final approval
     ON_HOLD = 8  # for when the application is suspended
     PENDING_PAYMENT = 9  # approved but awaiting payment
     RETURNED_REVISION = 10  # is when an application is commented on by the manager and returned to the officer
     RETURNED_MANAGER = 11  # is when an application is commented on by the president and returned to the manager
-    PENDING_PAYMENT_APPROVAL = 12
-    PENDING_PAYMENT_RETURNED = 13  # is when returned to applicant by officer because of payment
+    PENDING_PAYMENT_APPROVAL = 12  # sent to finance department after the user submits the receipt
+    PENDING_PAYMENT_RETURNED = 13  # is when returned to applicant by finance department because of payment rejection
+    PAYMENT_APPROVED = 14  # is when approved by finance and sent to officer for final approval
 
     name = models.CharField(max_length=255)
     value = models.IntegerField(choices=(
@@ -126,10 +139,14 @@ class ApplicationStatus(models.Model):
         (RETURNED_MANAGER, 'Returned to manager'),
         (PENDING_PAYMENT_APPROVAL, 'Pending payment approval'),
         (PENDING_PAYMENT_RETURNED, 'Pending payment returned'),
+        (PAYMENT_APPROVED, 'Payment approved'),
     ), unique=True)
 
 
 class Service(models.Model):
+    """
+    LOOKUP CLASS
+    """
     NEW = 1
     RENEW = 2
 
@@ -155,6 +172,8 @@ class Application(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     paid_on = models.DateTimeField(null=True)
 
+    type = models.ForeignKey(ApplicationType, on_delete=models.SET_NULL, null=True)
+
     commercial_record = models.ForeignKey(CommercialRecord, on_delete=models.CASCADE, null=True)
 
     @property
@@ -171,8 +190,12 @@ class Application(models.Model):
 
     @property
     def expiration_date(self):
-        six_months = 6 * 30
-        return self.created_at + timedelta(days=six_months)
+        two_months = 2 * 30
+        return self.created_at + timedelta(days=two_months)
+
+    @property
+    def type_text(self):
+        return 'طلب أفراد' if self.type.value == ApplicationType.INDIVIDUAL else 'طلب منشآت'
 
 
 class ApplicationComment(models.Model):
@@ -199,8 +222,11 @@ class ApplicationDocument(models.Model):
 
 
 class TargetType(models.Model):
-    APPLICATION = 1
-    LICENSE = 2
+    """
+    LOOKUP CLASS
+    """
+    APPLICATION = 1  # has to be of the same name as the model for the action_log helper to work
+    LICENSE = 2  # has to be of the same name as the model for the action_log helper to work
 
     name = models.CharField(max_length=255)
     value = models.IntegerField(choices=(
@@ -221,6 +247,52 @@ class ActionHistoryEntry(models.Model):
         if self.target_type.value == TargetType.APPLICATION:
             return Application.objects.get(pk=self.target)
 
+
+class LicenseStatus(models.Model):
+    """
+    LOOKUP CLASS
+    """
+    VALID = 1
+    SUSPENDED = 2
+
+    name = models.CharField(max_length=255)
+    value = models.IntegerField(choices=(
+        (VALID, 'Valid'),
+        (SUSPENDED, 'Suspended'),
+    ), unique=True)
+
+
+class License(models.Model):
+    serial = models.CharField(max_length=255)
+    status = models.ForeignKey(LicenseStatus, on_delete=models.SET_NULL, null=True)
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='license')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    action_date = models.DateTimeField()  # the date on which the license was issued or renewed
+    duration = models.IntegerField(choices=(
+        (Application.NEW_YEARS, 'New'),
+        (Application.RENEW_YEARS, 'Renew'),
+    ))
+
+    filepath = models.FilePathField(null=True)
+
+    @property
+    def expiration_date(self):
+        years_in_days = self.duration * 365
+        return self.action_date + timedelta(days=years_in_days)
+
+
+PRICES = {
+    Service.NEW: {
+        ApplicationType.INDIVIDUAL: 200,
+        ApplicationType.COMPANY: 1000,
+    },
+
+    Service.RENEW: {
+        ApplicationType.INDIVIDUAL: 500,
+        ApplicationType.COMPANY: 2000,
+    },
+}
 
 # *** example meras user object ***
 # {

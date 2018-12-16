@@ -1,3 +1,8 @@
+from datetime import datetime
+import time
+import os
+
+from django.template.loader import get_template
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth import login as auth_login
@@ -5,11 +10,34 @@ from django.contrib.auth.models import User
 from django.contrib.messages import get_messages, success, error, SUCCESS, ERROR
 from django.core.paginator import Paginator, PageNotAnInteger
 
-from license_portal.settings import EFILE_URL, MERAS_CLIENT_ID
+from weasyprint import HTML
+
+from license_portal.settings import EFILE_URL, MERAS_CLIENT_ID, BASE_DIR, MEDIA_ROOT, MEDIA_URL
 from main.helpers import sessdata, internal_logout, user_has_groups_any, user_has_group, action_history_log
-from main.models import Application, ApplicationDocument, ApplicationStatus, OFFICER, MANAGER, PRESIDENT, ApplicantType
+from main.models import Application, ApplicationDocument, ApplicationStatus, OFFICER, MANAGER, PRESIDENT, FINANCE, \
+    ApplicationType, License, LicenseStatus
 
 from .decorators import moderators_only
+
+
+def generate_license_pdf(_license):
+    template = get_template("moderation/pdf/license_pdf_template.html")
+    context = {'license': _license, 'ApplicationType': ApplicationType}
+    html = template.render(context)
+
+    filepath = os.path.join(BASE_DIR, 'moderation', 'tmp', '%s.html' % _license.serial)
+
+    filename = '%s.%s.pdf' % (_license.serial, int(time.time() * 100))
+    pdffilepath = os.path.join(MEDIA_ROOT, 'licenses', filename)
+
+    with open(filepath, 'w') as f:
+        f.write(html)
+
+    try:
+        HTML(filepath).write_pdf(pdffilepath)
+        return os.path.join(MEDIA_URL, 'licenses', filename)
+    except:
+        return False
 
 
 # TODO: add has_no_applications decorator to functions before production
@@ -29,19 +57,23 @@ def index(request):
         if not request.user.is_authenticated:
             auth_login(request, user)
 
-        if not user_has_groups_any(user, [OFFICER, MANAGER, PRESIDENT]):
+        if not user_has_groups_any(user, (OFFICER, MANAGER, PRESIDENT, FINANCE)):
             # internal_logout(request)
             return redirect(reverse('main:index'))
+        else:
+            request.session['user_is_moderator'] = True
 
         # TODO: implement filter by application status
         applications = Application.objects.order_by('-created_at', 'status__value')
 
-        if user_has_group(user, 'officer'):
-            applications = applications.filter(status__value__in=(ApplicationStatus.NEW, ApplicationStatus.IN_REVISION, ApplicationStatus.RETURNED_REVISION, ApplicationStatus.PENDING_PAYMENT, ApplicationStatus.REJECTED, ApplicationStatus.FINISHED, ApplicationStatus.ON_HOLD, ApplicationStatus.PENDING_PAYMENT_APPROVAL))
-        elif user_has_group(user, 'manager'):
+        if user_has_group(user, OFFICER):
+            applications = applications.filter(status__value__in=(ApplicationStatus.NEW, ApplicationStatus.IN_REVISION, ApplicationStatus.RETURNED_REVISION, ApplicationStatus.PENDING_PAYMENT, ApplicationStatus.REJECTED, ApplicationStatus.FINISHED, ApplicationStatus.ON_HOLD, ApplicationStatus.PENDING_PAYMENT_APPROVAL, ApplicationStatus.PENDING_PAYMENT_RETURNED, ApplicationStatus.PAYMENT_APPROVED))
+        elif user_has_group(user, MANAGER):
             applications = applications.filter(status__value__in=(ApplicationStatus.IN_MANAGER, ApplicationStatus.RETURNED_MANAGER, ApplicationStatus.PENDING_PAYMENT, ApplicationStatus.REJECTED, ApplicationStatus.FINISHED, ApplicationStatus.ON_HOLD))
-        elif user_has_group(user, 'president'):
+        elif user_has_group(user, PRESIDENT):
             applications = applications.filter(status__value__in=(ApplicationStatus.IN_PRESIDENT, ApplicationStatus.PENDING_PAYMENT, ApplicationStatus.REJECTED, ApplicationStatus.FINISHED, ApplicationStatus.ON_HOLD))
+        elif user_has_group(user, FINANCE):
+            applications = applications.filter(status__value__in=(ApplicationStatus.PENDING_PAYMENT_APPROVAL, ApplicationStatus.PENDING_PAYMENT_RETURNED))
 
         page = request.GET.get('page', 1)
         paginator = Paginator(applications, 10)
@@ -56,7 +88,7 @@ def index(request):
             msg = [msg for msg in storage][0]
         storage.used = True
 
-        context = {'applications': applications, 'page': int(page)}
+        context = {'applications': applications, 'page': int(page), 'active_link': 'moderate'}
 
         if storage:
             if msg.level == SUCCESS:
@@ -69,6 +101,44 @@ def index(request):
         internal_logout(request)
 
     return redirect('{}/account/login?client_id={}&returnUrl={}'.format(EFILE_URL, MERAS_CLIENT_ID, reverse('moderation:index')))
+
+
+@moderators_only
+def licenses(request):
+    if not request.user.is_authenticated:
+        return redirect('{}/account/login?client_id={}&returnUrl={}'.format(EFILE_URL, MERAS_CLIENT_ID,
+                                                                            reverse('moderation:index')))
+
+    if not user_has_groups_any(request.user, (OFFICER, MANAGER, PRESIDENT, FINANCE)):
+        return redirect(reverse('main:index'))
+    else:
+        request.session['user_is_moderator'] = True
+
+    # TODO: implement filter by license status
+    _licenses = License.objects.order_by('-created_at')
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(_licenses, 10)
+
+    try:
+        _licenses = paginator.get_page(page)
+    except PageNotAnInteger:
+        _licenses = paginator.get_page(1)
+
+    storage = get_messages(request)
+    if storage:
+        msg = [msg for msg in storage][0]
+    storage.used = True
+
+    context = {'licenses': _licenses, 'page': int(page), 'active_link': 'licenses'}
+
+    if storage:
+        if msg.level == SUCCESS:
+            context['success'] = msg
+        elif msg.level == ERROR:
+            context['error'] = msg
+
+    return render(request, 'moderation/licenses.html', context)
 
 
 def login(request):
@@ -89,16 +159,16 @@ def view_application(request, id):
                 application.save()
 
     applicant = application.applicant
-    applicant_type = applicant.type.value
+    application_type = application.type.value
 
     context = {'application': application,
                'ApplicationDocument': ApplicationDocument,
                'ApplicationStatus': ApplicationStatus,
                'user_role': request.user.groups.first().name,
-               'applicant_type': applicant_type,
-               'ApplicantType': ApplicantType}
+               'application_type': application_type,
+               'ApplicationType': ApplicationType}
 
-    if applicant_type == ApplicantType.COMPANY:
+    if application_type == ApplicationType.COMPANY:
         context['CR'] = application.commercial_record
         context['applicant_application_cr'] = applicant.applicant_crs.filter(commercial_record=application.commercial_record).first()
 
@@ -112,36 +182,53 @@ def action_application(request, id):
         reason = request.POST.get('reason')
         reason_completely = request.POST.get('reason-completely')
 
+        issued = True
+
         if action:
             application = get_object_or_404(Application, pk=id)
             if action == 'approve':
-                new_status = ''
+                new_status = 0
                 log_message = 'N/A'
 
                 if user_has_group(request.user, OFFICER):
-                    new_status = ApplicationStatus.IN_MANAGER
-                    log_message = 'قام بالموافقة على الطلب ونقله لمدير الأكاديمية للمراجعة'
-                elif user_has_group(request.user, 'manager'):
+                    if application.status.value == ApplicationStatus.PAYMENT_APPROVED:
+                        issued = issue_license(application)
+
+                        if not issued:
+                            error(request, 'حدث خطأ، لم يتم إصدار الترخيص')
+                        else:
+                            new_status = ApplicationStatus.FINISHED
+                            log_message = 'قام بإعتماد الطلب وإصدار الترخيص للمتقدم'
+                    else:
+                        new_status = ApplicationStatus.IN_MANAGER
+                        log_message = 'قام بالموافقة على الطلب ونقله لمدير الأكاديمية للمراجعة'
+                elif user_has_group(request.user, MANAGER):
                     new_status = ApplicationStatus.IN_PRESIDENT
                     log_message = 'قام بالموافقة على الطلب ونقله لرئيس الأكاديمية للمراجعة'
-                elif user_has_group(request.user, 'president'):
+                elif user_has_group(request.user, PRESIDENT):
                     new_status = ApplicationStatus.PENDING_PAYMENT
                     log_message = 'قام بالموافقة على الطلب وفي إنتظار اكتمال الدفع للاعتماد'
+                elif user_has_group(request.user, FINANCE):
+                    new_status = ApplicationStatus.PAYMENT_APPROVED
+                    log_message = 'قام بالموافقة على إيصال الدفع المقدم'
+                    application.paid_on = datetime.today()
 
-                application.status = ApplicationStatus.objects.get(value=new_status)
-                application.return_reason = None
-                application.save()
+                if issued:
+                    application.status = ApplicationStatus.objects.get(value=new_status)
+                    application.return_reason = None
+                    application.save()
 
-                action_history_log(application, request.user, log_message)
-                success(request, 'تمت العملية بنجاح')
+                    action_history_log(application, request.user, log_message)
+                    success(request, 'تمت العملية بنجاح')
             elif action == 'reject':
-                new_status = ''
-                if user_has_group(request.user, 'officer'):
+                if user_has_group(request.user, OFFICER):
                     new_status = ApplicationStatus.RETURNED
-                elif user_has_group(request.user, 'manager'):
+                elif user_has_group(request.user, MANAGER):
                     new_status = ApplicationStatus.RETURNED_REVISION
-                elif user_has_group(request.user, 'president'):
+                elif user_has_group(request.user, PRESIDENT):
                     new_status = ApplicationStatus.RETURNED_MANAGER
+                elif user_has_group(request.user, FINANCE) and application.status.value == ApplicationStatus.PENDING_PAYMENT_APPROVAL:
+                    new_status = ApplicationStatus.PENDING_PAYMENT_RETURNED
                 else:
                     new_status = ApplicationStatus.RETURNED
 
@@ -162,3 +249,15 @@ def action_application(request, id):
                 error(request, 'حدث خطأ ما، لقد فشلت العملية')
 
     return redirect(reverse('moderation:index'))
+
+
+def issue_license(application):
+    _license = License(serial=application.serial, status=LicenseStatus.objects.get(value=LicenseStatus.VALID),
+                       application=application, action_date=datetime.today(), duration=Application.NEW_YEARS)
+
+    _license.save()
+
+    if _license.id:
+        return True
+    else:
+        return False

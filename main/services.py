@@ -105,6 +105,8 @@ class WathiqService:
         if not cls._instance:
             while cls._iattempts < 10:
                 cls._instance = make_wathiq_client()
+                if cls._instance:
+                    break
                 cls._iattempts += 1
         return cls._instance
 
@@ -115,7 +117,7 @@ class WathiqService:
         try:
             return client.service.HasCRByID(nid)
         except Exception as e:
-            print('EXCEPTION:has_cr_by_id -> ', e)
+            print('EXCEPTION:has_cr_by_id::%s -> ' % nid, e)
             return False
 
     @classmethod
@@ -130,3 +132,43 @@ class WathiqService:
         except Exception as e:
             print('EXCEPTION:get_crs_by_id -> ', e)
             return []
+
+    @classmethod
+    def get_cr_data_by_cr(cls, cr):
+        client = cls.get_instance()
+
+        try:
+            return client.service.GetCRDataByCR(cr)
+        except Exception as e:
+            print('EXCEPTION:get_cr_data_by_cr -> ', e)
+            return False
+
+    @classmethod
+    def get_managers_by_cr(cls, cr):
+        client = cls.get_instance()
+
+        try:
+            return client.service.GetManagersByCR(cr)
+        except Exception as e:
+            print('EXCEPTION:get_managers_by_cr -> ', e)
+            return False
+
+    @classmethod
+    def get_ownerships_by_cr(cls, cr):
+        client = cls.get_instance()
+
+        try:
+            return client.service.GetOwnershipsByCR(cr)
+        except Exception as e:
+            print('EXCEPTION:get_ownerships_by_cr -> ', e)
+            return False
+
+    @classmethod
+    def get_related_crs_by_cr(cls, cr):
+        client = cls.get_instance()
+
+        try:
+            return client.service.GetRelatedCRsByCR(cr)
+        except Exception as e:
+            print('EXCEPTION:get_related_crs_by_cr -> ', e)
+            return False

@@ -48,23 +48,29 @@
             </div>
         </div>
 
-        {% if applicant_type == ApplicantType.COMPANY %}
+        {% if application_type == ApplicationType.COMPANY %}
             <div class="row" style="width: 100%">
-                <div class="col-md-6 col-sm-12">
+                <div class="col-md-12 col-sm-12">
                     <label>بيانات السجل التجاري:</label>
                     <p>
                         <table id="review-cr-info" class="table">
                             <thead>
                                 <tr>
                                     <th>رقم السجل التجاري</th>
+                                    <th>اسم المنشآة</th>
                                     <th>نوع المنشأة</th>
+                                    <th>نشاط المنشآة</th>
+                                    <th>رقم الهاتف</th>
                                     <th>منصب المتقدم</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td>{{ CR.number }}</td>
+                                    <td>{{ CR.name }}</td>
                                     <td>{{ CR.business_type_text }}</td>
+                                    <td>{{ CR.activities }}</td>
+                                    <td>{{ CR.phone }}</td>
                                     <td>{{ applicant_application_cr.relation_text }}</td>
                                 </tr>
                             </tbody>
@@ -96,7 +102,7 @@
         <div class="row" style="width: 100%">
             <div class="col-md-6 col-sm-12">
                 <label>نوع الطلب:</label>
-                <p>{{ application.applicant.type_text }}</p>
+                <p>{{ application.type_text }}</p>
             </div>
             <div class="col-md-6 col-sm-12">
                 <label>حالة الطلب:</label>
@@ -173,13 +179,18 @@
         </div>
     </div>
 
-{% if user_role == 'officer' and application.status.value <= ApplicationStatus.IN_REVISION or user_role == 'officer' and application.status.value == ApplicationStatus.RETURNED_REVISION or user_role == 'manager' and application.status.value == ApplicationStatus.IN_MANAGER or user_role == 'manager' and application.status.value == ApplicationStatus.RETURNED_MANAGER or user_role == 'president' and application.status.value == ApplicationStatus.IN_PRESIDENT %}
+{% if user_role == 'officer' and application.status.value <= ApplicationStatus.IN_REVISION or user_role == 'officer' and application.status.value == ApplicationStatus.RETURNED_REVISION or user_role == 'officer' and application.status.value == ApplicationStatus.PAYMENT_APPROVED or user_role == 'finance' and application.status.value == ApplicationStatus.PENDING_PAYMENT_APPROVAL or user_role == 'manager' and application.status.value == ApplicationStatus.IN_MANAGER or user_role == 'manager' and application.status.value == ApplicationStatus.RETURNED_MANAGER or user_role == 'president' and application.status.value == ApplicationStatus.IN_PRESIDENT %}
     <div class="action-panel">
         <form action="{% url 'moderation:action_application' application.id %}" method="POST" style="width: 100%">
             {% csrf_token %}
             <div class="action-message action-message-reject" style="display: none;">
                 <p>
-                    <strong>من فضلك أدخل السبب</strong><br>
+                    {% if application.status.value == ApplicationStatus.PENDING_PAYMENT_APPROVAL %}
+                        <strong>من فضلك أدخل سبب رفض إيصال الدفع</strong>
+                    {% else %}
+                        <strong>من فضلك أدخل السبب</strong>
+                    {% endif %}
+                    <br>
 
                     {% if user_role == 'officer' %}
                         <small>سيتم إرجاع الطلب للمتقدم به مع ذكر السبب</small>
@@ -187,31 +198,39 @@
                         <small>سيتم إرجاع الطلب لمسؤول التراخيص للمراجعة مع ذكر السبب</small>
                     {% elif user_role == 'president' %}
                         <small>سيتم إرجاع الطلب لمدير الأكاديمية للمراجعة مع ذكر السبب</small>
+                    {% elif user_role == 'finance' %}
+                        <small>سيتم إرجاع الطلب للمتقدم به مع ذكر السبب وإتاحة الإمكانية لإعادة رفع الإيصال <u>فقط</u></small>
                     {% endif %}
                 </p>
                 <textarea class="form-control" name="reason" rows="5" data-rule-required="true" data-msg-required="أدخل سبب الرفض"></textarea>
 
                 <small>(اضغط موافقة مرة أخرى للتأكيد)</small>
             </div>
+            {% if user_role != 'finance' %}
+                <div class="action-message action-message-reject-completely" style="display: none;">
+                    <p>
+                        <strong>من فضلك أدخل السبب</strong><br>
 
-            <div class="action-message action-message-reject-completely" style="display: none;">
-                <p>
-                    <strong>من فضلك أدخل السبب</strong><br>
+                        <small>سيتم رفض الطلب نهائياً ورده للمتقدم مع ذكر السبب</small>
 
-                    <small>سيتم رفض الطلب نهائياً ورده للمتقدم مع ذكر السبب</small>
+                    </p>
+                    <textarea class="form-control" name="reason-completely" rows="5" data-rule-required="true" data-msg-required="أدخل سبب الرفض"></textarea>
 
-                </p>
-                <textarea class="form-control" name="reason-completely" rows="5" data-rule-required="true" data-msg-required="أدخل سبب الرفض"></textarea>
-
-                <small>(اضغط موافقة مرة أخرى للتأكيد)</small>
-            </div>
+                    <small>(اضغط موافقة مرة أخرى للتأكيد)</small>
+                </div>
+            {% endif %}
 
             <div class="action-message action-message-approve" style="display: none;">
                 <p>
                     <strong>هل أنت متأكد؟</strong><br>
 
                     {% if user_role == 'officer' %}
-                        سيتم إرسال الطلب إلى مدير الأكاديمية للمراجعة <br>
+                        {% if application.status.value == ApplicationStatus.PAYMENT_APPROVED %}
+                            سيتم إعتماد الطلب كلياً وإصدار الترخيص للمتقدم
+                        {% else %}
+                            سيتم إرسال الطلب إلى مدير الأكاديمية للمراجعة
+                        {% endif %}
+                        <br>
                     {% elif user_role == 'manager' %}
                         سيتم إرسال الطلب إلى رئيس الأكاديمية للمراجعة <br>
                     {% endif %}
@@ -226,7 +245,10 @@
                     <input type="hidden" name="_action">
                     <button type="button" class="btn btn-success action-approve-btn" data-action=""> <i class="fa fa-check"></i> موافقة</button>
                     <button type="button" class="btn btn-warning action-reject-btn"> <i class="fa fa-times"></i> <span>رد الطلب</span></button>
-                    <button type="button" class="btn btn-danger action-reject-completely-btn"> <i class="fa fa-times"></i> <span>رفض نهائي</span></button>
+
+                    {% if user_role != 'finance' %}
+                        <button type="button" class="btn btn-danger action-reject-completely-btn"> <i class="fa fa-times"></i> <span>رفض نهائي</span></button>
+                    {% endif %}
                 </span>
             </div>
         </form>
@@ -414,7 +436,7 @@
         }
     </script>
 
-    {% if user_role == 'officer' and application.status.value <= ApplicationStatus.IN_REVISION or user_role == 'officer' and application.status.value == ApplicationStatus.RETURNED_REVISION or user_role == 'manager' and application.status.value == ApplicationStatus.IN_MANAGER or user_role == 'manager' and application.status.value == ApplicationStatus.RETURNED_MANAGER or user_role == 'president' and application.status.value == ApplicationStatus.IN_PRESIDENT %}
+    {% if user_role == 'officer' and application.status.value <= ApplicationStatus.IN_REVISION or user_role == 'officer' and application.status.value == ApplicationStatus.RETURNED_REVISION or user_role == 'officer' and application.status.value == ApplicationStatus.PAYMENT_APPROVED or user_role == 'finance' and application.status.value == ApplicationStatus.PENDING_PAYMENT_APPROVAL or user_role == 'manager' and application.status.value == ApplicationStatus.IN_MANAGER or user_role == 'manager' and application.status.value == ApplicationStatus.RETURNED_MANAGER or user_role == 'president' and application.status.value == ApplicationStatus.IN_PRESIDENT %}
         <script>
             var $rejCom = $('.action-reject-completely-btn');
 

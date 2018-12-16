@@ -4,9 +4,11 @@ from django.contrib import messages
 
 from license_portal.settings import EFILE_URL, MERAS_CLIENT_ID, MERAS_RETURN_URL
 from .decorators import requires_meras_login, terms_agreed, requires_finished_with_success, user_has_no_applications
-from .helpers import load_user_data, internal_logout, sessdata, verify_image, verify_pdf, action_history_log
+from .helpers import load_user_data, internal_logout, sessdata, verify_image, verify_pdf, action_history_log, user_has_groups_any
 from .services import EFileService, WathiqService
 from .models import *
+
+from moderation.views import generate_license_pdf
 
 
 def oauth_return(request):
@@ -58,18 +60,27 @@ def index(request):
 
 @requires_meras_login
 def dashboard(request):
-    access_token = sessdata(request, 'access_token')
-    if access_token:
-        user_authenticated = EFileService.is_authenticated(access_token)
-        if user_authenticated:
-            user = Applicant.objects.filter(userid=sessdata(request, 'user_userid')).first()
-            if not user or user and user.applications.count() == 0:
-                return redirect(reverse('main:terms'))
-            return render(request, 'dashboard.html', {'applications': user.applications.all(),
-                                                      'ApplicationStatus': ApplicationStatus,
-                                                      'view_statuses': (ApplicationStatus.RETURNED, ApplicationStatus.REJECTED)})
-        else:
-            return internal_logout(request)
+    user = Applicant.objects.filter(userid=sessdata(request, 'user_userid')).first()
+    if not user or user and user.applications.count() == 0:
+        return redirect(reverse('main:terms'))
+
+    if request.user and request.user.is_authenticated:
+        request.session['user_is_moderator'] = user_has_groups_any(request.user, (OFFICER, MANAGER, PRESIDENT, FINANCE))
+
+    return render(request, 'dashboard.html', {'applications': user.applications.all(),
+                                              'ApplicationStatus': ApplicationStatus,
+                                              'view_statuses': (ApplicationStatus.RETURNED, ApplicationStatus.REJECTED,
+                                                                ApplicationStatus.PENDING_PAYMENT_RETURNED),
+                                              'active_link': 'applications'})
+
+
+@requires_meras_login
+def licenses(request):
+    user = Applicant.objects.filter(userid=sessdata(request, 'user_userid')).first()
+    if not user or user and user.applications.count() == 0:
+        return redirect(reverse('main:terms'))
+
+    return render(request, 'licenses.html', {'licenses': user.licenses.all(), 'active_link': 'licenses'})
 
 
 def login(request):
@@ -124,7 +135,6 @@ def choose_type(request):
 @terms_agreed
 @user_has_no_applications
 def individual_signup(request):
-    # TODO: ask:: should the application go into in_revision state right after the applicant updates the docs or only when the officer role views it
     updating = request.POST.get('_updating', 'false') == 'true'
 
     if request.method == 'POST':
@@ -187,8 +197,7 @@ def individual_signup(request):
                                       person_type=sessdata(request, 'user_persontype'),
                                       gender=sessdata(request, 'user_gender'),
                                       has_wasel_account=sessdata(request, 'HasWaselAccount') if sessdata(request,
-                                                                                                         'HasWaselAccount') else False,
-                                      type=ApplicantType.objects.get(value=ApplicantType.INDIVIDUAL),
+                                                                                         'HasWaselAccount') else False,
                                       )
                 applicant.save()
             if not applicant.id:
@@ -200,7 +209,8 @@ def individual_signup(request):
                 else:
                     application_serial = 'A' + applicant.id_number
                     application = Application(serial=application_serial, status=ApplicationStatus.objects.get(value=ApplicationStatus.NEW),
-                                              applicant=applicant, service=Service.objects.get(type=Service.NEW))
+                                              applicant=applicant, service=Service.objects.get(type=Service.NEW),
+                                              type=ApplicationType.objects.get(value=ApplicationType.INDIVIDUAL),)
                     application.save()
                 if not application.id:
                     all_valid = False
@@ -279,7 +289,7 @@ def individual_signup(request):
                                         applicant.delete()
 
                                 if all_valid:
-                                    request.session['finished_with_success'] = ApplicantType.INDIVIDUAL
+                                    request.session['finished_with_success'] = ApplicationType.INDIVIDUAL
                                     if updating:
                                         application.return_reason = None
                                         application.status = ApplicationStatus.objects.get(value=ApplicationStatus.IN_REVISION)
@@ -356,6 +366,12 @@ def company_signup(request):
 
         all_valid = True
 
+        cr_data = WathiqService.get_cr_data_by_cr(crno)
+        if not cr_data:
+            all_valid = False
+            has_cr = False
+            crs = []
+
         if not crno or not cr_info or not doc_cr or not doc_est or not doc_saudiation or not doc_manhierarchy or not doc_prevproj or not doc_income:
             messages.error(request, message='برجاء ملئ جميع الحقول المطلوبة')
             all_valid = False
@@ -410,7 +426,6 @@ def company_signup(request):
                                       gender=sessdata(request, 'user_gender'),
                                       has_wasel_account=sessdata(request, 'HasWaselAccount') if sessdata(request,
                                                                                                          'HasWaselAccount') else False,
-                                      type=ApplicantType.objects.get(value=ApplicantType.COMPANY),
                                       )
                 applicant.save()
             if not applicant.id:
@@ -428,7 +443,8 @@ def company_signup(request):
                 else:
                     application_serial = 'C' + crno
                     application = Application(serial=application_serial, status=ApplicationStatus.objects.get(value=ApplicationStatus.NEW),
-                                              applicant=applicant, service=Service.objects.get(type=Service.NEW))
+                                              applicant=applicant, service=Service.objects.get(type=Service.NEW),
+                                              type=ApplicationType.objects.get(value=ApplicationType.COMPANY),)
                     application.save()
                 if not application.id:
                     all_valid = False
@@ -527,7 +543,11 @@ def company_signup(request):
                                             if not updating:
                                                 cr = CommercialRecord.objects.filter(number=crno).first()
                                                 if not cr:
-                                                    cr = CommercialRecord(number=cr_info['CR'], business_type_id=cr_info['BusTypeID'])
+                                                    cr = CommercialRecord(number=cr_info['CR'], business_type_id=cr_info['BusTypeID'],
+                                                                          activities=cr_data['Activities'], address=cr_data['Address'],
+                                                                          is_main=cr_data['IsMain'], name=cr_data['Name'],
+                                                                          po_box=cr_data['POBOX'], phone=cr_data['PhoneNumber'],
+                                                                          status=cr_data['Status'], zipcode=cr_data['ZipCode'])
                                                     cr.save()
 
                                                 if not cr.id:
@@ -538,6 +558,21 @@ def company_signup(request):
                                                     application.delete()
                                                     applicant.delete()
                                                 else:
+                                                    # updating cr data in case it changed
+                                                    cr.business_type_id = cr_data['BusTypeID']
+                                                    cr.activities = cr_data['Activities']
+                                                    cr.address = cr_data['Address']
+                                                    cr.is_main = cr_data['IsMain']
+                                                    cr.name = cr_data['Name']
+                                                    cr.po_box = cr_data['POBOX']
+                                                    cr.phone = cr_data['PhoneNumber']
+                                                    cr.status = cr_data['Status']
+                                                    cr.zipcode = cr_data['ZipCode']
+                                                    cr.save()
+                                                    # end update
+
+                                                    # TODO: fix the company signup to check for if the cr's general manager has a license or not and if not show error and dont complete the registration -- or if the applicant themselves have a license and if not dont proceed -- thats it cant remember anything else right now :D
+
                                                     acr = ApplicantCommercialRecord.objects.filter(applicant=applicant,
                                                                                              commercial_record=cr).first()
                                                     if acr:
@@ -560,7 +595,7 @@ def company_signup(request):
                                                         application.save()
 
                                         if all_valid:
-                                            request.session['finished_with_success'] = ApplicantType.COMPANY
+                                            request.session['finished_with_success'] = ApplicationType.COMPANY
                                             if updating:
                                                 application.return_reason = None
                                                 application.status = ApplicationStatus.objects.get(
@@ -584,9 +619,9 @@ def company_signup(request):
 @requires_meras_login
 @requires_finished_with_success
 def success(request):
-    applicant_type = request.session.get('finished_with_success')
+    application_type = request.session.get('finished_with_success')
     request.session['finished_with_success'] = None
-    return render(request, 'request_success.html', {'applicant_type': applicant_type, 'ApplicantType': ApplicantType})
+    return render(request, 'request_success.html', {'application_type': application_type, 'ApplicationType': ApplicationType})
 
 
 @requires_meras_login
@@ -594,21 +629,27 @@ def view_application(request, id):
     applicant = Applicant.objects.filter(id_number=sessdata(request, 'user_id')).first()
     application = Application.objects.filter(id=id, applicant=applicant).first()
 
-    if not application or application and application.status.value not in (ApplicationStatus.RETURNED, ApplicationStatus.REJECTED):
+    if not application or application and application.status.value not in (ApplicationStatus.RETURNED, ApplicationStatus.REJECTED,
+                                                                           ApplicationStatus.PENDING_PAYMENT_RETURNED):
         return redirect(reverse('main:index'))
 
-    applicant_type = applicant.type.value
+    application_type = application.type.value
 
     context = {'application': application, 'ApplicationStatus': ApplicationStatus}
 
-    if applicant_type == ApplicantType.COMPANY:
+    if application_type == ApplicationType.COMPANY:
         context['CR'] = application.commercial_record
         context['applicant_application_cr'] = applicant.applicant_crs.filter(
             commercial_record=application.commercial_record).first()
 
-    if applicant_type == ApplicantType.INDIVIDUAL:
+    if application.status.value == ApplicationStatus.PENDING_PAYMENT_RETURNED:
+        price = PRICES[application.service.type][application.type.value]
+        context['price'] = price
+        return render(request, 'payment_view.html', context)
+
+    if application_type == ApplicationType.INDIVIDUAL:
         return render(request, 'individual_view.html', context)
-    elif applicant_type == ApplicantType.COMPANY:
+    elif application_type == ApplicationType.COMPANY:
         return render(request, 'company_view.html', context)
 
 
@@ -617,10 +658,13 @@ def payment_directions(request, id):
     applicant = Applicant.objects.filter(id_number=sessdata(request, 'user_id')).first()
     application = Application.objects.filter(id=id, applicant=applicant).first()
 
-    if not application or application and application.status.value != ApplicationStatus.PENDING_PAYMENT:
+    if not application or application and application.status.value not in (ApplicationStatus.PENDING_PAYMENT,
+                                                                           ApplicationStatus.PENDING_PAYMENT_RETURNED):
         return redirect(reverse('main:index'))
 
-    applicant_type = applicant.type.value
+    application_type = application.type.value
+
+    updating = request.POST.get('_updating', 'false') == 'true'
 
     if request.method == 'POST':
         doc_receipt = request.FILES.get('doc-receipt')
@@ -636,6 +680,12 @@ def payment_directions(request, id):
                 all_valid = False
 
         if all_valid:
+            if updating:
+                existing_receipt = ApplicationDocument.objects.filter(application=application, file_type=ApplicationDocument.TYPES['IMAGE'],
+                                                                      description='صورة إيصال الدفع').first()
+                if existing_receipt:
+                    existing_receipt.delete()
+
             doc_receipt_obj = ApplicationDocument(file=doc_receipt, application=application,
                                              description='صورة إيصال الدفع', file_type=ApplicationDocument.TYPES['IMAGE'])
             doc_receipt_obj.save()
@@ -643,12 +693,17 @@ def payment_directions(request, id):
                 all_valid = False
                 messages.error(request, message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
             else:
-                request.session['finished_with_success'] = applicant_type
+                request.session['finished_with_success'] = application_type
 
                 application.return_reason = None
                 application.status = ApplicationStatus.objects.get(value=ApplicationStatus.PENDING_PAYMENT_APPROVAL)
+
                 application.save()
-                action_history_log(application, None, 'قام برفع صورة من إيصال الدفع')
+
+                if updating:
+                    action_history_log(application, None, 'قام بتحديث صورة إيصال الدفع')
+                else:
+                    action_history_log(application, None, 'قام برفع صورة من إيصال الدفع')
 
                 return redirect(reverse('main:success'))
 
@@ -656,4 +711,31 @@ def payment_directions(request, id):
     msgs = [msg for msg in storage]
     storage.used = True
 
-    return render(request, 'payment_directions.html', {'application': application, 'error': msgs[0] if msgs else None})
+    price = PRICES[application.service.type][application.type.value]
+
+    template_name = 'payment_directions.html'
+
+    if updating:
+        template_name = 'payment_view.html'
+
+    return render(request, template_name, {'application': application, 'price': price, 'error': msgs[0] if msgs else None})
+
+
+@requires_meras_login
+def download_license(request, id):
+    applicant = Applicant.objects.filter(id_number=sessdata(request, 'user_id')).first()
+
+    _license = License.objects.filter(id=id, application__applicant=applicant).first()
+
+    if not _license:
+        return redirect(reverse('main:index'))
+
+    filepath = generate_license_pdf(_license)
+
+    if filepath:
+        _license.filepath = filepath
+        _license.save()
+    else:
+        return HttpResponseBadRequest('فشلت العملية')
+
+    return redirect(filepath)
