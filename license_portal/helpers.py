@@ -18,9 +18,9 @@ def gitwebhooks(request):
     """
 
     proc = ''
-    
+
     if request.method == 'POST':
-        ref = request.get('ref')
+        ref = request.POST.get('ref')
 
         if ref and ref == BRANCH_REF:
             try:
