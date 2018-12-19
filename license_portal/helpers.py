@@ -12,7 +12,7 @@ def gitwebhooks(request):
     try:
         proc = subprocess.check_output(['mkdir', 'test'], cwd=PULL_BATCH_DIR)
     except Exception as e:
-        return HttpResponseServerError(e.output)
+        return HttpResponseServerError(e)
 
     # res, err = proc.communicate()
 
