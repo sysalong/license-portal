@@ -12,7 +12,7 @@ PULL_BATCH_DIR = os.path.join('C:\\', 'Apache24-general', 'htdocs', 'django_apps
 @csrf_exempt
 def gitwebhooks(request):
     """
-    For windows OS -- triggered when someone pushes to the repo on github
+    For windows OS -- triggered when someone pushes to the repo on github -- TODO: implement HMAC hash verification
     """
     if request.method == 'POST':
         try:
