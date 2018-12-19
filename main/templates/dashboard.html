@@ -4,6 +4,9 @@
 
   <div class="row" style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
 
+           <div style="text-align: right; display: block; margin-bottom: 15px; width: 100%; max-width: 960px;"> <a href="{% url 'main:terms' %}" class="btn btn-primary"><i class="fa fa-plus"></i> طلب جديد </a></div>
+
+
 		<div class="panel-form-wide">
 			<h3> حالة طلبك </h3>
 			<p> <i class="fa fa-info-circle"></i> إذا كانت حالة طلبكم تحت الإجراء، فبرجاء الانتظار حتى يتم الانتهاء من مراجعته وسيتم إرسال بريد الكتروني لكم </p>
@@ -14,6 +17,7 @@
                     <thead>
                         <tr>
                             <th>نوع الطلب</th>
+                            <th>الخدمة المطلوبة</th>
                             <th>تاريخ الإنشاء</th>
                             <th>حالة الطلب</th>
                             <th style="padding: 0px;"></th>
@@ -22,6 +26,7 @@
                     <tbody>
                     {% for application in applications %}
                         <tr>
+                            <td>{{ application.type_text }}</td>
                             <td>{{ application.service.name }}</td>
                             <td>{{ application.created_at|date }}</td>
                             {% if application.status.value == ApplicationStatus.RETURNED_REVISION %}
@@ -38,6 +43,7 @@
                     {% endfor %}
                     </tbody>
                 </table>
+
 
 			</div>
 

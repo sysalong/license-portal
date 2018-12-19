@@ -30,9 +30,6 @@ def cr_validate(request):
         if not hit:
             return JsonResponse({'status': 0, 'msg': 'لا يوجد لديك سجل تجاري مسجل بهذا الرقم'})
 
-        print(WathiqService.get_ownerships_by_cr(hit['CR']))
-        print(WathiqService.get_managers_by_cr(hit['CR']))
-
         not_allowed_msg = ''
         if hit['BusTypeID'] not in ALLOWED_BUSINESSES:
             not_allowed_msg = 'عفواً، لا يحق للمنشآة المسجلة بهذا الرقم الحصول على رخصة'

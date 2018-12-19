@@ -128,7 +128,17 @@ def terms(request):
 @requires_meras_login
 @terms_agreed
 def choose_type(request):
-    return render(request, 'choose_type.html')
+    nid = request.session.get('user_id')
+    context = {}
+    if nid:
+        applicant = Applicant.objects.filter(id_number=nid).first()
+        if applicant:
+            has_indapplication = applicant.applications.filter(type=ApplicationType.INDIVIDUAL).exists()
+
+            if has_indapplication:
+                context['ind_disabled'] = True
+
+    return render(request, 'choose_type.html', context)
 
 
 @requires_meras_login
@@ -330,8 +340,9 @@ def company_signup(request):
     crs = sessdata(request, 'crs')
     has_cr = False
 
+    nid = request.session.get('user_id')
+
     if not crs:
-        nid = request.session.get('user_id')
         if nid:
             has_cr = WathiqService.has_cr_by_id(nid)
             print('company_signup:has_cr -> ', has_cr)
@@ -466,8 +477,8 @@ def company_signup(request):
                         applicant.delete()
                     else:
                         doc_est_obj = ApplicationDocument(file=doc_est, application=application,
-                                                         description='صورة عقد التأسيس',
-                                                         file_type=ApplicationDocument.TYPES['IMAGE'])
+                                                          description='صورة عقد التأسيس',
+                                                          file_type=ApplicationDocument.TYPES['IMAGE'])
                         doc_est_obj.save()
                         if not doc_est_obj.id:
                             all_valid = False
@@ -574,15 +585,15 @@ def company_signup(request):
                                                     # TODO: fix the company signup to check for if the cr's general manager has a license or not and if not show error and dont complete the registration -- or if the applicant themselves have a license and if not dont proceed -- thats it cant remember anything else right now :D
 
                                                     acr = ApplicantCommercialRecord.objects.filter(applicant=applicant,
-                                                                                             commercial_record=cr).first()
+                                                                                                   commercial_record=cr).first()
                                                     if acr:
                                                         acr.relation_id = cr_info['RelationID']
                                                         acr.save()
                                                     else:
                                                         acr = ApplicantCommercialRecord.objects.create(applicant=applicant,
-                                                                                             commercial_record=cr,
-                                                                                             relation_id=cr_info[
-                                                                                                 'RelationID'])
+                                                                                                       commercial_record=cr,
+                                                                                                       relation_id=cr_info[
+                                                                                                           'RelationID'])
                                                     if not acr.id:
                                                         all_valid = False
                                                         messages.error(request,
@@ -609,11 +620,22 @@ def company_signup(request):
     msgs = [msg for msg in storage]
     storage.used = True
 
+    context = {'has_cr': has_cr, 'crs': crs, 'error': msgs[0] if msgs else None}
+
     template_name = 'company_signup.html'
     if updating:
         template_name = 'company_view.html'
+    else:
+        if nid:
+            applicant = Applicant.objects.filter(id_number=nid).first()
+            has_indlicense = False
+            if applicant:
+                has_indlicense = applicant.has_license_of_type(ApplicationType.INDIVIDUAL)
 
-    return render(request, template_name, {'has_cr': has_cr, 'crs': crs, 'error': msgs[0] if msgs else None})
+            if not applicant or not has_indlicense:
+                context['msg'] = 'لتتمكن من التقدم لطلب إصدار ترخيص منشآت يجب أن تحصل على رخصة أفراد أولاً.'
+
+    return render(request, template_name, context)
 
 
 @requires_meras_login

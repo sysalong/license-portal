@@ -102,6 +102,9 @@ class Applicant(models.Model):
     def licenses(self):
         return License.objects.filter(application__applicant=self)
 
+    def has_license_of_type(self, _type):
+        return self.applications.filter(status=ApplicationStatus.FINISHED, type=_type).exists()
+
 
 class ApplicationStatus(models.Model):
     """
@@ -265,7 +268,7 @@ class LicenseStatus(models.Model):
 class License(models.Model):
     serial = models.CharField(max_length=255)
     status = models.ForeignKey(LicenseStatus, on_delete=models.SET_NULL, null=True)
-    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='license')
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='licenses')
     created_at = models.DateTimeField(auto_now_add=True)
 
     action_date = models.DateTimeField()  # the date on which the license was issued or renewed

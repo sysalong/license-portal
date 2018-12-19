@@ -10,3 +10,8 @@ __pycache__/
 *.sublime-workspace
 .vscode/*
 license_portal/settings.py
+media
+media/
+media/**
+media/*.*
+moderation/tmp/
