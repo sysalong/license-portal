@@ -13,5 +13,6 @@ license_portal/settings.py
 media
 media/
 media/**
+media/**/*.*
 media/*.*
 moderation/tmp/

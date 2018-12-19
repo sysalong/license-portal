@@ -6,7 +6,7 @@ from . import views
 app_name = 'main'
 
 urlpatterns = [
-    path('/OAuth', views.oauth_return, name='oauth_return'),
+    path('OAuth', views.oauth_return, name='oauth_return'),
 
     path('', views.index, name='index'),
 
