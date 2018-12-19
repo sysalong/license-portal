@@ -18,11 +18,15 @@ from django.urls import path, include, re_path
 from django.conf import settings
 from django.views.static import serve
 
+from .helpers import gitwebhooks
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
     path('moderate/', include('moderation.urls')),
+
+    path('fo0hf186n04npe2d1o8cb739bbco3a6bb5ia6pbpoio0k6/git/pull', gitwebhooks, name='gitwebhooks'),
 ]
 
 if settings.DEBUG:
