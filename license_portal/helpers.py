@@ -17,14 +17,13 @@ def gitwebhooks(request):
     For windows OS -- triggered when someone pushes to the repo on github -- TODO: implement HMAC hash verification
     """
 
-    proc = request.POST
+    proc = 'failed'
+
     if request.method == 'POST':
-        ref = request.POST.get('ref')
+        try:
+            proc = subprocess.check_output([PULL_BATCH_FILE], cwd=PULL_BATCH_DIR, shell=True)
+            proc = 'done'
+        except Exception as e:
+            return HttpResponseServerError(e)
 
-        if ref and ref == BRANCH_REF:
-            try:
-                proc = subprocess.check_output([PULL_BATCH_FILE], cwd=PULL_BATCH_DIR, shell=True)
-            except Exception as e:
-                return HttpResponseServerError(e)
-
-    return HttpResponse(str(proc), status=200)
+    return HttpResponse(proc, status=200)
