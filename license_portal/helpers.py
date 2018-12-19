@@ -5,16 +5,16 @@ from django.http.response import HttpResponseServerError, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 
-PULL_BATCH_FILE = r'gitpull_windows.bat'
-PULL_BATCH_DIR = os.path.join('C:\\', 'Apache24-general', 'htdocs', 'django_apps', 'license_portal', 'license_portal')
+PULL_BATCH_FILE = r'gitpull_linux.sh'
+PULL_BATCH_DIR = os.path.join(r'/home', 'appdep', 'license-portal', 'license_portal')
 
-BRANCH_REF = 'refs/heads/staging'
-
+BRANCH_REF = 'refs/heads/production'
+print(PULL_BATCH_DIR)
 
 @csrf_exempt
 def gitwebhooks(request):
     """
-    For windows OS -- triggered when someone pushes to the repo on github -- TODO: implement HMAC hash verification
+    For linux-based OS -- triggered when someone pushes to the repo on github -- TODO: implement HMAC hash verification
     """
 
     proc = 'failed'
