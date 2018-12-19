@@ -28,7 +28,7 @@ SECRET_KEY = '^0_c%m*frdv5tr(4dmt)m7w(74!l&yvk!4b4#8=)9$6d858_9q'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'statspp.licenses.meras.gov.sa']
+ALLOWED_HOSTS = ['localhost', 'statspp.licenses.meras.gov.sa', '192.168.0.175']
 
 
 # Application definition
