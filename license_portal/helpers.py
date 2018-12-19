@@ -14,14 +14,15 @@ def gitwebhooks(request):
     """
     For windows OS -- triggered when someone pushes to the repo on github
     """
-    try:
-        proc = subprocess.check_output([PULL_BATCH_FILE], cwd=PULL_BATCH_DIR, shell=True)
-    except Exception as e:
-        return HttpResponseServerError(e)
+    if request.method == 'POST':
+        try:
+            proc = subprocess.check_output([PULL_BATCH_FILE], cwd=PULL_BATCH_DIR, shell=True)
+        except Exception as e:
+            return HttpResponseServerError(e)
 
-    # res, err = proc.communicate()
+        # res, err = proc.communicate()
 
-    # if err:
-    #     return HttpResponseServerError(err)
+        # if err:
+        #     return HttpResponseServerError(err)
 
     return HttpResponse(proc, status=200)
