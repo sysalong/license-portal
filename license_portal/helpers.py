@@ -17,7 +17,7 @@ def gitwebhooks(request):
     For windows OS -- triggered when someone pushes to the repo on github -- TODO: implement HMAC hash verification
     """
 
-    proc = ''
+    proc = request.POST.get('ref')
     if request.method == 'POST':
         ref = request.POST.get('ref')
 
