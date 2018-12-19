@@ -2,7 +2,7 @@ import subprocess
 import os
 
 
-PULL_BATCH_PATH = os.path.join('C:', 'Apache24-general', 'htdocs', 'django_apps', 'license_portal', 'license_portal', 'gitpull_windows.bat')
+PULL_BATCH_PATH = os.path.join('C:\\', 'Apache24-general', 'htdocs', 'django_apps', 'license_portal', 'license_portal', 'gitpull_windows.bat')
 print(PULL_BATCH_PATH)
 
 
