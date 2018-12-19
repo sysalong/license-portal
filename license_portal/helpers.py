@@ -9,7 +9,6 @@ PULL_BATCH_FILE = r'gitpull_linux.sh'
 PULL_BATCH_DIR = os.path.join(r'/home', 'appdep', 'license-portal', 'license_portal')
 
 BRANCH_REF = 'refs/heads/production'
-print(PULL_BATCH_DIR)
 
 @csrf_exempt
 def gitwebhooks(request):
