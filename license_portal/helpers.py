@@ -10,7 +10,7 @@ PULL_BATCH_DIR = os.path.join('C:\\', 'Apache24-general', 'htdocs', 'django_apps
 
 def gitwebhooks(request):
     """
-    For windows OS
+    For windows OS -- triggered when someone pushes to the repo on github
     """
     try:
         proc = subprocess.check_output([PULL_BATCH_FILE], cwd=PULL_BATCH_DIR, shell=True)
