@@ -17,8 +17,7 @@ def gitwebhooks(request):
     For windows OS -- triggered when someone pushes to the repo on github -- TODO: implement HMAC hash verification
     """
 
-    proc = request.POST['ref']
-
+    proc = request.POST
     if request.method == 'POST':
         ref = request.POST['ref']
 
@@ -28,4 +27,4 @@ def gitwebhooks(request):
             except Exception as e:
                 return HttpResponseServerError(e)
 
-    return HttpResponse(proc, status=200)
+    return HttpResponse(str(proc), status=200)
