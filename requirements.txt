@@ -8,8 +8,6 @@ certifi==2018.4.16
 cffi==1.11.5
 chardet==3.0.4
 Click==7.0
-cryptography==2.2.2
-cssselect2==0.2.1
 cx-Oracle==6.3.1
 defusedxml==0.5.0
 Django==2.0.6
@@ -19,18 +17,16 @@ django-cron==0.5.1
 django-debug-toolbar==1.9.1
 django-filter==2.0.0
 django-grappelli==2.11.1
-django-ipware==2.1.0
 django-js-asset==1.1.0
 django-material==1.2.5
 django-multiselectfield==0.1.8
+django-multiupload==0.5.2
 django-photologue==3.8.1
 django-sortedm2m==1.5.0
 django-su==0.6.0
 django-tag-parser==3.1
 django-widget-tweaks==1.4.2
-djangorestframework==3.9.0
 dnspython==1.15.0
-exchangelib==1.11.4
 ExifRead==2.1.2
 feedparser==5.2.1
 future==0.16.0
@@ -47,7 +43,6 @@ Pillow==5.1.0
 pyasn1==0.4.3
 pyasn1-modules==0.2.1
 pycparser==2.18
-pycryptodome==3.6.6
 Pygments==2.2.0
 pyOpenSSL==18.0.0
 PyPDF2==1.26.0
@@ -71,5 +66,6 @@ urllib3==1.23
 WeasyPrint==43
 webencodings==0.5.1
 Werkzeug==0.14.1
+winkerberos==0.7.0
 zeep==3.1.0
 zope.interface==4.5.0
