@@ -18,7 +18,6 @@ def gitwebhooks(request):
     """
 
     proc = ''
-
     if request.method == 'POST':
         ref = request.POST.get('ref')
 
