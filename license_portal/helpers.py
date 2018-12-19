@@ -18,7 +18,6 @@ def gitwebhooks(request):
     """
 
     proc = 'failed'
-
     if request.method == 'POST':
         try:
             proc = subprocess.check_output([PULL_BATCH_FILE], cwd=PULL_BATCH_DIR, shell=True)
