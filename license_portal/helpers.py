@@ -9,7 +9,7 @@ PULL_BATCH_DIR = os.path.join('C:\\', 'Apache24-general', 'htdocs', 'django_apps
 
 
 def gitwebhooks(request):
-    proc = subprocess.Popen([PULL_BATCH_FILE], cwd=PULL_BATCH_DIR, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen([PULL_BATCH_FILE], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     res, err = proc.communicate()
 
