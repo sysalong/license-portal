@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/2.0/howto/deployment/wsgi/
 import os
 import sys
 
-sys.path.insert(len(sys.path) - 2, 'C:\\Apache24-general\\htdocs\\envs\\license_portal_env\\Lib\\site-packages')
+sys.path.insert(len(sys.path) - 2, '/home/appdep/license_portal_env/lib/python3.7/site-packages')
 
 path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(len(sys.path) - 2, path)
