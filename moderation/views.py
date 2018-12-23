@@ -5,7 +5,7 @@ import os
 from django.template.loader import get_template
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.contrib.auth import login as auth_login
+from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages, success, error, SUCCESS, ERROR
 from django.core.paginator import Paginator, PageNotAnInteger
@@ -42,72 +42,75 @@ def generate_license_pdf(_license):
 
 # TODO: add has_no_applications decorator to functions before production
 def index(request):
-    access_token = sessdata(request, 'access_token')
+    ##access_token = sessdata(request, 'access_token')
 
-    if access_token:
+    ##if access_token:
         # user_authenticated = EFileService.is_authenticated(access_token)
         # if user_authenticated:
-        user = User.objects.filter(username=sessdata(request, 'user_username'), email=sessdata(request, 'user_email')).first()
-        if not user:
-            user = User.objects.create_user(sessdata(request, 'user_username'), sessdata(request, 'user_email'), sessdata(request, 'user_id') + '+' + sessdata(request, 'user_userid'))
-            user.first_name = sessdata(request, 'user_firstname')
-            user.last_name = sessdata(request, 'user_lastname')
-            user.save()
+        ##user = User.objects.filter(username=sessdata(request, 'user_username'), email=sessdata(request, 'user_email')).first()
+        ##if not user:
+            ##user = User.objects.create_user(sessdata(request, 'user_username'), sessdata(request, 'user_email'), sessdata(request, 'user_id') + '+' + sessdata(request, 'user_userid'))
+            ##user.first_name = sessdata(request, 'user_firstname')
+            ##user.last_name = sessdata(request, 'user_lastname')
+            ##user.save()
 
-        if not request.user.is_authenticated:
-            auth_login(request, user)
+    if not request.user or not request.user.is_authenticated:
+        ##auth_login(request, user)
+        return redirect('/')
 
-        if not user_has_groups_any(user, (OFFICER, MANAGER, PRESIDENT, FINANCE)):
-            # internal_logout(request)
-            return redirect(reverse('main:index'))
-        else:
-            request.session['user_is_moderator'] = True
+    user = request.user
 
-        # TODO: implement filter by application status
-        applications = Application.objects.order_by('-created_at', 'status__value')
-
-        if user_has_group(user, OFFICER):
-            applications = applications.filter(status__value__in=(ApplicationStatus.NEW, ApplicationStatus.IN_REVISION, ApplicationStatus.RETURNED_REVISION, ApplicationStatus.PENDING_PAYMENT, ApplicationStatus.REJECTED, ApplicationStatus.FINISHED, ApplicationStatus.ON_HOLD, ApplicationStatus.PENDING_PAYMENT_APPROVAL, ApplicationStatus.PENDING_PAYMENT_RETURNED, ApplicationStatus.PAYMENT_APPROVED))
-        elif user_has_group(user, MANAGER):
-            applications = applications.filter(status__value__in=(ApplicationStatus.IN_MANAGER, ApplicationStatus.RETURNED_MANAGER, ApplicationStatus.PENDING_PAYMENT, ApplicationStatus.REJECTED, ApplicationStatus.FINISHED, ApplicationStatus.ON_HOLD))
-        elif user_has_group(user, PRESIDENT):
-            applications = applications.filter(status__value__in=(ApplicationStatus.IN_PRESIDENT, ApplicationStatus.PENDING_PAYMENT, ApplicationStatus.REJECTED, ApplicationStatus.FINISHED, ApplicationStatus.ON_HOLD))
-        elif user_has_group(user, FINANCE):
-            applications = applications.filter(status__value__in=(ApplicationStatus.PENDING_PAYMENT_APPROVAL, ApplicationStatus.PENDING_PAYMENT_RETURNED))
-
-        page = request.GET.get('page', 1)
-        paginator = Paginator(applications, 10)
-
-        try:
-            applications = paginator.get_page(page)
-        except PageNotAnInteger:
-            applications = paginator.get_page(1)
-
-        storage = get_messages(request)
-        if storage:
-            msg = [msg for msg in storage][0]
-        storage.used = True
-
-        context = {'applications': applications, 'page': int(page), 'active_link': 'moderate'}
-
-        if storage:
-            if msg.level == SUCCESS:
-                context['success'] = msg
-            elif msg.level == ERROR:
-                context['error'] = msg
-
-        return render(request, 'moderation/dashboard.html', context)
+    if not user_has_groups_any(user, (OFFICER, MANAGER, PRESIDENT, FINANCE)):
+        # internal_logout(request)
+        return redirect(reverse('main:index'))
     else:
-        internal_logout(request)
+        request.session['user_is_moderator'] = True
 
-    return redirect('{}/account/login?client_id={}&returnUrl={}'.format(EFILE_URL, MERAS_CLIENT_ID, reverse('moderation:index')))
+    # TODO: implement filter by application status
+    applications = Application.objects.order_by('-created_at', 'status__value')
+
+    if user_has_group(user, OFFICER):
+        applications = applications.filter(status__value__in=(ApplicationStatus.NEW, ApplicationStatus.IN_REVISION, ApplicationStatus.RETURNED_REVISION, ApplicationStatus.PENDING_PAYMENT, ApplicationStatus.REJECTED, ApplicationStatus.FINISHED, ApplicationStatus.ON_HOLD, ApplicationStatus.PENDING_PAYMENT_APPROVAL, ApplicationStatus.PENDING_PAYMENT_RETURNED, ApplicationStatus.PAYMENT_APPROVED))
+    elif user_has_group(user, MANAGER):
+        applications = applications.filter(status__value__in=(ApplicationStatus.IN_MANAGER, ApplicationStatus.RETURNED_MANAGER, ApplicationStatus.PENDING_PAYMENT, ApplicationStatus.REJECTED, ApplicationStatus.FINISHED, ApplicationStatus.ON_HOLD))
+    elif user_has_group(user, PRESIDENT):
+        applications = applications.filter(status__value__in=(ApplicationStatus.IN_PRESIDENT, ApplicationStatus.PENDING_PAYMENT, ApplicationStatus.REJECTED, ApplicationStatus.FINISHED, ApplicationStatus.ON_HOLD))
+    elif user_has_group(user, FINANCE):
+        applications = applications.filter(status__value__in=(ApplicationStatus.PENDING_PAYMENT_APPROVAL, ApplicationStatus.PENDING_PAYMENT_RETURNED))
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(applications, 10)
+
+    try:
+        applications = paginator.get_page(page)
+    except PageNotAnInteger:
+        applications = paginator.get_page(1)
+
+    storage = get_messages(request)
+    if storage:
+        msg = [msg for msg in storage][0]
+    storage.used = True
+
+    context = {'applications': applications, 'page': int(page), 'active_link': 'moderate'}
+
+    if storage:
+        if msg.level == SUCCESS:
+            context['success'] = msg
+        elif msg.level == ERROR:
+            context['error'] = msg
+
+    return render(request, 'moderation/dashboard.html', context)
+    ##else:
+        ##internal_logout(request)
+
+    ##return redirect('{}/account/login?client_id={}&returnUrl={}'.format(EFILE_URL, MERAS_CLIENT_ID, reverse('moderation:index')))
 
 
 @moderators_only
 def licenses(request):
     if not request.user.is_authenticated:
-        return redirect('{}/account/login?client_id={}&returnUrl={}'.format(EFILE_URL, MERAS_CLIENT_ID,
-                                                                            reverse('moderation:index')))
+        return redirect(reverse('main:index'))
+        ##return redirect('{}/account/login?client_id={}&returnUrl={}'.format(EFILE_URL, MERAS_CLIENT_ID, reverse('moderation:index')))
 
     if not user_has_groups_any(request.user, (OFFICER, MANAGER, PRESIDENT, FINANCE)):
         return redirect(reverse('main:index'))
@@ -142,11 +145,36 @@ def licenses(request):
 
 
 def login(request):
-    return render(request, 'moderation/login.html')
+    if request.user and request.user.is_authenticated:
+        return redirect(reverse('main:index'))
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        if not username or not password:
+            return redirect('/')
+
+        user = authenticate(request, username=username, password=password)
+        if user:
+            if user_has_groups_any(user, (OFFICER, MANAGER, PRESIDENT, FINANCE)):
+                auth_login(request, user)
+                return redirect(reverse('moderation:index'))
+            else:
+                error(request, 'عفواً، لا تتوفر لديك الصلاحيات اللازمة للدخول')
+        else:
+            error(request, 'خطأ في اسم المستخدم أو كلمة المرور')
+
+    context = {}
+    msgs = get_messages(request)
+    if msgs:
+        context['error'] = [msg for msg in msgs][0]
+
+    return render(request, 'moderation/login.html', context)
 
 
 def admin(request):
-    return render(request, 'moderation/login.html')
+    return redirect(reverse('moderation:index'))
 
 
 @moderators_only

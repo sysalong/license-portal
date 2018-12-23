@@ -8,15 +8,20 @@
 		<div class="moderation-login-form">
 			<h4>تسجيل دخول الإدارة</h4>
             <form method="post">
+                {% csrf_token %}
                 <div class="form-group">
-                    <input type="text" class="form-control" id="input-username" data-rule-required="true" data-msg-required="ادخل اسم المستخدم الخاص بك" placeholder="اسم المستخدم">
+                    <input type="text" class="form-control" name="username" id="input-username" data-rule-required="true" data-msg-required="ادخل اسم المستخدم الخاص بك" placeholder="اسم المستخدم">
                     <div class="help-block"></div>
                 </div>
 
                 <div class="form-group">
-                    <input type="password" class="form-control" id="input-password" data-rule-required="true" data-msg-required="ادخل كلمة المرور الخاصة بك" placeholder="كلمة المرور">
+                    <input type="password" class="form-control" name="password" id="input-password" data-rule-required="true" data-msg-required="ادخل كلمة المرور الخاصة بك" placeholder="كلمة المرور">
                     <div class="help-block"></div>
                 </div>
+
+                {% if error %}
+                    <label class="error" style="display: block;">{{ error }}</label>
+                {% endif %}
 
                 <button type="submit" style="background-color: #353C43;margin: 10px;" class="btn" ripple="ripple">تسجيل الدخول</button>
             </form>
