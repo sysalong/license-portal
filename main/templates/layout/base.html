@@ -79,9 +79,15 @@
                 </ul>
                 <ul class="pull-right list-inline">
 
-                    {% if request.session.user_id %}
+                    {% if request.session.user_id or request.user and request.session.user_is_moderator %}
                         <li class="dropdown">
-                            <a href="#!" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ request.session.user_fullname }} <span class="caret"></span></a>
+                            <a href="#!" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                {% if request.session.user_is_moderator %}
+                                    {{ request.user.username }}
+                                {% else %}
+                                    {{ request.session.user_fullname }}
+                                {% endif %}
+                                <span class="caret"></span></a>
                             <ul class="dropdown-menu pull-right">
                                 <li>
                                     <a href="{% url 'main:logout' %}">تسجيل الخروج</a>
