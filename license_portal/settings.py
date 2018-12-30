@@ -80,24 +80,24 @@ WSGI_APPLICATION = 'license_portal.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.oracle',
-    #     'NAME': 'cdsapl',
-    #     'USER': 'oyounis[stat_services]',
-    #     'PASSWORD': 'oyounis123',
-    #     'HOST': '192.168.0.115',
-    #     'PORT': 1521,
-    #     'OPTIONS': {
-    #         'threaded': True,
-    #         },
-    # }
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'license_portal',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': '127.0.0.1',
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': 'cdsapl',
+        'USER': 'oyounis[stat_services]',
+        'PASSWORD': 'oyounis123',
+        'HOST': '192.168.0.115',
+        'PORT': 1521,
+        'OPTIONS': {
+            'threaded': True,
+            },
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'license_portal',
+    #     'USER': 'root',
+    #     'PASSWORD': 'root',
+    #     'HOST': '127.0.0.1',
+    # }
 }
 
 
