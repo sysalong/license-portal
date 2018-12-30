@@ -111,4 +111,4 @@ def cr_data(request):
         if not crdata:
             return JsonResponse({'status': 0, 'msg': 'حدث خطأ في خدمة استرجاع البيانات'})
 
-        return JsonResponse({'status': 1, 'data': {'crdata': crdata, 'cr': hit}})
+        return JsonResponse({'status': 1, 'data': {'crdata': dict(crdata), 'cr': hit}})
