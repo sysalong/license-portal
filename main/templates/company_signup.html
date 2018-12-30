@@ -82,31 +82,38 @@
 
                     <div class="form-group">
                         <label class="control-label"> رقم السجل التجاري <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i></label>
-                        <div class="cr-reader-wrapper">
+                        {% comment %}<div class="cr-reader-wrapper">
                             <div class="cr-reader">
                                 <input type="text" class="form-control" id="cr-value" value="" placeholder=" أدخل رقم السجل التجاري " data-rule-required="true" data-msg-required="برجاء ادخال رقم السجل التجاري" data-rule-pattern="[0-9]{10}" data-msg-pattern="أدخل رقم سجل تجاري صحيح" maxlength="10">
                                 <i class="fa fa-check-circle input-verified" style="display: none;"></i>
                                 <img src="{% static 'img/ajax-loader.gif' %}" alt=" " class="input-loader" style="display: none">
                             </div>
                             <button type="button" class="btn btn-primary cr-read-btn">تحقق</button>
-                        </div>
+                        </div>{% endcomment %}
+                        <select class="form-control cr-select">
+                                <option value="">اختر السجل التجاري</option>
+                            {% for cr in crs %}
+                                <option value="{{ cr.CR }}">{{ cr.CR }}</option>
+                            {% endfor %}
+                        </select>
                         <div class="help-block cr-help-block"></div>
                     </div>
 
 
                     <div id="docs" style="display: none">
                         <table id="cr-info" class="table">
-                                <thead>
-                                    <tr>
-                                        <th>رقم السجل التجاري</th>
-                                        <th>نوع المنشأة</th>
-                                        <th>المنصب</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                            <thead>
+                                <tr>
+                                    <th>رقم السجل التجاري</th>
+                                    <th>اسم المنشآة</th>
+                                    <th>نوع المنشأة</th>
+                                    <th>المنصب</th>
+                                </tr>
+                            </thead>
+                            <tbody>
 
-                                </tbody>
-                            </table>
+                            </tbody>
+                        </table>
 
                         <fieldset>
                             <legend>المستندات المطلوبة</legend>
@@ -239,6 +246,7 @@
                             <thead>
                                 <tr>
                                     <th>رقم السجل التجاري</th>
+                                    <th>اسم المنشآة</th>
                                     <th>نوع المنشأة</th>
                                     <th>المنصب</th>
                                 </tr>
@@ -464,6 +472,54 @@
                     e.preventDefault();
                     return false;
                 }
+            });
+
+            var $crselect = $('.cr-select');
+
+            $crselect.change(function(){
+                var val = $crselect.val();
+                if (val.trim() == ""){
+                    $('.cr-help-block').html('');
+                    $('[name=_crno]').val('');
+                    crValid = false;
+                    $('#docs').slideUp('fast');
+                    return;
+                }
+
+                fetch('{% url 'main:api:cr_data' %}', { method: 'POST', body: JSON.stringify({ 'crno': val }), headers: { 'X-CSRFToken': '{{ csrf_token }}' } })
+                        .then(function(res){
+                            return res.json();
+                        })
+                        .then(function(res){
+                            if (res.status == 0){
+                                $('.cr-help-block').html(res.msg);
+                                $('.input-loader').hide();
+                            }
+                            else if (res.status == 1){
+                                var cr = res.data.cr;
+                                var crdata = res.data.crdata;
+                                {#$crselect[0].readonly = true;#}
+                                {#$crselect.attr('readonly', 'readonly');#}
+                                $('[name=_crno]').val(cr.CR);
+                                crValid = true;
+                                //$('.cr-read-btn').hide();
+                                //$('.cr-read-btn').attr('disabled', 'disabled');
+                                $('#cr-info').find('tbody').html('<tr>' +
+                                    '<td>' + cr.CR + '</td>' +
+                                    '<td>' + crdata.Name + '</td>' +
+                                    '<td>' + cr.BusType + '</td>' +
+                                    '<td>' + cr.RelationName + '</td>' +
+                                    '</tr>');
+                                $('#review-cr-info').find('tbody').html('<tr>' +
+                                    '<td>' + cr.CR + '</td>' +
+                                    '<td>' + crdata.Name + '</td>' +
+                                    '<td>' + cr.BusType + '</td>' +
+                                    '<td>' + cr.RelationName + '</td>' +
+                                    '</tr>');
+                                $('#docs').slideDown('fast');
+                                updateInputVerifyIcon();
+                            }
+                        });
             });
         });
     </script>
