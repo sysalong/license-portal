@@ -14,7 +14,6 @@ def delete_expired_applications():
     two_months = 2 * 30
     today = datetime.datetime.today()
 
-    # TODO: ask:: which statuses can expire
     apps = Application.objects.exclude(status__value__in=(ApplicationStatus.FINISHED, ApplicationStatus.REJECTED, ApplicationStatus.ON_HOLD))
     for app in apps:
         if app.created_at + datetime.timedelta(days=two_months) < today:

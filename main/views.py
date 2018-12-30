@@ -629,25 +629,25 @@ def company_signup(request):
     msgs = [msg for msg in storage]
     storage.used = True
 
-    has_cr = True  # TODO: DEV ONLY
-    crs = [  # TODO: DEV ONLY
-        {
-          'BusType': 'تــــوصية بســـيطة',
-          'BusTypeID': 201,
-          'CR': '5950011517',
-          'ID': '1024901843',
-          'RelationID': 3,
-          'RelationName': 'شريك متضامن'
-        },
-        {
-            'BusType': 'تــــوصية بســـdيطة',
-            'BusTypeID': 201,
-            'CR': '5951111517',
-            'ID': '1024901843',
-            'RelationID': 3,
-            'RelationName': 'شريك متضامن'
-        }
-    ]
+    # has_cr = True  # TODO: DEV ONLY
+    # crs = [  # TODO: DEV ONLY
+    #     {
+    #       'BusType': 'تــــوصية بســـيطة',
+    #       'BusTypeID': 201,
+    #       'CR': '5950011517',
+    #       'ID': '1024901843',
+    #       'RelationID': 3,
+    #       'RelationName': 'شريك متضامن'
+    #     },
+    #     {
+    #         'BusType': 'تــــوصية بســـdيطة',
+    #         'BusTypeID': 201,
+    #         'CR': '5951111517',
+    #         'ID': '1024901843',
+    #         'RelationID': 3,
+    #         'RelationName': 'شريك متضامن'
+    #     }
+    # ]
 
     context = {'has_cr': has_cr, 'crs': crs, 'error': msgs[0] if msgs else None}
 
@@ -664,8 +664,8 @@ def company_signup(request):
             if not applicant or not has_indlicense:
                 context['msg'] = 'لتتمكن من التقدم لطلب إصدار ترخيص منشآت يجب أن تحصل على رخصة أفراد أولاً.'
 
-    context['msg'] = None  # TODO: DEV ONLY
-    has_indlicense = False  # TODO: DEV ONLY
+    # context['msg'] = None  # TODO: DEV ONLY
+    # has_indlicense = False  # TODO: DEV ONLY
 
     return render(request, template_name, context)
 
