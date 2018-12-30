@@ -649,7 +649,7 @@ def company_signup(request):
     #     }
     # ]
 
-    context = {'has_cr': has_cr, 'crs': crs, 'error': msgs[0] if msgs else None}
+    context = {'has_cr': has_cr, 'crs': crs, 'error': msgs[0] if msgs else None, 'has_indlicense': False}
 
     template_name = 'company_signup.html'
     if updating:
@@ -660,6 +660,7 @@ def company_signup(request):
             has_indlicense = False
             if applicant:
                 has_indlicense = applicant.has_license_of_type(ApplicationType.INDIVIDUAL)
+                context['has_indlicense'] = has_indlicense
 
             if not applicant or not has_indlicense:
                 context['msg'] = 'لتتمكن من التقدم لطلب إصدار ترخيص منشآت يجب أن تحصل على رخصة أفراد أولاً.'
