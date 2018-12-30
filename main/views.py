@@ -3,7 +3,7 @@ from django.http.response import HttpResponseBadRequest
 from django.contrib import messages
 
 from license_portal.settings import EFILE_URL, MERAS_CLIENT_ID, MERAS_RETURN_URL
-from .decorators import requires_meras_login, terms_agreed, requires_finished_with_success, user_has_no_applications
+from .decorators import requires_meras_login, terms_agreed, requires_finished_with_success, user_has_no_applications, redirect_moderators
 from .helpers import load_user_data, internal_logout, sessdata, verify_image, verify_pdf, action_history_log, user_has_groups_any
 from .services import EFileService, WathiqService
 from .models import *
@@ -11,6 +11,7 @@ from .models import *
 from moderation.views import generate_license_pdf
 
 
+@redirect_moderators
 def oauth_return(request):
     access_token = request.GET.get('access_token')
     return_url = request.GET.get('returnUrl')
@@ -41,6 +42,7 @@ def oauth_return(request):
     return redirect(MERAS_RETURN_URL)
 
 
+@redirect_moderators
 @requires_meras_login
 def index(request):
     return redirect(reverse('main:dashboard'))
@@ -58,6 +60,7 @@ def index(request):
     #         return redirect(reverse('main:login'))
 
 
+@redirect_moderators
 @requires_meras_login
 def dashboard(request):
     user = Applicant.objects.filter(userid=sessdata(request, 'user_userid')).first()
@@ -74,6 +77,7 @@ def dashboard(request):
                                               'active_link': 'applications'})
 
 
+@redirect_moderators
 @requires_meras_login
 def licenses(request):
     user = Applicant.objects.filter(userid=sessdata(request, 'user_userid')).first()
@@ -83,6 +87,7 @@ def licenses(request):
     return render(request, 'licenses.html', {'licenses': user.licenses.all(), 'active_link': 'licenses'})
 
 
+@redirect_moderators
 def login(request):
     if sessdata(request, 'user_userid'):
         return redirect(reverse('main:index'))
@@ -112,6 +117,7 @@ def logout(request):
     return redirect(reverse('main:login'))
 
 
+@redirect_moderators
 @requires_meras_login
 def terms(request):
     # access_token = request.session.get('access_token')
@@ -125,6 +131,7 @@ def terms(request):
     return render(request, 'terms.html')
 
 
+@redirect_moderators
 @requires_meras_login
 @terms_agreed
 def choose_type(request):
@@ -141,6 +148,7 @@ def choose_type(request):
     return render(request, 'choose_type.html', context)
 
 
+@redirect_moderators
 @requires_meras_login
 @terms_agreed
 @user_has_no_applications
@@ -319,6 +327,7 @@ def individual_signup(request):
     return render(request, template_name, {'error': msgs[0] if msgs else None})
 
 
+@redirect_moderators
 @requires_meras_login
 @terms_agreed
 # @user_has_no_applications
@@ -620,6 +629,26 @@ def company_signup(request):
     msgs = [msg for msg in storage]
     storage.used = True
 
+    has_cr = True  # TODO: DEV ONLY
+    crs = [  # TODO: DEV ONLY
+        {
+          'BusType': 'تــــوصية بســـيطة',
+          'BusTypeID': 201,
+          'CR': '5950011517',
+          'ID': '1024901843',
+          'RelationID': 3,
+          'RelationName': 'شريك متضامن'
+        },
+        {
+            'BusType': 'تــــوصية بســـdيطة',
+            'BusTypeID': 201,
+            'CR': '5951111517',
+            'ID': '1024901843',
+            'RelationID': 3,
+            'RelationName': 'شريك متضامن'
+        }
+    ]
+
     context = {'has_cr': has_cr, 'crs': crs, 'error': msgs[0] if msgs else None}
 
     template_name = 'company_signup.html'
@@ -635,9 +664,13 @@ def company_signup(request):
             if not applicant or not has_indlicense:
                 context['msg'] = 'لتتمكن من التقدم لطلب إصدار ترخيص منشآت يجب أن تحصل على رخصة أفراد أولاً.'
 
+    context['msg'] = None  # TODO: DEV ONLY
+    has_indlicense = False  # TODO: DEV ONLY
+
     return render(request, template_name, context)
 
 
+@redirect_moderators
 @requires_meras_login
 @requires_finished_with_success
 def success(request):
@@ -646,6 +679,7 @@ def success(request):
     return render(request, 'request_success.html', {'application_type': application_type, 'ApplicationType': ApplicationType})
 
 
+@redirect_moderators
 @requires_meras_login
 def view_application(request, id):
     applicant = Applicant.objects.filter(id_number=sessdata(request, 'user_id')).first()
@@ -675,6 +709,7 @@ def view_application(request, id):
         return render(request, 'company_view.html', context)
 
 
+@redirect_moderators
 @requires_meras_login
 def payment_directions(request, id):
     applicant = Applicant.objects.filter(id_number=sessdata(request, 'user_id')).first()
@@ -743,6 +778,7 @@ def payment_directions(request, id):
     return render(request, template_name, {'application': application, 'price': price, 'error': msgs[0] if msgs else None})
 
 
+@redirect_moderators
 @requires_meras_login
 def download_license(request, id):
     applicant = Applicant.objects.filter(id_number=sessdata(request, 'user_id')).first()

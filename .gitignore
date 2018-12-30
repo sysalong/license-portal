@@ -13,5 +13,9 @@ license_portal/settings.py
 media
 media/
 media/**
+media/**/*.*
 media/*.*
 moderation/tmp/
+
+main/migrations/__pycache__
+main/migrations/__pycache__/*

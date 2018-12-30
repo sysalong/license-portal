@@ -66,3 +66,15 @@ def user_has_no_applications(func):
         return func(*args, **kwargs)
 
     return wrapper
+
+
+def redirect_moderators(func):
+    def wrapper(*args, **kwargs):
+        request = args[0]
+
+        if request and request.user and request.user.is_authenticated and user_has_groups_any(request.user, (OFFICER, MANAGER, PRESIDENT, OFFICER)):
+            return redirect(reverse('moderation:index'))
+
+        return func(*args, **kwargs)
+
+    return wrapper
