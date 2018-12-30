@@ -34,7 +34,7 @@ def generate_license_pdf(_license):
         f.write(html)
 
     try:
-        HTML(filepath).write_pdf(pdffilepath)
+        HTML(filepath, encoding='utf8').write_pdf(pdffilepath)
         return os.path.join(MEDIA_URL, 'licenses', filename).replace('\\', '/')
     except:
         return False
