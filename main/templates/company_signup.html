@@ -80,7 +80,7 @@
 
                     <hr>
 
-                    <div class="form-group">
+                    <div class="form-group" style="position: relative;">
                         <label class="control-label"> رقم السجل التجاري <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i></label>
                         {% comment %}<div class="cr-reader-wrapper">
                             <div class="cr-reader">
@@ -96,6 +96,7 @@
                                 <option value="{{ cr.CR }}">{{ cr.CR }}</option>
                             {% endfor %}
                         </select>
+                        <img src="{% static 'img/ajax-loader.gif' %}" alt=" " class="input-loader" style="display: none">
                         <div class="help-block cr-help-block"></div>
                     </div>
 
@@ -475,6 +476,17 @@
             });
 
             var $crselect = $('.cr-select');
+            var $inputloader = $('.input-loader');
+
+            function activateInputLoader() {
+                $crselect[0].disabled = true;
+                $inputloader.show();
+            }
+
+            function deactivateInputLoader() {
+                $crselect[0].disabled = false;
+                $inputloader.hide();
+            }
 
             $crselect.change(function(){
                 var val = $crselect.val();
@@ -486,8 +498,11 @@
                     return;
                 }
 
+                activateInputLoader();
+
                 fetch('{% url 'main:api:cr_data' %}', { method: 'POST', body: JSON.stringify({ 'crno': val }), headers: { 'X-CSRFToken': '{{ csrf_token }}' } })
                         .then(function(res){
+                            deactivateInputLoader();
                             return res.json();
                         })
                         .then(function(res){
