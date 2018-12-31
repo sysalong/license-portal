@@ -460,9 +460,8 @@ td.history-date-field {
 .input-verified, .input-loader {
     position: absolute;
     right: 100%;
-    top: 50%;
+    top: 33px;
     margin-right: 8px;
-    margin-top: 4px;
 }
 .input-verified {
     color: #2FA35D;
