@@ -330,7 +330,6 @@ def individual_signup(request):
 @redirect_moderators
 @requires_meras_login
 @terms_agreed
-# @user_has_no_applications
 def company_signup(request):
     def verify_cr(cr):
         crs = sessdata(request, 'crs')
@@ -662,8 +661,8 @@ def company_signup(request):
                 has_indlicense = applicant.has_license_of_type(ApplicationType.INDIVIDUAL)
                 context['has_indlicense'] = has_indlicense
 
-            if not applicant or not has_indlicense:
-                context['msg'] = 'لتتمكن من التقدم لطلب إصدار ترخيص منشآت يجب أن تحصل على رخصة أفراد أولاً.'
+            if not applicant or not has_indlicense or not applicant.has_valid_license_of_type(ApplicationType.INDIVIDUAL):
+                context['msg'] = 'لتتمكن من التقدم لطلب إصدار ترخيص منشآت يجب أن يتوفر لديك رخصة أفراد سارية أولاً.'
 
     # context['msg'] = None  # TODO: DEV ONLY
     # has_indlicense = False  # TODO: DEV ONLY
