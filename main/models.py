@@ -103,7 +103,13 @@ class Applicant(models.Model):
         return License.objects.filter(application__applicant=self)
 
     def has_license_of_type(self, _type):
-        return self.applications.filter(status=ApplicationStatus.FINISHED, type=_type).exists()
+        return self.licenses.filter(application__type=_type).exists()
+
+    def get_licenses_of_type(self, _type):
+        return self.licenses.filter(application__type=_type)
+
+    def has_valid_license_of_type(self, _type):
+        return list(filter(lambda l: l.is_expired(), self.get_licenses_of_type(_type))) == []
 
 
 class ApplicationStatus(models.Model):
@@ -283,6 +289,9 @@ class License(models.Model):
     def expiration_date(self):
         years_in_days = self.duration * 365
         return self.action_date + timedelta(days=years_in_days)
+
+    def is_expired(self):
+        return self.expiration_date < datetime.today()
 
 
 PRICES = {
