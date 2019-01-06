@@ -243,6 +243,13 @@
 <script>
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
+
+        $('.submit-loading').parents('form').submit(function(){
+            var $this = $(this);
+            if($this.valid()) {
+                $this.find('.submit-loading').addClass('loading');
+            }
+        });
     });
 </script>
 

@@ -51,69 +51,61 @@
                     {% if application.status.value != ApplicationStatus.REJECTED %}
                         <fieldset>
                             <legend>المستندات المطلوبة</legend>
-                            <div class="form-group">
-                                <label class="control-label"> صورة الهوية <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
-                                <div class="input-group browse-button">
-                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
-                                  <span class="input-group-btn">
-                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-photo-o"></i> اختر</button>
-                                  </span>
-                                </div><!-- /input-group -->
-                                <input type="file" name="doc-id" accept="image/*" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
-                                <div class="help-block"></div>
-                            </div>
 
-                            <div class="form-group">
-                                <label class="control-label"> صورة المؤهل الأكاديمي <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
-                                <div class="input-group browse-button">
-                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
-                                  <span class="input-group-btn">
-                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-photo-o"></i> اختر</button>
-                                  </span>
-                                </div><!-- /input-group -->
-                                <input type="file" name="doc-graduation" accept="image/*" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
-                                <div class="help-block"></div>
-                            </div>
+                            {% for doc in docs %}
+                                {% if doc.file_type == TYPES.IMAGE %}
+                                    <div class="form-group">
+                                        <label class="control-label"> {{ doc.description }}
+                                        {% if doc.is_required %}
+                                            <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i>
+                                        {% endif %}
+                                        </label>
+                                        <div class="input-group browse-button">
+                                          <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
+                                          <span class="input-group-btn">
+                                            <button class="btn btn-primary" type="button"><i class="fa fa-file-photo-o"></i> اختر</button>
+                                          </span>
+                                        </div><!-- /input-group -->
+                                        <input type="hidden" name="returned-files[]" value="{{ doc.id }}">
+                                        <input type="hidden" name="returned-file-type-{{ doc.id }}" value="{{ doc.file_type }}">
+                                        <input type="file" name="returned-file-{{ doc.id }}" accept="image/*"
+                                        {% if doc.is_required %}
+                                            data-rule-required="true" data-msg-required="برجاء اختيار ملف"
+                                        {% endif %}
+                                        >
+                                        <div><span>الملف الحالي:</span> <a href="{% url 'main:preview_file' doc.id %}" class="btn-link">{{ doc.basename }} (عرض الملف)</a></div>
+                                        <div class="help-block"></div>
+                                    </div>
+                                {% elif doc.file_type == TYPES.PDF %}
+                                    <div class="form-group">
+                                        <label class="control-label"> {{ doc.description }}   <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملف من صيغة PDF"></i>
+                                            {% if doc.is_required %}
+                                                <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i>
+                                            {% endif %}
+                                        </label>
+                                        <div class="input-group browse-button">
+                                          <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
+                                          <span class="input-group-btn">
+                                            <button class="btn btn-primary" type="button"><i class="fa fa-file-pdf-o"></i> اختر</button>
+                                          </span>
+                                        </div><!-- /input-group -->
+                                        <input type="hidden" name="returned-files[]" value="{{ doc.id }}">
+                                        <input type="hidden" name="returned-file-type-{{ doc.id }}" value="{{ doc.file_type }}">
+                                        <input type="file" name="returned-file-{{ doc.id }}" accept="application/pdf"
+                                        {% if doc.is_required %}
+                                            data-rule-required="true" data-msg-required="برجاء اختيار ملف"
+                                        {% endif %}
+                                        >
+                                        <div><span>الملف الحالي:</span> <a href="{% url 'main:preview_file' doc.id %}" class="btn-link">{{ doc.basename }} (عرض الملف)</a></div>
+                                        <div class="help-block"></div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
 
-                            <div class="form-group">
-                                <label class="control-label"> شهادات الخبرات (متعددة)   <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملفات من صيغة PDF"></i> <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
-                                <div class="input-group browse-button">
-                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
-                                  <span class="input-group-btn">
-                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-pdf-o"></i> اختر</button>
-                                  </span>
-                                </div><!-- /input-group -->
-                                <input type="file" name="doc-expertise" multiple accept="application/pdf" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
-                                <div class="help-block"></div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label"> السيرة الذاتية   <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملف من صيغة PDF"></i> <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
-                                <div class="input-group browse-button">
-                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
-                                  <span class="input-group-btn">
-                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-pdf-o"></i> اختر</button>
-                                  </span>
-                                </div><!-- /input-group -->
-                                <input type="file" name="doc-resume" accept="application/pdf" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
-                                <div class="help-block"></div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label"> مستندات إضافية   <i class="fa fa-question-circle" data-toggle="tooltip" data-title="ملف مجمع من صيغة PDF"></i> </label>
-                                <div class="input-group browse-button">
-                                  <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
-                                  <span class="input-group-btn">
-                                    <button class="btn btn-primary" type="button"><i class="fa fa-file-pdf-o"></i> اختر</button>
-                                  </span>
-                                </div><!-- /input-group -->
-                                <input type="file" name="doc-additional" accept="application/pdf">
-                                <div class="help-block"></div>
-                            </div>
                         </fieldset>
 
                         <div class="form-submission-wrapper" style="margin-bottom: 15px; text-align: center">
-                            <button type="submit" class="btn btn-success" ripple="ripple"><i class="fa fa-paper-plane"></i> تحديث الطلب </button>
+                            <button type="submit" class="btn btn-success submit-loading" ripple="ripple"><i class="fa fa-paper-plane"></i> تحديث الطلب </button>
                             <!-- <button type="button" class="btn btn-warning" ripple="ripple"><i class="fa fa-paper-plane"></i> حفظ </button> -->
                         </div>
                     {% endif %}

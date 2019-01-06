@@ -189,12 +189,17 @@ def view_application(request, id):
     applicant = application.applicant
     application_type = application.type.value
 
+    returned_q = application.documents.filter(returned=True)
+    returned_docs = list(returned_q.values_list('id', flat=True))
+    returned_q.update(returned=False)
+
     context = {'application': application,
                'ApplicationDocument': ApplicationDocument,
                'ApplicationStatus': ApplicationStatus,
                'user_role': request.user.groups.first().name,
                'application_type': application_type,
-               'ApplicationType': ApplicationType}
+               'ApplicationType': ApplicationType,
+               'returned_docs': returned_docs}
 
     if application_type == ApplicationType.COMPANY:
         context['CR'] = application.commercial_record
@@ -251,6 +256,11 @@ def action_application(request, id):
             elif action == 'reject':
                 if user_has_group(request.user, OFFICER):
                     new_status = ApplicationStatus.RETURNED
+                    returned_files = request.POST.getlist('returned-files[]')
+                    if returned_files != []:
+                        application.documents.filter(id__in=returned_files).update(returned=True)
+                    else:
+                        application.documents.all().update(returned=True)
                 elif user_has_group(request.user, MANAGER):
                     new_status = ApplicationStatus.RETURNED_REVISION
                 elif user_has_group(request.user, PRESIDENT):
