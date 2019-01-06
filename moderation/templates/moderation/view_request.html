@@ -131,9 +131,17 @@
             <div class="col-sm-12">
                 {% for doc in application.documents.all %}
                     {% if doc.file_type == ApplicationDocument.TYPES.IMAGE %}
-                        <div class="col-sm-2 application-document-icon application-document-icon-img" style="background-image: url('{{ doc.file.url }}')" data-toggle="tooltip" data-title="عرض الملف" onclick="displayViewer('image', '{{ doc.file.url }}', '{{ doc.description }}')"><span class="file-preview-description">{{ doc.description }}</span></div>
+                        <div class="col-md-2 col-sm-4 col-xs-5 application-document-icon application-document-icon-img" style="background-image: url('{{ doc.file.url }}')" data-toggle="tooltip" data-title="عرض الملف" onclick="displayViewer('image', '{{ doc.file.url }}', '{{ doc.description }}')">
+                            {% if doc.id in returned_docs %}
+                                <span class="updated-notifier"></span>
+                            {% endif %}
+                            <span class="file-preview-description"><small>({{ forloop.counter }})</small> {{ doc.description }}</span></div>
                     {% elif doc.file_type == ApplicationDocument.TYPES.PDF %}
-                        <div class="col-sm-2 application-document-icon application-document-icon-pdf" data-toggle="tooltip" data-title="عرض الملف" onclick="displayViewer('pdf', '{{ doc.file.url }}', '{{ doc.description }}')"><i class="fa fa-file-pdf-o"></i><span class="file-preview-description">{{ doc.description }}</span></div>
+                        <div class="col-md-2 col-sm-4 col-xs-5 application-document-icon application-document-icon-pdf" data-toggle="tooltip" data-title="عرض الملف" onclick="displayViewer('pdf', '{{ doc.file.url }}', '{{ doc.description }}')"><i class="fa fa-file-pdf-o"></i>
+                            {% if doc.id in returned_docs %}
+                                <span class="updated-notifier"></span>
+                            {% endif %}
+                            <span class="file-preview-description"><small>({{ forloop.counter }})</small> {{ doc.description }}</span></div>
                     {% endif %}
                 {% endfor %}
             </div>
@@ -193,7 +201,9 @@
                     <br>
 
                     {% if user_role == 'officer' %}
-                        <small>سيتم إرجاع الطلب للمتقدم به مع ذكر السبب</small>
+                        <small>سيتم إرجاع الطلب للمتقدم به مع ذكر السبب وإتاحة له الفرصة لإعادة رفع المستندات المختارة أدناه
+                        <br>
+                        (في حالة عدم اختيار أياً من الملفات التالية سيتم طلب إعادة رفع جميع المستندات من المتقدم)</small>
                     {% elif user_role == 'manager' %}
                         <small>سيتم إرجاع الطلب لمسؤول التراخيص للمراجعة مع ذكر السبب</small>
                     {% elif user_role == 'president' %}
@@ -202,7 +212,28 @@
                         <small>سيتم إرجاع الطلب للمتقدم به مع ذكر السبب وإتاحة الإمكانية لإعادة رفع الإيصال <u>فقط</u></small>
                     {% endif %}
                 </p>
-                <textarea class="form-control" name="reason" rows="5" data-rule-required="true" data-msg-required="أدخل سبب الرفض"></textarea>
+
+                {% if user_role == 'officer' %}
+                    <div class="return-file-selector">
+                        <div class="row" style="width: 100%;margin-bottom: 20px;">
+                            <div class="col-sm-12">
+                                {% for doc in application.documents.all %}
+                                    {% if doc.file_type == ApplicationDocument.TYPES.IMAGE %}
+
+                                        <div class="col-md-2 col-sm-4 col-xs-5 application-document-icon-mini application-document-icon-img" style="background-image: url('{{ doc.file.url }}')" data-toggle="tooltip" data-title="اختر الملف" onclick="selectFileReturn(this, {{ doc.id }})" data-selected="false"><span class="file-preview-description"><small>({{ forloop.counter }})</small> {{ doc.description }}</span></div>
+
+                                    {% elif doc.file_type == ApplicationDocument.TYPES.PDF %}
+
+                                        <div class="col-md-2 col-sm-4 col-xs-5 application-document-icon-mini application-document-icon-pdf" data-toggle="tooltip" data-title="اختر الملف" onclick="selectFileReturn(this, {{ doc.id }})" data-selected="false"><i class="fa fa-file-pdf-o"></i><span class="file-preview-description"><small>({{ forloop.counter }})</small> {{ doc.description }}</span></div>
+
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <textarea class="form-control" placeholder="أدخل السبب" name="reason" rows="5" data-rule-required="true" data-msg-required="أدخل سبب الرفض"></textarea>
 
                 <small>(اضغط موافقة مرة أخرى للتأكيد)</small>
             </div>
@@ -298,7 +329,7 @@
                 <p>{{ application.applicant.countryid }}</p>
             </div>
 
-            {% if applicant_type == ApplicantType.COMPANY %}
+            {% if application_type == ApplicationType.COMPANY %}
                 <div class="info-item">
                     <label>رقم السجل التجاري:</label>
                     <p>{{ CR.number }}</p>
@@ -360,7 +391,7 @@
                 <p>{{ application.applicant.countryid }}</p>
             </div>
 
-            {% if applicant_type == ApplicantType.COMPANY %}
+            {% if application_type == ApplicationType.COMPANY %}
                 <div class="info-item">
                     <label>رقم السجل التجاري:</label>
                     <p>{{ CR.number }}</p>
@@ -542,6 +573,7 @@
                     hideApprovePanel();
                     hideRejectPanel();
                     hideRejectComPanel();
+                    deselectFileReturns();
                     firstAction = false;
                 }
                 else {
@@ -562,6 +594,31 @@
                     firstAction = true;
                 }
             });
+
+            var $returnfileselector = $('.return-file-selector');
+
+            function selectFileReturn(el, docid) {
+                console.log(el, docid);
+                var $this = $(el);
+                var selected = $this.attr('data-selected') == 'true';
+
+                if (!selected) {
+                    $returnfileselector.append('<input type="hidden" name="returned-files[]" class="returned-files-input" value="'+docid+'" id="returnedfile-'+docid+'">');
+                    $this.attr('data-selected', 'true');
+                    $this.addClass('application-document-icon-mini-selected');
+                }
+                else {
+                    $('#returnedfile-'+docid).remove();
+                    $this.attr('data-selected', 'false');
+                    $this.removeClass('application-document-icon-mini-selected');
+                }
+            }
+
+            function deselectFileReturns() {
+                $('.returned-files-input').remove();
+                $('.application-document-icon-mini-selected').attr('data-selected', 'false');
+                $('.application-document-icon-mini-selected').removeClass('application-document-icon-mini-selected');
+            }
         </script>
     {% endif %}
 {% endblock %}

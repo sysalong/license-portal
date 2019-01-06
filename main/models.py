@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 
 from django.db import models
@@ -227,7 +228,30 @@ class ApplicationDocument(models.Model):
         (TYPES['IMAGE'], 'Image'),
         (TYPES['PDF'], 'PDF'),
     ))
+    returned = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def is_required(self):
+        print(self.description != 'مستندات إضافية')
+        return self.description != 'مستندات إضافية'
+
+    @property
+    def input_field_name(self):
+        if self.description == 'صورة الهوية':
+            return 'id'
+        elif self.description == 'صورة المؤهل الأكاديمي':
+            return 'graduation'
+        elif self.description == 'السيرة الذاتية':
+            return 'resume'
+        elif self.description == 'شهادات الخبرات':
+            return 'expertise'
+        elif self.description == 'مستندات إضافية':
+            return 'additional'
+
+    @property
+    def basename(self):
+        return os.path.basename(self.file.name)
 
 
 class TargetType(models.Model):

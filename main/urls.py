@@ -24,5 +24,7 @@ urlpatterns = [
 
     path('license/<int:id>', views.download_license, name='download_license'),
 
+    path('preview/<int:id>', views.preview_file, name='preview_file'),
+
     path('api/', include('main.apiurls')),
 ]
