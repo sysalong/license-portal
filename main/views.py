@@ -354,7 +354,10 @@ def individual_signup(request):
                         request.session['finished_with_success'] = ApplicationType.INDIVIDUAL
                         if updating:
                             application.return_reason = None
-                            application.status = ApplicationStatus.objects.get(value=ApplicationStatus.IN_REVISION)
+                            if application.paid_on and application.status == ApplicationStatus.objects.get(value=ApplicationStatus.RETURNED):
+                                application.status = ApplicationStatus.objects.get(value=ApplicationStatus.PAYMENT_APPROVED)
+                            else:
+                                application.status = ApplicationStatus.objects.get(value=ApplicationStatus.IN_REVISION)
                             application.save()
                             action_history_log(application, None, 'قام بتحديث طلبه')
 
@@ -473,7 +476,7 @@ def company_signup(request):
             all_valid = False
         else:
             if not updating:
-                if doc_cr or not doc_est or not doc_saudiation or not doc_manhierarchy or not doc_prevproj or not doc_income:
+                if not doc_cr or not doc_est or not doc_saudiation or not doc_manhierarchy or not doc_prevproj or not doc_income:
                     messages.error(request, message='برجاء ملئ جميع الحقول المطلوبة')
                     all_valid = False
                 else:
