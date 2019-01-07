@@ -743,8 +743,10 @@ def company_signup(request):
                         request.session['finished_with_success'] = ApplicationType.COMPANY
                         if updating:
                             application.return_reason = None
-                            application.status = ApplicationStatus.objects.get(
-                                value=ApplicationStatus.IN_REVISION)
+                            if application.paid_on and application.status == ApplicationStatus.objects.get(value=ApplicationStatus.RETURNED):
+                                application.status = ApplicationStatus.objects.get(value=ApplicationStatus.PAYMENT_APPROVED)
+                            else:
+                                application.status = ApplicationStatus.objects.get(value=ApplicationStatus.IN_REVISION)
                             application.save()
                             action_history_log(application, None, 'قام بتحديث طلبه')
 
@@ -874,12 +876,14 @@ def payment_directions(request, id):
 
         if all_valid:
             if updating:
-                existing_receipt = ApplicationDocument.objects.filter(application=application, file_type=ApplicationDocument.TYPES['IMAGE'],
+                doc_receipt_obj = ApplicationDocument.objects.filter(application=application, file_type=ApplicationDocument.TYPES['IMAGE'],
                                                                       description='صورة إيصال الدفع').first()
-                if existing_receipt:
-                    existing_receipt.delete()
-
-            doc_receipt_obj = ApplicationDocument(file=doc_receipt, application=application,
+                if doc_receipt_obj:
+                    doc_receipt_obj.file = doc_receipt
+                    doc_receipt_obj.returned = True
+                    # existing_receipt.delete()
+            else:
+                doc_receipt_obj = ApplicationDocument(file=doc_receipt, application=application,
                                              description='صورة إيصال الدفع', file_type=ApplicationDocument.TYPES['IMAGE'])
             doc_receipt_obj.save()
             if not doc_receipt_obj.id:

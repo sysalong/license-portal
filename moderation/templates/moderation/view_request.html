@@ -6,6 +6,7 @@
     <h4> عرض الطلب </h4>
 
     <hr>
+
     <label class="panel-title">البيانات الشخصية للمتقدم</label>
     <div class="panel-form-wide">
         <div class="row" style="width: 100%">
@@ -82,7 +83,9 @@
 
     </div>
 
+
     <hr>
+
     <label class="panel-title">تفاصيل الطلب</label>
     <div class="panel-form-wide">
         {% if application.return_reason %}
@@ -130,13 +133,13 @@
         <div class="row" style="width: 100%">
             <div class="col-sm-12">
                 {% for doc in application.documents.all %}
-                    {% if doc.file_type == ApplicationDocument.TYPES.IMAGE %}
+                    {% if doc.file_type == ApplicationDocument.TYPES.IMAGE and not user_role == 'finance' or user_role == 'finance' and doc.description == 'صورة إيصال الدفع' %}
                         <div class="col-md-2 col-sm-4 col-xs-5 application-document-icon application-document-icon-img" style="background-image: url('{{ doc.file.url }}')" data-toggle="tooltip" data-title="عرض الملف" onclick="displayViewer('image', '{{ doc.file.url }}', '{{ doc.description }}')">
                             {% if doc.id in returned_docs %}
                                 <span class="updated-notifier"></span>
                             {% endif %}
                             <span class="file-preview-description"><small>({{ forloop.counter }})</small> {{ doc.description }}</span></div>
-                    {% elif doc.file_type == ApplicationDocument.TYPES.PDF %}
+                    {% elif doc.file_type == ApplicationDocument.TYPES.PDF and not user_role == 'finance' %}
                         <div class="col-md-2 col-sm-4 col-xs-5 application-document-icon application-document-icon-pdf" data-toggle="tooltip" data-title="عرض الملف" onclick="displayViewer('pdf', '{{ doc.file.url }}', '{{ doc.description }}')"><i class="fa fa-file-pdf-o"></i>
                             {% if doc.id in returned_docs %}
                                 <span class="updated-notifier"></span>
@@ -147,7 +150,7 @@
             </div>
         </div>
 
-
+{% if not user_role == 'finance' and not user_role == 'president' %}
         <div class="row" style="width: 100%; margin-top: 20px;">
             <div class="col-sm-12">
         <hr>
@@ -185,6 +188,9 @@
                 </table>
             </div>
         </div>
+
+{% endif %}
+
     </div>
 
 {% if user_role == 'officer' and application.status.value <= ApplicationStatus.IN_REVISION or user_role == 'officer' and application.status.value == ApplicationStatus.RETURNED_REVISION or user_role == 'officer' and application.status.value == ApplicationStatus.PAYMENT_APPROVED or user_role == 'finance' and application.status.value == ApplicationStatus.PENDING_PAYMENT_APPROVAL or user_role == 'manager' and application.status.value == ApplicationStatus.IN_MANAGER or user_role == 'manager' and application.status.value == ApplicationStatus.RETURNED_MANAGER or user_role == 'president' and application.status.value == ApplicationStatus.IN_PRESIDENT %}
