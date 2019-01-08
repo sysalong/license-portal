@@ -20,17 +20,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% for license in licenses %}
-                        <tr>
-                            <td>{{ license.application.type.name }}</td>
-                            <td>{{ license.status.name }}</td>
-                            <td>{{ license.created_at|date }}</td>
-                            <td>{{ license.expiration_date|date }}</td>
-                            <td><a href="{% url 'main:download_license' license.id %}" target="_blank" class="btn btn-primary" ripple="ripple"><i class="fa fa-download"></i> تحميل الترخيص</a></td>
-                            {% comment %}<td><a href="{% url 'main:view_application' license.application.id %}" class="btn btn-primary" ripple="ripple"><i class="fa fa-eye"></i> عرض الطلب</a></td>{% endcomment %}
+                    {% if licenses %}
+                        {% for license in licenses %}
+                            <tr>
+                                <td>{{ license.application.type.name }}</td>
+                                <td>{{ license.status.name }}</td>
+                                <td>{{ license.created_at|date }}</td>
+                                <td>{{ license.expiration_date|date }}</td>
+                                <td><a href="{% url 'main:download_license' license.id %}" target="_blank" class="btn btn-primary" ripple="ripple"><i class="fa fa-download"></i> تحميل الترخيص</a></td>
+                                {% comment %}<td><a href="{% url 'main:view_application' license.application.id %}" class="btn btn-primary" ripple="ripple"><i class="fa fa-eye"></i> عرض الطلب</a></td>{% endcomment %}
 
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" style="text-align: center;"><i>لا يوجد تراخيص صادرة</i></td>
                         </tr>
-                    {% endfor %}
+                    {% endif %}
                     </tbody>
                 </table>
 
