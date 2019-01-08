@@ -1,4 +1,5 @@
 {% load static %}
+{% load user_tags %}
 
 <!DOCTYPE html>
 <html dir="rtl" lang="ar-sa">
@@ -179,21 +180,30 @@
                         <a href="/Home/AboutUs"> الرئيسية </a>
                     </li>
 
+                {% user_has_application as user_has_application %}
+                {% user_has_license as user_has_license %}
+
                     {% if not request.session.user_is_moderator %}
-                        {% if active_link == 'applications' %}
-                            <li class="active">
-                        {% else %}
-                            <li class="">
+
+                        {% if user_has_application %}
+                            {% if active_link == 'applications' %}
+                                <li class="active">
+                            {% else %}
+                                <li class="">
+                            {% endif %}
+                                    <a href="{% url 'main:dashboard' %}"> الطلبات </a>
+                                </li>
                         {% endif %}
-                                <a href="{% url 'main:dashboard' %}"> الطلبات </a>
+
+                        {% if user_has_license %}
+                            {% if active_link == 'licenses' %}
+                                <li class="active">
+                            {% else %}
+                                <li class="">
+                            {% endif %}
+                                <a href="{% url 'main:licenses' %}"> التراخيص </a>
                             </li>
-                        {% if active_link == 'licenses' %}
-                            <li class="active">
-                        {% else %}
-                            <li class="">
                         {% endif %}
-                            <a href="{% url 'main:licenses' %}"> التراخيص </a>
-                        </li>
                     {% else %}
                         {% if active_link == 'moderate' %}
                             <li class="active">

@@ -31,6 +31,7 @@ def oauth_return(request):
         return HttpResponseBadRequest('Couldn\'t load user data from EFile.')
 
     has_applications = Application.objects.filter(applicant__id_number=sessdata(request, 'user_id')).exists()
+    request.session['has_applications'] = has_applications
 
     if return_url and return_url == reverse('moderation:index'):  # TODO: remove this line after development is done
         return redirect(reverse('moderation:index'))  # TODO: remove this line after development is done
@@ -83,8 +84,8 @@ def dashboard(request):
 @requires_meras_login
 def licenses(request):
     user = Applicant.objects.filter(userid=sessdata(request, 'user_userid')).first()
-    if not user or user and user.applications.count() == 0:
-        return redirect(reverse('main:terms'))
+    if not user or user and user.licenses.count() == 0:
+        return redirect(reverse('main:index'))
 
     return render(request, 'licenses.html', {'licenses': user.licenses.all(), 'active_link': 'licenses'})
 

@@ -73,8 +73,8 @@
 
                 <div class="main-form">
                     <div class="form-group">
-                        <label class="control-label"> مدة الخدمة المطلوبة </label>
-                        <input type="text" class="form-control" id="duration-value" readonly value="سنتين">
+                        <label class="control-label"> الخدمة المطلوبة </label>
+                        <input type="text" class="form-control" id="duration-value" readonly value="طلب رخصة جديدة (ومدتها سنتين)">
                         <div class="help-block"></div>
                     </div>
 
@@ -263,13 +263,13 @@
 
                     <div class="form-group">
                         <label class="control-label"> الخدمة المطلوبة </label>
-                        <input type="text" class="form-control" value="التقديم على رخصة إحصائية جديدة" readonly>
+                        <input type="text" class="form-control" value="طلب رخصة جديدة" readonly>
                         <div class="help-block"></div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label"> مدة الخدمة المطلوبة </label>
-                        <input type="text" class="form-control" id="service-period-value" value="" readonly>
+                        <input type="text" class="form-control" id="service-period-value" value="سنتين" readonly>
                         <div class="help-block"></div>
                     </div>
 
@@ -380,8 +380,8 @@
                     $('.main-form-head').hide();
                     $('.alert.alert-dismissible').hide();
 
-                    var licenseDurationEl = $('#duration-value')[0];
-                    $('#service-period-value').val(licenseDurationEl.value);
+                    {#var licenseDurationEl = $('#duration-value')[0];#}
+                    {#$('#service-period-value').val(licenseDurationEl.value);#}
                     $('.data-entry-step').removeClass('inprogress').addClass('success');
                     $('.review-step').addClass('inprogress');
                     $('.review-form').show();
