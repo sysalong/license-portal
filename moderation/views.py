@@ -30,7 +30,7 @@ def generate_license_pdf(_license):
     filename = '%s.%s.pdf' % (_license.serial, int(time.time() * 100))
     pdffilepath = os.path.join(MEDIA_ROOT, 'licenses', filename)
 
-    with open(filepath, 'w') as f:
+    with open(filepath, 'w', encoding='utf-8') as f:
         f.write(html)
 
     try:
