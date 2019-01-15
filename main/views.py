@@ -33,13 +33,7 @@ def oauth_return(request):
     has_applications = Application.objects.filter(applicant__id_number=sessdata(request, 'user_id')).exists()
     request.session['has_applications'] = has_applications
 
-    if return_url and return_url == reverse('moderation:index'):  # TODO: remove this line after development is done
-        return redirect(reverse('moderation:index'))  # TODO: remove this line after development is done
-
     if not has_applications:
-        if return_url and return_url == reverse('moderation:index'):
-            return redirect(reverse('moderation:index'))
-
         return redirect(reverse('main:terms'))
 
     return redirect(MERAS_RETURN_URL)
@@ -95,7 +89,7 @@ def login(request):
     if sessdata(request, 'user_userid'):
         return redirect(reverse('main:index'))
 
-    return redirect('{}/account/login?client_id={}&returnUrl={}'.format(EFILE_URL, MERAS_CLIENT_ID, MERAS_RETURN_URL))
+    return redirect('{}/account/login?client_id={}&referrer=Meras&returnUrl={}'.format(EFILE_URL, MERAS_CLIENT_ID, MERAS_RETURN_URL))
     # return render(request, 'login.html', {'oauth_url': '{}/account/login?client_id={}&returnUrl={}'.format(EFILE_URL, MERAS_CLIENT_ID, MERAS_RETURN_URL)})
 
 
@@ -160,7 +154,7 @@ def individual_signup(request):
     updating = request.POST.get('_updating', 'false') == 'true'
 
     if request.method == 'POST':
-        doc_id = request.FILES.get('doc-id')
+        ## doc_id = request.FILES.get('doc-id')
         doc_graduation = request.FILES.get('doc-graduation')
         doc_expertise_list = request.FILES.getlist('doc-expertise')
         doc_resume = request.FILES.get('doc-resume')
@@ -169,36 +163,32 @@ def individual_signup(request):
         all_valid = True
 
         if not updating:
-            if not doc_id or not doc_graduation or not doc_expertise_list or not doc_resume:
+            if not doc_graduation or not doc_expertise_list or not doc_resume:
                 messages.error(request, message='برجاء ملئ جميع الحقول المطلوبة')
                 all_valid = False
             else:
-                if not verify_image(doc_id):
-                    messages.error(request, message='صورة الهوية ليست في صيغة صحيحة')
+                if not verify_image(doc_graduation):
+                    messages.error(request, message='صورة المؤهل الأكاديمي ليست في صيغة صحيحة')
                     all_valid = False
                 else:
-                    if not verify_image(doc_graduation):
-                        messages.error(request, message='صورة المؤهل الأكاديمي ليست في صيغة صحيحة')
+                    doc_expertise_valid = True
+                    for file in doc_expertise_list:
+                        if not verify_pdf(file):
+                            doc_expertise_valid = False
+                            break
+
+                    if not doc_expertise_valid:
+                        messages.error(request, message='ملف شهادات الخبرة ليس في صيغة صحيحة')
                         all_valid = False
                     else:
-                        doc_expertise_valid = True
-                        for file in doc_expertise_list:
-                            if not verify_pdf(file):
-                                doc_expertise_valid = False
-                                break
-
-                        if not doc_expertise_valid:
-                            messages.error(request, message='ملف شهادات الخبرة ليس في صيغة صحيحة')
+                        if not verify_pdf(doc_resume):
+                            messages.error(request, message='ملف السيرة الذاتية ليس في صيغة صحيحة')
                             all_valid = False
                         else:
-                            if not verify_pdf(doc_resume):
-                                messages.error(request, message='ملف السيرة الذاتية ليس في صيغة صحيحة')
-                                all_valid = False
-                            else:
-                                if doc_additional:
-                                    if not verify_pdf(doc_additional):
-                                        messages.error(request, message='ملف المستندات الإضافية ليس في صيغة صحيحة')
-                                        all_valid = False
+                            if doc_additional:
+                                if not verify_pdf(doc_additional):
+                                    messages.error(request, message='ملف المستندات الإضافية ليس في صيغة صحيحة')
+                                    all_valid = False
 
         if all_valid:
             applicant = Applicant.objects.filter(id_number=sessdata(request, 'user_id')).first()
@@ -284,73 +274,60 @@ def individual_signup(request):
                                            message='حدث خطأ أثناء عملية رفع الملفات، يرجى التأكد من صحة الملفات والمحاولة مرة أخرى')
                         # application.documents.all().delete()
                     else:
-                        doc_id_obj = ApplicationDocument(file=doc_id, application=application,
-                                                         description='صورة الهوية', file_type=ApplicationDocument.TYPES['IMAGE'])
-                        doc_id_obj.save()
-                        if not doc_id_obj.id:
+                        doc_graduation_obj = ApplicationDocument(file=doc_graduation, application=application,
+                                                         description='صورة المؤهل الأكاديمي', file_type=ApplicationDocument.TYPES['IMAGE'])
+                        doc_graduation_obj.save()
+                        if not doc_graduation_obj.id:
                             all_valid = False
-                            messages.error(request, message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
+                            messages.error(request,
+                                           message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
                             application.delete()
                             applicant.delete()
                         else:
-                            doc_graduation_obj = ApplicationDocument(file=doc_graduation, application=application,
-                                                             description='صورة المؤهل الأكاديمي', file_type=ApplicationDocument.TYPES['IMAGE'])
-                            doc_graduation_obj.save()
-                            if not doc_graduation_obj.id:
+                            doc_resume_obj = ApplicationDocument(file=doc_resume, application=application,
+                                                                     description='السيرة الذاتية', file_type=ApplicationDocument.TYPES['PDF'])
+                            doc_resume_obj.save()
+                            if not doc_resume_obj.id:
                                 all_valid = False
                                 messages.error(request,
                                                message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
-                                doc_id_obj.delete()
+                                doc_graduation_obj.delete()
                                 application.delete()
                                 applicant.delete()
                             else:
-                                doc_resume_obj = ApplicationDocument(file=doc_resume, application=application,
-                                                                         description='السيرة الذاتية', file_type=ApplicationDocument.TYPES['PDF'])
-                                doc_resume_obj.save()
-                                if not doc_resume_obj.id:
-                                    all_valid = False
-                                    messages.error(request,
-                                                   message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
-                                    doc_graduation_obj.delete()
-                                    doc_id_obj.delete()
-                                    application.delete()
-                                    applicant.delete()
-                                else:
-                                    success_upload = []
-                                    for file in doc_expertise_list:
-                                        file_obj = ApplicationDocument(file=file, application=application,
-                                                                 description='شهادات الخبرات', file_type=ApplicationDocument.TYPES['PDF'])
-                                        file_obj.save()
-                                        if not file_obj.id:
-                                            all_valid = False
-                                            messages.error(request,
-                                                           message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
-                                            for f in success_upload:
-                                                f.delete()
-                                            doc_resume_obj.delete()
-                                            doc_graduation_obj.delete()
-                                            doc_id_obj.delete()
-                                            application.delete()
-                                            applicant.delete()
-                                            break
-                                        else:
-                                            success_upload.append(file)
+                                success_upload = []
+                                for file in doc_expertise_list:
+                                    file_obj = ApplicationDocument(file=file, application=application,
+                                                             description='شهادات الخبرات', file_type=ApplicationDocument.TYPES['PDF'])
+                                    file_obj.save()
+                                    if not file_obj.id:
+                                        all_valid = False
+                                        messages.error(request,
+                                                       message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
+                                        for f in success_upload:
+                                            f.delete()
+                                        doc_resume_obj.delete()
+                                        doc_graduation_obj.delete()
+                                        application.delete()
+                                        applicant.delete()
+                                        break
+                                    else:
+                                        success_upload.append(file)
 
-                                    if doc_additional:
-                                        doc_additional_obj = ApplicationDocument(file=doc_additional, application=application,
-                                                                                 description='مستندات إضافية', file_type=ApplicationDocument.TYPES['PDF'])
-                                        doc_additional_obj.save()
-                                        if not doc_additional_obj.id:
-                                            all_valid = False
-                                            messages.error(request,
-                                                           message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
-                                            for f in success_upload:
-                                                f.delete()
-                                            doc_resume_obj.delete()
-                                            doc_graduation_obj.delete()
-                                            doc_id_obj.delete()
-                                            application.delete()
-                                            applicant.delete()
+                                if doc_additional:
+                                    doc_additional_obj = ApplicationDocument(file=doc_additional, application=application,
+                                                                             description='مستندات إضافية', file_type=ApplicationDocument.TYPES['PDF'])
+                                    doc_additional_obj.save()
+                                    if not doc_additional_obj.id:
+                                        all_valid = False
+                                        messages.error(request,
+                                                       message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
+                                        for f in success_upload:
+                                            f.delete()
+                                        doc_resume_obj.delete()
+                                        doc_graduation_obj.delete()
+                                        application.delete()
+                                        applicant.delete()
 
                     if all_valid:
                         request.session['finished_with_success'] = ApplicationType.INDIVIDUAL
@@ -365,7 +342,7 @@ def individual_signup(request):
 
                         return redirect(reverse('main:success'))
 
-    if updating and not all_valid and application:  # TODO: PERFORM REGRESSION TEST ON INDIVIDUAL NEW APP AND RETURNED PAYMENT -- PERFORM TEST ON COMPANY RETURNED DOCS AND REGRESSION TEST THE RETURNED PAYMENT AND NEW APP
+    if updating and not all_valid and application:
         return redirect('main:view_application', id=application.id)
         # template_name = 'individual_view.html'
 
