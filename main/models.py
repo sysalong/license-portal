@@ -219,6 +219,7 @@ class ApplicationDocument(models.Model):
     TYPES = {
         'IMAGE': 1,
         'PDF': 2,
+        'HYBRID': 3,
     }
 
     file = models.FileField(upload_to=application_docs_upload_to)
@@ -227,20 +228,25 @@ class ApplicationDocument(models.Model):
     file_type = models.IntegerField(default=0, choices=(
         (TYPES['IMAGE'], 'Image'),
         (TYPES['PDF'], 'PDF'),
+        (TYPES['HYBRID'], 'PDF or Image'),
     ))
     returned = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property
+    def file_extension(self):
+        name, extension = os.path.splitext(self.file.name)
+        return extension.lower()
+
+    @property
     def is_required(self):
-        print(self.description != 'مستندات إضافية')
         return self.description != 'مستندات إضافية'
 
     @property
     def input_field_name(self):
         if self.description == 'صورة الهوية':
             return 'id'
-        elif self.description == 'صورة المؤهل الأكاديمي':
+        elif self.description == 'المؤهل الأكاديمي':
             return 'graduation'
         elif self.description == 'السيرة الذاتية':
             return 'resume'

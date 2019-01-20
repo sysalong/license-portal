@@ -416,7 +416,7 @@ label.error {
 .viewer-file-content img {
     max-width: 95%;
 }
-.viewer-file-content object, .viewer-file-content embed {
+.viewer-file-content object, .viewer-file-content embed, .viewer-file-content iframe {
     width: 95%;
     height: 100%;
 }

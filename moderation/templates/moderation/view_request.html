@@ -133,18 +133,23 @@
         <div class="row" style="width: 100%">
             <div class="col-sm-12">
                 {% for doc in application.documents.all %}
-                    {% if doc.file_type == ApplicationDocument.TYPES.IMAGE and not user_role == 'finance' or user_role == 'finance' and doc.description == 'صورة إيصال الدفع' %}
-                        <div class="col-md-2 col-sm-4 col-xs-5 application-document-icon application-document-icon-img" style="background-image: url('{{ doc.file.url }}')" data-toggle="tooltip" data-title="عرض الملف" onclick="displayViewer('image', '{{ doc.file.url }}', '{{ doc.description }}')">
-                            {% if doc.id in returned_docs %}
-                                <span class="updated-notifier"></span>
-                            {% endif %}
-                            <span class="file-preview-description"><small>({{ forloop.counter }})</small> {{ doc.description }}</span></div>
-                    {% elif doc.file_type == ApplicationDocument.TYPES.PDF and not user_role == 'finance' %}
-                        <div class="col-md-2 col-sm-4 col-xs-5 application-document-icon application-document-icon-pdf" data-toggle="tooltip" data-title="عرض الملف" onclick="displayViewer('pdf', '{{ doc.file.url }}', '{{ doc.description }}')"><i class="fa fa-file-pdf-o"></i>
-                            {% if doc.id in returned_docs %}
-                                <span class="updated-notifier"></span>
-                            {% endif %}
-                            <span class="file-preview-description"><small>({{ forloop.counter }})</small> {{ doc.description }}</span></div>
+                    {% if doc.file_type == ApplicationDocument.TYPES.IMAGE or doc.file_type == ApplicationDocument.TYPES.HYBRID and doc.file_extension != 'pdf' %}
+                        {% if not user_role == 'finance' or user_role == 'finance' and doc.description == 'صورة إيصال الدفع' %}
+                            <div class="col-md-2 col-sm-4 col-xs-5 application-document-icon application-document-icon-img" style="background-image: url('{{ doc.file.url }}')" data-toggle="tooltip" data-title="عرض الملف" onclick="displayViewer('image', '{{ doc.file.url }}', '{{ doc.description }}')">
+                                {% if doc.id in returned_docs %}
+                                    <span class="updated-notifier"></span>
+                                {% endif %}
+                                <span class="file-preview-description"><small>({{ forloop.counter }})</small> {{ doc.description }}</span></div>
+                        {% endif %}
+
+                    {% elif doc.file_type == ApplicationDocument.TYPES.PDF or doc.file_type == ApplicationDocument.TYPES.HYBRID and doc.file_extension == 'pdf' %}
+                        {% if not user_role == 'finance' %}
+                            <div class="col-md-2 col-sm-4 col-xs-5 application-document-icon application-document-icon-pdf" data-toggle="tooltip" data-title="عرض الملف" onclick="displayViewer('pdf', {{ doc.id }}, '{{ doc.description }}')"><i class="fa fa-file-pdf-o"></i>
+                                {% if doc.id in returned_docs %}
+                                    <span class="updated-notifier"></span>
+                                {% endif %}
+                                <span class="file-preview-description"><small>({{ forloop.counter }})</small> {{ doc.description }}</span></div>
+                        {% endif %}
                     {% endif %}
                 {% endfor %}
             </div>
@@ -224,11 +229,11 @@
                         <div class="row" style="width: 100%;margin-bottom: 20px;">
                             <div class="col-sm-12">
                                 {% for doc in application.documents.all %}
-                                    {% if doc.file_type == ApplicationDocument.TYPES.IMAGE %}
+                                    {% if doc.file_type == ApplicationDocument.TYPES.IMAGE or doc.file_type == ApplicationDocument.TYPES.HYBRID and doc.file_extension != 'pdf' %}
 
                                         <div class="col-md-2 col-sm-4 col-xs-5 application-document-icon-mini application-document-icon-img" style="background-image: url('{{ doc.file.url }}')" data-toggle="tooltip" data-title="اختر الملف" onclick="selectFileReturn(this, {{ doc.id }})" data-selected="false"><span class="file-preview-description"><small>({{ forloop.counter }})</small> {{ doc.description }}</span></div>
 
-                                    {% elif doc.file_type == ApplicationDocument.TYPES.PDF %}
+                                    {% elif doc.file_type == ApplicationDocument.TYPES.PDF or doc.file_type == ApplicationDocument.TYPES.HYBRID and doc.file_extension == 'pdf' %}
 
                                         <div class="col-md-2 col-sm-4 col-xs-5 application-document-icon-mini application-document-icon-pdf" data-toggle="tooltip" data-title="اختر الملف" onclick="selectFileReturn(this, {{ doc.id }})" data-selected="false"><i class="fa fa-file-pdf-o"></i><span class="file-preview-description"><small>({{ forloop.counter }})</small> {{ doc.description }}</span></div>
 
@@ -359,9 +364,10 @@
             <span class="viewer-option-button viewer-close-btn" data-toggle="tooltip" data-title="غلق" data-placement="bottom"><i class="fa fa-times"></i></span>
         </div>
         <div class="viewer-file-content">
-            <object data="" type="application/pdf">
-                <embed src="" type="application/pdf">
-            </object>
+{#            <object data="" type="application/pdf">#}
+{#                <embed src="" type="application/pdf">#}
+{#            </object>#}
+            <iframe src="" frameborder="0"></iframe>
         </div>
 
         <div class="file-viewer-info-panel" style="display: none;">
@@ -439,8 +445,9 @@
             }
             else if (type === 'pdf') {
                 pdfViewer.find('.viewer-file-description').html(description);
-                pdfViewer.find('.viewer-file-content object').attr('data', src);
-                pdfViewer.find('.viewer-file-content embed').attr('src', src);
+                {#pdfViewer.find('.viewer-file-content object').attr('data', src);#}
+                {#pdfViewer.find('.viewer-file-content embed').attr('src', src);#}
+                pdfViewer.find('.viewer-file-content iframe').attr('src', '{% url 'moderation:pdf_view_for_js' %}' + src);
                 $('body')[0].style['overflow'] = 'hidden';
                 pdfViewer.fadeIn('fast');
             }

@@ -67,14 +67,15 @@
                         </div>{% endcomment %}
 
                         <div class="form-group">
-                            <label class="control-label"> صورة المؤهل الأكاديمي <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
+                            <label class="control-label"> المؤهل الأكاديمي <i class="fa fa-question-circle" data-toggle="tooltip"
+                                                                              data-title="ملف صورة أو من صيغة PDF"></i> <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
                             <div class="input-group browse-button">
                               <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
                               <span class="input-group-btn">
-                                <button class="btn btn-primary" type="button"><i class="fa fa-file-photo-o"></i> اختر</button>
+                                <button class="btn btn-primary" type="button"><i class="fa fa-file-pdf-o"></i> اختر</button>
                               </span>
                             </div><!-- /input-group -->
-                            <input type="file" name="doc-graduation" accept="image/*" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
+                            <input type="file" name="doc-graduation" accept="image/*,application/pdf" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
                             <div class="help-block"></div>
                         </div>
 
