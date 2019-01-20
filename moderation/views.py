@@ -299,3 +299,11 @@ def issue_license(application):
         return True
     else:
         return False
+
+
+@moderators_only
+def pdf_view(request, doc_id):
+    doc = ApplicationDocument.objects.filter(pk=doc_id).first()
+    if not doc:
+        return redirect(reverse('moderation:index'))
+    return render(request, 'moderation/viewer.html', {'file_url': doc.file.url})

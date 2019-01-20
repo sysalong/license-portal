@@ -167,7 +167,7 @@ def individual_signup(request):
                 messages.error(request, message='برجاء ملئ جميع الحقول المطلوبة')
                 all_valid = False
             else:
-                if not verify_image(doc_graduation):
+                if not verify_image(doc_graduation) and not verify_pdf(doc_graduation):
                     messages.error(request, message='صورة المؤهل الأكاديمي ليست في صيغة صحيحة')
                     all_valid = False
                 else:
@@ -248,7 +248,7 @@ def individual_signup(request):
                                         all_valid = False
                                         break
                                     else:
-                                        if filetype == ApplicationDocument.TYPES['IMAGE'] and not verify_image(fileblob) or filetype == ApplicationDocument.TYPES['PDF'] and not verify_pdf(fileblob):
+                                        if filetype == ApplicationDocument.TYPES['IMAGE'] and not verify_image(fileblob) or filetype == ApplicationDocument.TYPES['PDF'] and not verify_pdf(fileblob) or filetype == ApplicationDocument.TYPES['HYBRID'] and not verify_pdf(fileblob) and not verify_image(fileblob):
                                             all_valid = False
                                             break
                                         else:
@@ -275,7 +275,7 @@ def individual_signup(request):
                         # application.documents.all().delete()
                     else:
                         doc_graduation_obj = ApplicationDocument(file=doc_graduation, application=application,
-                                                         description='صورة المؤهل الأكاديمي', file_type=ApplicationDocument.TYPES['IMAGE'])
+                                                         description='المؤهل الأكاديمي', file_type=ApplicationDocument.TYPES['HYBRID'])
                         doc_graduation_obj.save()
                         if not doc_graduation_obj.id:
                             all_valid = False
