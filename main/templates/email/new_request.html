@@ -123,7 +123,7 @@
 </head>
 
 <body style="background-color:#d6dde5;">
-  <div style="background-color:#d6dde5;">
+  <div style="background-color:#d6dde5; padding-top: 30px;">
     <!--[if mso | IE]>
       <table
          align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
@@ -135,7 +135,7 @@
       <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#ffffff;background-color:#ffffff;width:100%;">
         <tbody>
           <tr>
-            <td style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:20px;padding-top:20;text-align:center;vertical-align:top;">
+            <td style="direction:rtl;font-size:0px;padding:20px 0;padding-bottom:20px;padding-top:20px;text-align:center;vertical-align:top;">
               <!--[if mso | IE]>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
 
@@ -155,7 +155,7 @@
                             <td style="width:182px;"> <a href="#!" target="_blank">
 
       <img
-         alt="GAstats logo" height="auto" src="{% static 'img/stats_logo_wide.png' %}" style="border:none;display:block;outline:none;text-decoration:none;height:auto;width:100%;" width="182"
+         alt="GAstats logo" height="auto" src="https://{{ request_host }}{% static 'img/stats_logo_wide.png' %}" style="border:none;display:block;outline:none;text-decoration:none;height:auto;width:100%;" width="182"
       />
 
         </a> </td>
@@ -193,7 +193,7 @@
       <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#ffffff;background-color:#ffffff;width:100%;">
         <tbody>
           <tr>
-            <td style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:20px;padding-top:20;text-align:center;vertical-align:top;">
+            <td style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:20px;padding-top:20px;text-align:center;vertical-align:top;">
               <!--[if mso | IE]>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
 
@@ -226,7 +226,7 @@
                   </tr>
                   <tr>
                     <td align="justify" style="font-size:0px;padding:10px 25px;padding-top:0;padding-right:25px;padding-bottom:0px;padding-left:25px;word-break:break-word;">
-                      <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:justify;color:#000000;">
+                      <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.2rem;text-align:center;color:#000000;direction: rtl">
                         <p>
                             <span style="color: rgb(57, 63, 76);">عزيزنا العميل </span>
                             <span style="font-weight: bold;"><span style="color: rgb(57, 63, 76);">{{ applicant.fullname }}</span></span><span style="color: rgb(57, 63, 76);">, لقد تم استلام طلبك وسيتم مراجعته من قبل الموظف المختص. </span>
@@ -239,10 +239,10 @@
                     </td>
                   </tr>
                   <tr>
-                    <td align="center" vertical-align="middle" style="font-size:0px;padding:15px 30px;padding-top:10;padding-right:25px;padding-bottom:10px;padding-left:25px;word-break:break-word;">
+                    <td align="center" vertical-align="middle" style="font-size:0px;padding:15px 30px;padding-top:10px;padding-right:25px;padding-bottom:10px;padding-left:25px;word-break:break-word;">
                       <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:separate;line-height:100%;">
                         <tr>
-                          <td align="center" bgcolor="#00639a" role="presentation" style="border:none;border-radius:3px;cursor:auto;padding:10px 25px;" valign="middle"> <a href="#!" style="background:#00639a;color:#FFFFFF;font-family:Ubuntu, Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif;font-size:13px;font-weight:normal;line-height:120%;Margin:0;text-decoration:underline;text-transform:none;"
+                          <td align="center" bgcolor="#00639a" role="presentation" style="border:none;border-radius:3px;cursor:auto;padding:10px 25px;" valign="middle"> <a href="https://{{ request_host }}" style="background:#00639a;color:#FFFFFF;font-family:Ubuntu, Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif;font-size:13px;font-weight:normal;line-height:120%;Margin:0;text-decoration:underline;text-transform:none;"
                               target="_blank">
               متابعة طلبك
             </a> </td>
@@ -289,7 +289,7 @@
       <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#ffffff;background-color:#ffffff;width:100%;">
         <tbody>
           <tr>
-            <td style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:20px;padding-top:20;text-align:center;vertical-align:top;">
+            <td style="direction:ltr;font-size:0px;padding:20px 0;padding-bottom:20px;padding-top:20px;text-align:center;vertical-align:top;">
               <!--[if mso | IE]>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
 
@@ -302,10 +302,10 @@
               <div class="mj-column-per-100 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
                 <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
                   <tr>
-                    <td align="center" style="font-size:0px;padding:10px 25px;padding-top:10;padding-right:25px;padding-bottom:10px;padding-left:25px;word-break:break-word;">
-                      <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:center;color:#000000;">
+                    <td align="center" style="font-size:0px;padding:10px 25px;padding-top:10px;padding-right:25px;padding-bottom:10px;padding-left:25px;word-break:break-word;">
+                      <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:center;color:#000000;direction: rtl">
                         <p>هل لديك أسئلة، أستفسارات أو صعوبات؟</p>
-                        <p>يرجى التواصل مع فريق الدعم من خلال البريد الالكتروني <a href="#!" style="text-decoration: none; color: #36a9e0;"><span style="font-weight: bold;">support@email.com</span></a></p>
+                        <p style="direction: rtl">يرجى التواصل مع فريق الدعم من خلال البريد الالكتروني <a href="mailto:support@email.com" style="text-decoration: none; color: #36a9e0;"><span style="font-weight: bold;">support@email.com</span></a></p>
                       </div>
                     </td>
                   </tr>
@@ -351,13 +351,13 @@
               <div class="mj-column-per-33 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
                 <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
                   <tr>
-                    <td align="center" style="font-size:0px;padding:10px 25px;padding-top:10;padding-right:25px;padding-bottom:10px;padding-left:25px;word-break:break-word;">
+                    <td align="center" style="font-size:0px;padding:10px 25px;padding-top:10px;padding-right:25px;padding-bottom:10px;padding-left:25px;word-break:break-word;">
                       <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
                         <tbody>
                           <tr>
                             <td style="width:77px;">
                                 <a href="#!" target="_blank">
-                                    <img alt="GAstats logo" height="auto" src="{% static 'img/stats_logo_wide.png' %}" style="border:none;display:block;outline:none;text-decoration:none;height:auto;width:100%;" width="77" />
+                                    <img alt="GAstats logo" height="auto" src="https://{{ request_host }}{% static 'img/stats_logo_wide.png' %}" style="border:none;display:block;outline:none;text-decoration:none;height:auto;width:100%;" width="77" />
                                 </a>
                             </td>
                           </tr>
@@ -464,6 +464,64 @@
       </table>
     </div>
     <!--[if mso | IE]>
+          </td>
+        </tr>
+      </table>
+
+
+      <table
+         align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:600px;" width="600"
+      >
+        <tr>
+          <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
+      <![endif]-->
+
+      <div style="background: #d6dde5;background-color: #d6dde5;Margin:0px auto;max-width:600px;">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background: #d6dde5;background-color: #d6dde5;width:100%;">
+        <tbody>
+          <tr>
+            <td style="direction:rtl;padding:20px 0;padding-bottom:0px;padding-top:0;text-align:center;vertical-align:top;">
+              <!--[if mso | IE]>
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+
+        <tr>
+
+            <td
+               class="" style="vertical-align:top;width:199.99999999999997px;"
+            >
+          <![endif]-->
+              <div class="mj-column-per-33 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
+                <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">
+                  <tr>
+                    <td align="center" style="padding:10px 25px;padding-top:10px;padding-right:25px;padding-bottom:10px;padding-left:25px;word-break:break-word;">
+                      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
+                        <tbody>
+                          <tr>
+                            <td>
+                                <p style="color: black; font-size: 8pt;direction: rtl;text-align: justify;">
+                                    تحذير: هذه الرسالة وما تحويه من مرفقات (إن وجدت) تمثل وثيقة سرية قد تحتوي على معلومات محمية بموجب القانون. إذا لم تكن الشخص المعني بهذه الرسالة فيجب عليك تنبيه المُرسل بخطأ وصولها إليك، وحذف الرسالة ومرفقاتها (إن وجدت)، ولا يجوز لك نسخ أو توزيع هذه الرسالة أو مرفقاتها (إن وجدت) أو أي جزء منها، أو البوح بمحتوياتها للغير أو استعمالها لأي غرض. علماً بأن فحوى هذه الرسالة ومرفقاتها (ان وجدت) تعبر عن رأي المُرسل وليس بالضرورة رأي مصلحة الاحصاءات العامة والمعلومات بالمملكة العربية السعودية، ولا تتحمل المصلحة أي مسئولية عن الأضرار الناتجة عن ما قد يحتويه هذا البريد.
+
+                                </p>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <!--[if mso | IE]>
+            </td>
+        </tr>
+      </table>
+                <![endif]-->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+      <!--[if mso | IE]>
           </td>
         </tr>
       </table>

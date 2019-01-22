@@ -68,6 +68,22 @@ def user_has_no_applications(func):
     return wrapper
 
 
+def user_has_no_applications_of_type(applicationtype=None):
+    def wrapper(func):
+        def wrapped(request, *args, **kwargs):
+            if sessdata(request, 'user_userid'):
+                has_applications = Application.objects.filter(applicant__userid=sessdata(request, 'user_userid'),
+                                                              type=applicationtype).exists()
+                if has_applications:
+                    return redirect(reverse('main:index'))
+
+            return func(request, *args, **kwargs)
+
+        return wrapped
+
+    return wrapper
+
+
 def redirect_moderators(func):
     def wrapper(*args, **kwargs):
         request = args[0]

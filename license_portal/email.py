@@ -1,6 +1,6 @@
 # email config
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # for development test
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # for development test
 EMAIL_HOST = 'gstat-ex01.stats.gov.sa'
 EMAIL_PORT = 25
 EMAIL_HOST_USER = ''

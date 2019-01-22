@@ -19,3 +19,5 @@ moderation/tmp/
 
 main/migrations/__pycache__
 main/migrations/__pycache__/*
+
+requirements.txt
