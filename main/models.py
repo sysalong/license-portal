@@ -236,7 +236,7 @@ class ApplicationDocument(models.Model):
     @property
     def file_extension(self):
         name, extension = os.path.splitext(self.file.name)
-        return extension.lower()
+        return extension.lower()[1:]
 
     @property
     def is_required(self):
