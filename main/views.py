@@ -1,11 +1,11 @@
-import os
-
 from django.shortcuts import render, redirect, reverse
 from django.http.response import HttpResponseBadRequest, HttpResponse
 from django.contrib import messages
+from django.core.mail import send_mail
+from django.template.loader import get_template
 
 from license_portal.settings import EFILE_URL, MERAS_CLIENT_ID, MERAS_RETURN_URL
-from .decorators import requires_meras_login, terms_agreed, requires_finished_with_success, user_has_no_applications, redirect_moderators
+from .decorators import requires_meras_login, terms_agreed, requires_finished_with_success, user_has_no_applications, redirect_moderators, user_has_no_applications_of_type
 from .helpers import load_user_data, internal_logout, sessdata, verify_image, verify_pdf, action_history_log, user_has_groups_any
 from .services import EFileService, WathiqService
 from .models import *
@@ -150,6 +150,7 @@ def choose_type(request):
 @requires_meras_login
 @terms_agreed
 @user_has_no_applications
+@user_has_no_applications_of_type(applicationtype=ApplicationType.INDIVIDUAL)
 def individual_signup(request):
     updating = request.POST.get('_updating', 'false') == 'true'
 
@@ -339,6 +340,18 @@ def individual_signup(request):
                                 application.status = ApplicationStatus.objects.get(value=ApplicationStatus.IN_REVISION)
                             application.save()
                             action_history_log(application, None, 'قام بتحديث طلبه')
+
+                        try:
+                            subject = 'التراخيص الاحصائية | تم استلام طلبك'
+                            sender = 'support@email.com'
+                            # receiver = [applicant.email]  # for after dev
+                            receiver = ['oyounis@stats.gov.sa']  # for test purposes TODO: remove in production -- and staging when asked
+                            email_context = {'applicant': applicant, 'request_host': request.get_host()}
+
+                            message = get_template('email/new_request.html').render(email_context)
+                            send_mail(subject, message, sender, receiver, fail_silently=False, html_message=message)
+                        except:
+                            pass
 
                         return redirect(reverse('main:success'))
 
