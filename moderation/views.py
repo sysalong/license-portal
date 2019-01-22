@@ -21,7 +21,7 @@ from .decorators import moderators_only
 
 
 def generate_license_pdf(_license):
-    template = get_template("moderation/pdf/license_pdf_template.html")
+    template = get_template("moderation/pdf/license_pdf_template3.html")
     context = {'license': _license, 'ApplicationType': ApplicationType}
     html = template.render(context)
 

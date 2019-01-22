@@ -1,0 +1,196 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Licensing certificates</title>
+
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 0.7cm;
+            direction: rtl;
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        html,body {
+            height: 100%;
+            margin: 0px;
+        }
+
+        @font-face {
+            font-family: "NeoSansArabic-Light";
+            src: url("http://statspp.licenses.meras.gov.sa/static/pdf_assets/_fonts/NeoSansArabic-Light.ttf");
+        }
+        @font-face {
+            font-family: "NeoSansArabic";
+            src: url("http://statspp.licenses.meras.gov.sa/static/pdf_assets/_fonts/NeoSansArabic.ttf");
+        }
+        @font-face {
+            font-family: "NeoSansArabic-Medium";
+            src: url("http://statspp.licenses.meras.gov.sa/static/pdf_assets/_fonts/NeoSansArabic-Medium.ttf");
+        }
+        /*========================================================*/
+        .certificate_container {
+            width: 100%;
+            display: flex;
+            border: 1px solid #000000;
+            padding: 0;
+        }
+        .details_container {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+        header {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            flex: 2;
+            height: 60%;
+        }
+        .logo img {
+            max-width: 210px;
+        }
+        .square {
+            height: 80px;
+            width: 80px;
+            border: 1px solid #000000;
+            border-radius: 10px;
+            margin-left: 10px;
+
+        }
+        .license {
+            font-family: "NeoSansArabic";
+            font-size: 8pt;
+        }
+
+        section {
+            flex: 3;
+        }
+        section h4 {
+            color: #0ea5df;
+            font-family: "NeoSansArabic-Medium";
+        }
+        .justify_text p {
+            font-family: "NeoSansArabic-Medium";
+            text-align: right;
+            line-height: 30pt;
+        }
+        footer {
+            flex: 1;
+        }
+        footer span {
+            color: #0ea5df;
+            font-family: "NeoSansArabic";
+            margin-left: 5px;
+        }
+        footer p {
+            font-family: "NeoSansArabic";
+            font-size: 10pt;
+        }
+        hr {
+            border-top: 2px solid #0ea5df;
+        }
+        .details_footer {
+            display: flex;
+        }
+        .details_footer p {
+            font-size: 9pt;
+        }
+        .pobox {
+            flex: 1;
+            text-align: center;
+        }
+        .ksa {
+            flex: 1;
+            text-align: center;
+        }
+        .phone {
+            flex: 1;
+            text-align: center;
+        }
+        .website {
+            flex: 1;
+            text-align: left;
+        }
+        .gray_logo {
+            flex: 1;
+            height: 95%;
+            margin: auto;
+        }
+
+
+        /*
+        .license p {
+            font-family: "NeoSansArabic";
+            margin-right: 105px;
+            left: 0;
+        }
+        */
+    </style>
+</head>
+<body>
+<div class="certificate_container">
+    <div class="details_container">
+        <header>
+            <div class="logo"><img src="http://statspp.licenses.meras.gov.sa/static/pdf_assets/_images/Stats_Logo_H.png" alt=""></div>
+            <div class="square"></div>
+            <div class="license">
+                <p>رقم الترخيص : ............................................................</p>
+                <p>تاريخ الإصـدار : ............................................................</p>
+                <p>تاريخ الانتهـاء : ............................................................</p>
+            </div>
+        </header>
+        <section>
+            <h4>ترخيص مزاولة الأعمال الإحصائية</h4>
+            <div class="justify_text">
+                <p>
+                    الفئة :......................................................... المقر الرئيسي :.........................................................
+                    <br>
+                    تشهد الهيئة العامة للإحصاء بأن : .................................................................................................
+                    <br>
+                    اسم المنشأة :................................................ رقم سجل تجاري :...................................................
+                    <br>
+                    قد تم الترخيص له بمزاولة مهنة : ..................................................................................................
+                    <br>
+                    لاستكمال الشروط المطلوبة.
+                </p>
+            </div>
+        </section>
+        <footer>
+            <p><span>*</span>أي كشط أو تعديل في هذي الشهادة يلغيها</p>
+            <hr>
+            <div class="details_footer">
+                <div class="pobox">
+                    <p>ص.ب: 3735 P.O.Box</p>
+                    <p>الرياض Riyadh 11481</p>
+                </div>
+                <div class="ksa">
+                    <p>المملكة العربية السعودية</p>
+                    <p>Kingdom of Saudi Arabia</p>
+                </div>
+                <div class="phone">
+                    <p>هاتف T. +966 11 401 4138</p>
+                    <p>فاكس F. +966 11 405 9493</p>
+                </div>
+                <div class="website">
+                    <p>stats.gov.sa</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <div class="gray_logo"><img src="http://statspp.licenses.meras.gov.sa/static/pdf_assets/_images/Gray-Logo.png" alt=""></div>
+</div>
+</body>
+</html>
