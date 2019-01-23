@@ -920,6 +920,9 @@ def download_license(request, id):
     if not _license:
         return redirect(reverse('main:index'))
 
+    # context = {'license': _license, 'ApplicationType': ApplicationType}
+    # return render(request, 'moderation/pdf/license_pdf_template3.html', context)
+
     filepath = generate_license_pdf(_license)
 
     if filepath:
