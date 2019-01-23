@@ -433,38 +433,6 @@ def company_signup(request):
             has_cr = False
             crs = []
 
-        all_valid = True  # TODO: DEV ONLY
-        has_cr = True  # TODO: DEV ONLY
-
-        cr_info = {  # TODO: DEV ONLY
-            'BusType': 'تــــوصية بســـيطة',
-            'BusTypeID': 201,
-            'CR': '5950011517',
-            'ID': '1024901843',
-            'RelationID': 3,
-            'RelationName': 'شريك متضامن'
-        }
-        cr_data = {  # TODO: DEV ONLY
-            'Activities': 'تجـارة الجمله والتجزئـه في الكفـرات والأسـاتك والشـنابر ,,,,,,,',
-            'Address': 'نجران - العريسة - شارع الملك عبدالعزيز',
-            'BusType': 'تــــوصية بســـيطة',
-            'BusTypeID': 201,
-            'CR': '5950011517',
-            'CRLocation': 'نجران',
-            'CRLocationID': 5950,
-            'CRNationalNO': None,
-            'Capital': 10001600.0,
-            'CreationDate': '14280126',
-            'ExpiredDate': '14400126',
-            'Fax': '0174727753',
-            'IsMain': False,
-            'Name': 'فرع شركة خالد عبدالله الصافي واخوانة',
-            'POBOX': '000505',
-            'PhoneNumber': '0174727750',
-            'Status': 'ACTIVE',
-            'ZipCode': '11421'
-        }
-
         if not crno or not cr_info:
             messages.error(request, message='حدث خطأ أثناء عملية التسجيل، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
             all_valid = False
@@ -753,26 +721,6 @@ def company_signup(request):
     msgs = [msg for msg in storage]
     storage.used = True
 
-    # has_cr = True  # TODO: DEV ONLY
-    # crs = [  # TODO: DEV ONLY
-    #     {
-    #       'BusType': 'تــــوصية بســـيطة',
-    #       'BusTypeID': 201,
-    #       'CR': '5950011517',
-    #       'ID': '1024901843',
-    #       'RelationID': 3,
-    #       'RelationName': 'شريك متضامن'
-    #     },
-    #     {
-    #         'BusType': 'تــــوصية بســـdيطة',
-    #         'BusTypeID': 201,
-    #         'CR': '5951111517',
-    #         'ID': '1024901843',
-    #         'RelationID': 3,
-    #         'RelationName': 'شريك متضامن'
-    #     }
-    # ]
-
     context = {'has_cr': has_cr, 'crs': crs, 'error': msgs[0] if msgs else None, 'has_indlicense': False}
 
     template_name = 'company_signup.html'
@@ -788,9 +736,6 @@ def company_signup(request):
 
             if not applicant or not has_indlicense or not applicant.has_valid_license_of_type(ApplicationType.INDIVIDUAL):
                 context['msg'] = 'لتتمكن من التقدم لطلب إصدار ترخيص منشآت يجب أن يتوفر لديك رخصة أفراد سارية أولاً.'
-
-    # context['msg'] = None  # TODO: DEV ONLY
-    # has_indlicense = False  # TODO: DEV ONLY
 
     return render(request, template_name, context)
 
