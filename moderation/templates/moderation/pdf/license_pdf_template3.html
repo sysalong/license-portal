@@ -51,10 +51,12 @@
 
 .textLayer > span {
   position: absolute;
-  white-space: pre;
   cursor: text;
   -webkit-transform-origin: 0% 0%;
           transform-origin: 0% 0%;
+}
+.textLayer > span:not(.field-value) {
+    white-space: pre;
 }
 .textLayer > span:not(.field-value) {
   color: transparent;
@@ -209,6 +211,8 @@ select {
 
         .field-value {
             color: black;
+            text-align: right;
+            direction: rtl
         }
     </style>
 </head>
@@ -252,9 +256,9 @@ select {
 
 
             {% if license.application.type.value == ApplicationType.COMPANY %}
-                <span class="field-value" style="right: 328px; top: 397.047px; font-size: 16px; font-family: sans-serif;text-align: right">
+                <span class="field-value" style="right: 431px; top: 424.047px; font-size: 18px; font-family: sans-serif;">
             {% else %}
-                <span class="field-value" style="right: 328px; top: 400.047px; font-size: 16px; font-family: sans-serif;text-align: right">
+                <span class="field-value" style="right: 431px; top: 427.047px; font-size: 18px; font-family: sans-serif;">
             {% endif %}
                     {{ license.application.applicant.fullname }}
                 </span>
@@ -266,7 +270,7 @@ select {
             </span>
 
             {% if license.application.type.value == ApplicationType.COMPANY %}
-                <span class="field-value" style="right: 630.656px; top: 457.847px; font-size: 16px; font-family: sans-serif; text-align: right">
+                <span class="field-value" style="right: 630.656px; top: 472.847px; font-size: 18px; font-family: sans-serif;">
                     {{ license.application.commercial_record.number }}
                 </span>
                 <span style="left: 273.656px; top: 470.847px; font-size: 10.6667px; font-family: sans-serif; transform: scaleX(0.496439);">
@@ -276,8 +280,10 @@ select {
                     رقم سجل تجاري:
                 </span>
 
-                <span class="field-value" style="right: 282.313px; top: 455.847px; font-size: 16px; font-family: sans-serif; text-align: right; width: 195px;white-space: normal;">
-                    {{ license.application.commercial_record.name }}
+                <span class="field-value" style="right: 278.313px; top: 454.847px; font-size: 16px; font-family: sans-serif; width: 198px;white-space: normal;height: 35px;">
+                    <span style="display: inline;vertical-align: bottom;position: absolute;bottom: 0px;height: 35px;">
+                        {{ license.application.commercial_record.name }}
+                    </span>
                 </span>
                 <span style="left: 622.313px; top: 470.847px; font-size: 10.6667px; font-family: sans-serif; transform: scaleX(0.513595);">
                     ...........................................................................................................
@@ -286,7 +292,7 @@ select {
                     اسم المنشأة :
                 </span>
             {% else %}
-                <span class="field-value" style="right: 625.656px; top: 460.847px; font-size: 16px; font-family: sans-serif;text-align: right;">
+                <span class="field-value" style="right: 627.656px; top: 476.847px; font-size: 18px; font-family: sans-serif;">
                     {{ license.application.applicant.id_number }}
                 </span>
                 <span style="left: 273.656px; top: 473.847px; font-size: 10.6667px; font-family: sans-serif; transform: scaleX(0.496439);">
@@ -296,7 +302,7 @@ select {
                     رقم الهوية / الجواز:
                 </span>
 
-                <span class="field-value" style="right: 135.313px; top: 457.847px; font-size: 16px; font-family: sans-serif;text-align: right;">
+                <span class="field-value" style="right: 237.313px; top: 471.847px; font-size: 18px; font-family: sans-serif;">
                     سعودي
                 </span>
                 <span style="left: 662.313px; top: 470.847px; font-size: 10.6667px; font-family: sans-serif; transform: scaleX(0.513595);">
@@ -348,7 +354,7 @@ select {
                 Kingdom of Saudi Arabia
             </span>
 
-            <span class="field-value" style="right: 732.009px; top: 113.071px; font-size: 12.6667px; font-family: sans-serif; text-align: right;">
+            <span class="field-value" style="right: 734.009px; top: 125.071px; font-size: 12.6667px; font-family: sans-serif;">
                 {{ license.serial }}
             </span>
             <span style="left: 257.009px; top: 119.071px; font-size: 10.6667px; font-family: sans-serif; transform: scaleX(0.49);">
@@ -358,7 +364,7 @@ select {
                 رقم الترخيص:
             </span>
 
-            <span class="field-value" style="right: 732.009px; top: 136.071px; font-size: 12.6667px; font-family: sans-serif; text-align: right;">
+            <span class="field-value" style="right: 734.009px; top: 149.071px; font-size: 12.6667px; font-family: sans-serif;">
                 {{ license.created_at|date }}
             </span>
             <span style="left: 257.009px; top: 143.071px; font-size: 10.6667px; font-family: sans-serif; transform: scaleX(0.49);">
@@ -368,7 +374,7 @@ select {
                 تاريخ الإصـدار:
             </span>
 
-            <span class="field-value" style="left: 318.009px; top: 162.071px; font-size: 10.6667px; font-family: sans-serif;">
+            <span class="field-value" style="right: 735.009px; top: 172.071px; font-size: 12.6667px; font-family: sans-serif;">
                 {{ license.expiration_date|date }}
             </span>
             <span style="left: 257.009px; top: 167.071px; font-size: 10.6667px; font-family: sans-serif; transform: scaleX(0.49);">
