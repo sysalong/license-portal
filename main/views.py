@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, reverse
-from django.http.response import HttpResponseBadRequest, HttpResponse
+from django.http.response import HttpResponseBadRequest, HttpResponse, HttpResponseNotFound
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.template.loader import get_template
@@ -11,6 +11,8 @@ from .services import EFileService, WathiqService
 from .models import *
 
 from moderation.views import generate_license_pdf
+
+from license_portal.utils import decrypt_base64decode
 
 
 @redirect_moderators
@@ -923,7 +925,7 @@ def download_license(request, id):
     # context = {'license': _license, 'ApplicationType': ApplicationType}
     # return render(request, 'moderation/pdf/license_pdf_template3.html', context)
 
-    filepath = generate_license_pdf(_license)
+    filepath = generate_license_pdf(_license, request)
 
     if filepath:
         _license.filepath = filepath
@@ -950,3 +952,16 @@ def preview_file(request, id):
     response['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename(doc.file.name)
 
     return response
+
+
+def qrcode_details(request, serial_encrypted):
+    try:
+        serial = decrypt_base64decode(serial_encrypted)
+    except:
+        return redirect(reverse('main:index'))
+
+    _license = License.objects.filter(serial=serial).first()
+    if not _license:
+        return HttpResponseNotFound('Wrong license serial. License not found!')
+
+    return render(request, 'license_verify.html', {'license': _license})

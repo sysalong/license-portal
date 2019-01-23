@@ -27,4 +27,6 @@ urlpatterns = [
     path('preview/<int:id>', views.preview_file, name='preview_file'),
 
     path('api/', include('main.apiurls')),
+
+    path('qrcode/<str:serial_encrypted>', views.qrcode_details, name='qrcode_details'),
 ]

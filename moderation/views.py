@@ -2,6 +2,8 @@ from datetime import datetime
 import time
 import os
 
+import qrcode
+
 from django.template.loader import get_template
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -18,12 +20,32 @@ from main.models import Application, ApplicationDocument, ApplicationStatus, OFF
     ApplicationType, License, LicenseStatus
 
 from .decorators import moderators_only
+from license_portal.utils import encrypt_base64encode
 
 
-def generate_license_pdf(_license):
+def generate_license_pdf(_license, request):
+    from io import BytesIO
+    import base64
+
+    buffered = BytesIO()
+
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+    )
+
+    qr.add_data('%s%s' % (request.get_host(), reverse('main:qrcode_details', kwargs={'serial_encrypted': encrypt_base64encode(_license.serial)})))
+    qr.make(fit=True)
+
+    img = qr.make_image(fill_color="#174dab", back_color="transparent")
+    img.save(buffered, format='PNG')
+
     template = get_template("moderation/pdf/license_pdf_template3.html")
-    context = {'license': _license, 'ApplicationType': ApplicationType}
+    qrcode_image = '<img class="qrcode" src="data:image/png;base64,{0}"/>'.format(base64.b64encode(buffered.getvalue()).decode())
+
+    context = {'license': _license, 'ApplicationType': ApplicationType, 'qrcode_image': qrcode_image}
     html = template.render(context)
+    # return render(request, "moderation/pdf/license_pdf_template3.html", context)
 
     filepath = os.path.join(BASE_DIR, 'moderation', 'tmp', '%s.html' % _license.serial)
 

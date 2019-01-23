@@ -323,6 +323,10 @@ class License(models.Model):
     def is_expired(self):
         return self.expiration_date < datetime.today()
 
+    @property
+    def expired(self):
+        return self.expiration_date < datetime.today()
+
 
 PRICES = {
     Service.NEW: {

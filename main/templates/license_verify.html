@@ -1,0 +1,135 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="icon" sizes="16x16 32x32 64x64 192x192" href="https://meras.gov.sa/dist/img/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon-precomposed" href="https://meras.gov.sa/dist/img/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="https://meras.gov.sa/dist/img/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="https://meras.gov.sa/resources/images/fav/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="https://meras.gov.sa/resources/images/fav/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="https://meras.gov.sa/resources/images/fav/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="https://meras.gov.sa/resources/images/fav/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="https://meras.gov.sa/resources/images/fav/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="https://meras.gov.sa/resources/images/fav/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="https://meras.gov.sa/resources/images/fav/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://meras.gov.sa/resources/images/fav/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://meras.gov.sa/resources/images/fav/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://meras.gov.sa/resources/images/fav/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://meras.gov.sa/resources/images/fav/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="https://meras.gov.sa/resources/images/fav/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://meras.gov.sa/resources/images/fav/favicon-16x16.png">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="https://meras.gov.sa/ms-icon-144x144.png">
+    <meta name="theme-color" content="#0E2EA0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <title>{% block page_title %}مراس - ترخيص مزاولة الأعمال الإحصائية{% endblock %}</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
+    <link rel="stylesheet" href="{% static 'css/bulma-rtl.min.css' %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'fonts/meras/css/fonts.css' %}">
+
+    <style>
+        html, body {
+            height: 100%;
+            font-family: 'frutiger';
+        }
+        section.hero {
+            height: 100%;
+        }
+
+        .media-content .content p .field-title {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero is-light is-fullheight-with-navbar">
+      <div class="hero-head">
+        <nav class="navbar">
+          <div class="container">
+            <div class="navbar-brand">
+              <a class="navbar-item">
+                <img src="{% static 'img/stats_logo_wide.png' %}" alt="Logo" style="max-height: 3.75rem;">
+              </a>
+            </div>
+
+          </div>
+        </nav>
+      </div>
+
+      <div class="hero-body">
+          <div class="container">
+              <div class="columns">
+                  <div class="column is-6">
+                      <div class="has-text-centered">
+                          <p class="title">
+                            التحقق من ترخيص إحصائي
+                          </p>
+                          <p class="subtitle">
+                            لقد قمت بمسح QRCode لشهادة ترخيص إحصائي <br> يمكنك عرض تفاصيل الترخيص والتأكد من صحته من خلال هذه الصفحة
+                          </p>
+                        </div>
+                  </div>
+                  <div class="column is-6">
+                      <div class="box">
+                          <article class="media">
+                            <div class="media-content">
+                              <div class="content">
+                              <p>
+                                  {% if license.expired %}
+                                      <span class="tag is-danger has-text-weight-bold" style="background: #E52B20">الترخيص منتهي الصلاحية</span>
+                                  {% else %}
+                                      <span class="tag is-success has-text-weight-bold">الترخيص ساري</span>
+                                  {% endif %}
+                              </p>
+                                <p>
+                                  <strong class="field-title">رمز الترخيص</strong>
+                                  <span>{{ license.serial }}</span>
+                                </p>
+                                <p>
+                                  <strong class="field-title">مسجل باسم</strong>
+                                  <span>{{ license.application.applicant.fullname }}</span>
+                                </p>
+
+                                  {% if license.application.commercial_record %}
+                                    <p>
+                                      <strong class="field-title">اسم المنشآة</strong>
+                                      <span>{{ license.application.commercial_record.name }}</span>
+                                    </p>
+                                  {% endif %}
+
+                                <p>
+                                  <strong class="field-title">تاريخ الإصدار</strong>
+                                  <span>{{ license.action_date|date }}</span>
+                                </p>
+                                <p>
+                                  <strong class="field-title">تاريخ الإنتهاء</strong>
+                                  <span>{{ license.expiration_date|date }}</span>
+                                </p>
+                              </div>
+                            </div>
+                          </article>
+                        </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div class="hero-foot" style="background: rgb(54, 54 ,54); color: #fff; text-align: center; padding: 10px">
+          <img src="{% static 'img/meras_reverse.svg' %}" style="height: 50px">
+      </div>
+    </section>
+
+    <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+</body>
+</html>
