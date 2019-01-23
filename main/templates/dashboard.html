@@ -37,7 +37,7 @@
                             {% if application.status.value in view_statuses %}
                                 <td><a href="{% url 'main:view_application' application.id %}" class="btn btn-warning" ripple="ripple"><i class="fa fa-eye"></i> عرض</a></td>
                             {% elif application.status.value == ApplicationStatus.PENDING_PAYMENT %}
-                                <td><a href="{% url 'main:payment_directions' application.id %}" class="btn btn-primary" ripple="ripple"><i class="fa fa-eye"></i> التعليمات</a></td>
+                                <td><a href="{% url 'main:payment_directions' application.id %}" class="btn btn-primary" ripple="ripple"><i class="fa fa-eye"></i> تعليمات الدفع</a></td>
                             {% endif %}
                         </tr>
                     {% endfor %}
