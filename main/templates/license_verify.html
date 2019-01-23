@@ -84,7 +84,7 @@
                       <div class="box">
                           <article class="media">
                             <div class="media-content">
-                              <div class="content">
+                              <div class="content" style="overflow:hidden">
                               <p>
                                   {% if license.expired %}
                                       <span class="tag is-danger has-text-weight-bold" style="background: #E52B20">الترخيص منتهي الصلاحية</span>
@@ -105,6 +105,11 @@
                                     <p>
                                       <strong class="field-title">اسم المنشآة</strong>
                                       <span>{{ license.application.commercial_record.name }}</span>
+                                    </p>
+
+                                      <p>
+                                          <strong class="field-title">رقم سجل تجاري</strong>
+                                          <span>{{ license.application.commercial_record.number }}</span>
                                     </p>
                                   {% endif %}
 
