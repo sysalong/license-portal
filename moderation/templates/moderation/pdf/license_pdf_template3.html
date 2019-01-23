@@ -214,9 +214,18 @@ select {
             text-align: right;
             direction: rtl
         }
+
+        .qrcode {
+            position: absolute;
+            right: 562px;
+            width: 88px;
+            top: 107px;
+        }
     </style>
 </head>
 <body style="padding:0;margin: 0;">
+
+    {{ qrcode_image|safe }}
 
     <div class="page" style="width: 100%; height: 100%; padding:0;margin: 0;" data-page-number="1" data-loaded="true">
         <div style="width: 100%; height: 100%" class="canvasWrapper">
@@ -383,7 +392,6 @@ select {
             <span style="left: 391.82px; top: 163.031px; font-size: 13.3333px; font-family: sans-serif; transform: scaleX(0.926013);">
                 تاريخ الانتهـاء:
             </span>
-
             <div class="endOfContent"></div>
         </div>
     </div>
