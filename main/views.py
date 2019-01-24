@@ -171,7 +171,7 @@ def individual_signup(request):
                 all_valid = False
             else:
                 if not verify_image(doc_graduation) and not verify_pdf(doc_graduation):
-                    messages.error(request, message='صورة المؤهل الأكاديمي ليست في صيغة صحيحة')
+                    messages.error(request, message='ملف المؤهل الأكاديمي ليس في صيغة صحيحة')
                     all_valid = False
                 else:
                     doc_expertise_valid = True
@@ -414,7 +414,7 @@ def company_signup(request):
         has_cr = True
 
     if request.method == 'POST':
-        doc_cr = request.FILES.get('doc-cr')
+        ## doc_cr = request.FILES.get('doc-cr')
         doc_est = request.FILES.get('doc-est')
         doc_saudiation = request.FILES.get('doc-saudiation')
         doc_manhierarchy = request.FILES.get('doc-manhierarchy')
@@ -438,38 +438,34 @@ def company_signup(request):
             all_valid = False
         else:
             if not updating:
-                if not doc_cr or not doc_est or not doc_saudiation or not doc_manhierarchy or not doc_prevproj or not doc_income:
+                if not doc_est or not doc_saudiation or not doc_manhierarchy or not doc_prevproj or not doc_income:
                     messages.error(request, message='برجاء ملئ جميع الحقول المطلوبة')
                     all_valid = False
                 else:
-                    if not verify_image(doc_cr):
-                        messages.error(request, message='صورة السجل التجاري ليست في صيغة صحيحة')
+                    if not verify_image(doc_est):
+                        messages.error(request, message='صورة عقد التأسيس ليست في صيغة صحيحة')
                         all_valid = False
                     else:
-                        if not verify_image(doc_est):
-                            messages.error(request, message='صورة عقد التأسيس ليست في صيغة صحيحة')
+                        if not verify_image(doc_saudiation):
+                            messages.error(request, message='صورة شهادة السعودة ليست في صيغة صحيحة')
                             all_valid = False
                         else:
-                            if not verify_image(doc_saudiation):
-                                messages.error(request, message='صورة شهادة السعودة ليست في صيغة صحيحة')
+                            if not verify_image(doc_manhierarchy):
+                                messages.error(request, message='صورة الهيكل التنظيمي ليست في صيغة صحيحة')
                                 all_valid = False
                             else:
-                                if not verify_image(doc_manhierarchy):
-                                    messages.error(request, message='صورة الهيكل التنظيمي ليست في صيغة صحيحة')
+                                if not verify_image(doc_prevproj):
+                                    messages.error(request, message='ملف بالمشاريع السابقة ليس في صيغة صحيحة')
                                     all_valid = False
                                 else:
-                                    if not verify_image(doc_prevproj):
-                                        messages.error(request, message='ملف بالمشاريع السابقة ليس في صيغة صحيحة')
+                                    if not verify_image(doc_income):
+                                        messages.error(request, message='صورة شهادة من الزكاة والدخل ليست في صيغة صحيحة')
                                         all_valid = False
                                     else:
-                                        if not verify_image(doc_income):
-                                            messages.error(request, message='صورة شهادة من الزكاة والدخل ليست في صيغة صحيحة')
-                                            all_valid = False
-                                        else:
-                                            if doc_additional:
-                                                if not verify_pdf(doc_additional):
-                                                    messages.error(request, message='ملف المستندات الإضافية ليس في صيغة صحيحة')
-                                                    all_valid = False
+                                        if doc_additional:
+                                            if not verify_pdf(doc_additional):
+                                                messages.error(request, message='ملف المستندات الإضافية ليس في صيغة صحيحة')
+                                                all_valid = False
 
         if all_valid:
             applicant = Applicant.objects.filter(id_number=sessdata(request, 'user_id')).first()
@@ -561,103 +557,125 @@ def company_signup(request):
                                            message='حدث خطأ أثناء عملية رفع الملفات، يرجى التأكد من صحة الملفات والمحاولة مرة أخرى')
                         # application.documents.all().delete()
                     else:
-                        doc_cr_obj = ApplicationDocument(file=doc_cr, application=application,
-                                                         description='صورة السجل التجاري',
-                                                         file_type=ApplicationDocument.TYPES['IMAGE'])
-                        doc_cr_obj.save()
-                        if not doc_cr_obj.id:
+                        doc_est_obj = ApplicationDocument(file=doc_est, application=application,
+                                                          description='صورة عقد التأسيس',
+                                                          file_type=ApplicationDocument.TYPES['IMAGE'])
+                        doc_est_obj.save()
+                        if not doc_est_obj.id:
                             all_valid = False
                             messages.error(request,
                                            message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
+
                             application.delete()
                             applicant.delete()
                         else:
-                            doc_est_obj = ApplicationDocument(file=doc_est, application=application,
-                                                              description='صورة عقد التأسيس',
-                                                              file_type=ApplicationDocument.TYPES['IMAGE'])
-                            doc_est_obj.save()
-                            if not doc_est_obj.id:
+                            doc_saudiation_obj = ApplicationDocument(file=doc_saudiation, application=application, description='صورة شهادة السعودة', file_type=ApplicationDocument.TYPES['IMAGE'])
+                            doc_saudiation_obj.save()
+                            if not doc_saudiation_obj.id:
                                 all_valid = False
                                 messages.error(request,
                                                message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
-                                doc_cr_obj.delete()
+
+                                doc_est_obj.delete()
                                 application.delete()
                                 applicant.delete()
                             else:
-                                doc_saudiation_obj = ApplicationDocument(file=doc_saudiation, application=application, description='صورة شهادة السعودة', file_type=ApplicationDocument.TYPES['IMAGE'])
-                                doc_saudiation_obj.save()
-                                if not doc_saudiation_obj.id:
+                                doc_manhierarchy_obj = ApplicationDocument(file=doc_manhierarchy, application=application, description='صورة الهيكل التنظيمي', file_type=ApplicationDocument.TYPES['IMAGE'])
+                                doc_manhierarchy_obj.save()
+                                if not doc_manhierarchy_obj.id:
                                     all_valid = False
                                     messages.error(request,
                                                    message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
+
+                                    doc_saudiation_obj.delete()
                                     doc_est_obj.delete()
-                                    doc_cr_obj.delete()
                                     application.delete()
                                     applicant.delete()
                                 else:
-                                    doc_manhierarchy_obj = ApplicationDocument(file=doc_manhierarchy, application=application, description='صورة الهيكل التنظيمي', file_type=ApplicationDocument.TYPES['IMAGE'])
-                                    doc_manhierarchy_obj.save()
-                                    if not doc_manhierarchy_obj.id:
+                                    doc_prevproj_obj = ApplicationDocument(file=doc_prevproj, application=application, description='مستند بالمشاريع السابقة', file_type=ApplicationDocument.TYPES['IMAGE'])
+                                    doc_prevproj_obj.save()
+                                    if not doc_prevproj_obj.id:
                                         all_valid = False
                                         messages.error(request,
                                                        message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
-                                        doc_saudiation_obj.delete()
+
+                                        doc_manhierarchy_obj.delete()
                                         doc_est_obj.delete()
-                                        doc_cr_obj.delete()
                                         application.delete()
                                         applicant.delete()
                                     else:
-                                        doc_prevproj_obj = ApplicationDocument(file=doc_prevproj, application=application, description='مستند بالمشاريع السابقة', file_type=ApplicationDocument.TYPES['IMAGE'])
-                                        doc_prevproj_obj.save()
-                                        if not doc_prevproj_obj.id:
+                                        doc_income_obj = ApplicationDocument(file=doc_income, application=application, description='صورة شهادة من الزكاة والدخل', file_type=ApplicationDocument.TYPES['IMAGE'])
+                                        doc_income_obj.save()
+                                        if not doc_income_obj.id:
                                             all_valid = False
                                             messages.error(request,
                                                            message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
+
+                                            doc_prevproj_obj.delete()
                                             doc_manhierarchy_obj.delete()
                                             doc_est_obj.delete()
-                                            doc_cr_obj.delete()
                                             application.delete()
                                             applicant.delete()
-                                        else:
-                                            doc_income_obj = ApplicationDocument(file=doc_income, application=application, description='صورة شهادة من الزكاة والدخل', file_type=ApplicationDocument.TYPES['IMAGE'])
-                                            doc_income_obj.save()
-                                            if not doc_income_obj.id:
+
+                                        if doc_additional:
+                                            doc_additional_obj = ApplicationDocument(file=doc_additional, application=application, description='مستندات إضافية', file_type=ApplicationDocument.TYPES['PDF'])
+                                            doc_additional_obj.save()
+                                            if not doc_additional_obj.id:
                                                 all_valid = False
-                                                messages.error(request,
-                                                               message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
+                                                messages.error(request, message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
+
+                                                doc_income_obj.delete()
                                                 doc_prevproj_obj.delete()
                                                 doc_manhierarchy_obj.delete()
                                                 doc_est_obj.delete()
-                                                doc_cr_obj.delete()
                                                 application.delete()
                                                 applicant.delete()
 
-                                            if doc_additional:
-                                                doc_additional_obj = ApplicationDocument(file=doc_additional, application=application, description='مستندات إضافية', file_type=ApplicationDocument.TYPES['PDF'])
-                                                doc_additional_obj.save()
-                                                if not doc_additional_obj.id:
-                                                    all_valid = False
-                                                    messages.error(request, message='حدث خطأ أثناء عملية رفع المستندات، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
-                                                    doc_income_obj.delete()
-                                                    doc_prevproj_obj.delete()
-                                                    doc_manhierarchy_obj.delete()
-                                                    doc_est_obj.delete()
-                                                    doc_cr_obj.delete()
-                                                    application.delete()
-                                                    applicant.delete()
+                                    if all_valid:
+                                        if not updating:
+                                            cr = CommercialRecord.objects.filter(number=crno).first()
+                                            if not cr:
+                                                cr = CommercialRecord(number=cr_info['CR'], business_type_id=cr_info['BusTypeID'],
+                                                                      activities=cr_data['Activities'], address=cr_data['Address'],
+                                                                      is_main=cr_data['IsMain'], name=cr_data['Name'],
+                                                                      po_box=cr_data['POBOX'], phone=cr_data['PhoneNumber'],
+                                                                      status=cr_data['Status'], zipcode=cr_data['ZipCode'])
+                                                cr.save()
 
-                                        if all_valid:
-                                            if not updating:
-                                                cr = CommercialRecord.objects.filter(number=crno).first()
-                                                if not cr:
-                                                    cr = CommercialRecord(number=cr_info['CR'], business_type_id=cr_info['BusTypeID'],
-                                                                          activities=cr_data['Activities'], address=cr_data['Address'],
-                                                                          is_main=cr_data['IsMain'], name=cr_data['Name'],
-                                                                          po_box=cr_data['POBOX'], phone=cr_data['PhoneNumber'],
-                                                                          status=cr_data['Status'], zipcode=cr_data['ZipCode'])
-                                                    cr.save()
+                                            if not cr.id:
+                                                all_valid = False
+                                                messages.error(request,
+                                                               message='حدث خطأ أثناء عملية الحفظ، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
+                                                application.documents.all().delete()
+                                                application.delete()
+                                                applicant.delete()
+                                            else:
+                                                # updating cr data in case it changed
+                                                cr.business_type_id = cr_data['BusTypeID']
+                                                cr.activities = cr_data['Activities']
+                                                cr.address = cr_data['Address']
+                                                cr.is_main = cr_data['IsMain']
+                                                cr.name = cr_data['Name']
+                                                cr.po_box = cr_data['POBOX']
+                                                cr.phone = cr_data['PhoneNumber']
+                                                cr.status = cr_data['Status']
+                                                cr.zipcode = cr_data['ZipCode']
+                                                cr.save()
+                                                # end update
 
-                                                if not cr.id:
+                                                # TODO: fix the company signup to check for if the cr's general manager has a license or not and if not show error and dont complete the registration -- or if the applicant themselves have a license and if not dont proceed -- thats it cant remember anything else right now :D
+
+                                                acr = ApplicantCommercialRecord.objects.filter(applicant=applicant,
+                                                                                               commercial_record=cr).first()
+                                                if acr:
+                                                    acr.relation_id = cr_info['RelationID']
+                                                    acr.save()
+                                                else:
+                                                    acr = ApplicantCommercialRecord.objects.create(applicant=applicant,
+                                                                                                   commercial_record=cr,
+                                                                                                   relation_id=cr_info[
+                                                                                                       'RelationID'])
+                                                if not acr.id:
                                                     all_valid = False
                                                     messages.error(request,
                                                                    message='حدث خطأ أثناء عملية الحفظ، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
@@ -665,41 +683,8 @@ def company_signup(request):
                                                     application.delete()
                                                     applicant.delete()
                                                 else:
-                                                    # updating cr data in case it changed
-                                                    cr.business_type_id = cr_data['BusTypeID']
-                                                    cr.activities = cr_data['Activities']
-                                                    cr.address = cr_data['Address']
-                                                    cr.is_main = cr_data['IsMain']
-                                                    cr.name = cr_data['Name']
-                                                    cr.po_box = cr_data['POBOX']
-                                                    cr.phone = cr_data['PhoneNumber']
-                                                    cr.status = cr_data['Status']
-                                                    cr.zipcode = cr_data['ZipCode']
-                                                    cr.save()
-                                                    # end update
-
-                                                    # TODO: fix the company signup to check for if the cr's general manager has a license or not and if not show error and dont complete the registration -- or if the applicant themselves have a license and if not dont proceed -- thats it cant remember anything else right now :D
-
-                                                    acr = ApplicantCommercialRecord.objects.filter(applicant=applicant,
-                                                                                                   commercial_record=cr).first()
-                                                    if acr:
-                                                        acr.relation_id = cr_info['RelationID']
-                                                        acr.save()
-                                                    else:
-                                                        acr = ApplicantCommercialRecord.objects.create(applicant=applicant,
-                                                                                                       commercial_record=cr,
-                                                                                                       relation_id=cr_info[
-                                                                                                           'RelationID'])
-                                                    if not acr.id:
-                                                        all_valid = False
-                                                        messages.error(request,
-                                                                       message='حدث خطأ أثناء عملية الحفظ، يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى')
-                                                        application.documents.all().delete()
-                                                        application.delete()
-                                                        applicant.delete()
-                                                    else:
-                                                        application.commercial_record = cr
-                                                        application.save()
+                                                    application.commercial_record = cr
+                                                    application.save()
 
                     if all_valid:
                         request.session['finished_with_success'] = ApplicationType.COMPANY

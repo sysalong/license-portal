@@ -118,7 +118,7 @@
 
                         <fieldset>
                             <legend>المستندات المطلوبة</legend>
-                            <div class="form-group">
+                            {% comment %}<div class="form-group">
                                 <label class="control-label"> صورة السجل التجاري <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
                                 <div class="input-group browse-button">
                                   <input type="text" class="form-control file-name-holder" readonly placeholder="اضغط لاختيار ملف">
@@ -128,7 +128,7 @@
                                 </div><!-- /input-group -->
                                 <input type="file" name="doc-cr" accept="image/*" data-rule-required="true" data-msg-required="برجاء اختيار ملف">
                                 <div class="help-block"></div>
-                            </div>
+                            </div>{% endcomment %}
 
                             <div class="form-group">
                                 <label class="control-label"> صورة عقد التأسيس <i class="fa fa-asterisk required-indicator" data-toggle="tooltip" data-title="حقل مطلوب"></i> </label>
