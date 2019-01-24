@@ -29,16 +29,20 @@
                             <td>{{ application.type_text }}</td>
                             <td>{{ application.service.name }}</td>
                             <td>{{ application.created_at|date }}</td>
-                            {% if application.status.value == ApplicationStatus.RETURNED_REVISION %}
-                                <td>تحت الإجراء</td>
-                            {% else %}
-                                <td>{{ application.status.name }}</td>
-                            {% endif %}
-                            {% if application.status.value in view_statuses %}
-                                <td><a href="{% url 'main:view_application' application.id %}" class="btn btn-warning" ripple="ripple"><i class="fa fa-eye"></i> عرض</a></td>
-                            {% elif application.status.value == ApplicationStatus.PENDING_PAYMENT %}
-                                <td><a href="{% url 'main:payment_directions' application.id %}" class="btn btn-primary" ripple="ripple"><i class="fa fa-eye"></i> تعليمات الدفع</a></td>
-                            {% endif %}
+                            <td>
+                                {% if application.status.value == ApplicationStatus.RETURNED_REVISION %}
+                                    تحت الإجراء
+                                {% else %}
+                                    {{ application.status.name }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if application.status.value in view_statuses %}
+                                    <a href="{% url 'main:view_application' application.id %}" class="btn btn-warning" ripple="ripple"><i class="fa fa-eye"></i> عرض</a>
+                                {% elif application.status.value == ApplicationStatus.PENDING_PAYMENT %}
+                                    <a href="{% url 'main:payment_directions' application.id %}" class="btn btn-primary" ripple="ripple"><i class="fa fa-eye"></i> تعليمات الدفع</a>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
