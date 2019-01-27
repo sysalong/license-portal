@@ -403,43 +403,43 @@
                 }, 300);
             }
 
-            function crValidate() {
+            function crValidate(val) {
                 $('.cr-help-block').html('');
 
-                if ($('#cr-value').valid()){
-                    $('.input-loader').show();
-                    fetch('{% url 'main:api:cr_validate' %}', { method: 'POST', body: JSON.stringify({ 'crno': $('#cr-value').val() }), headers: { 'X-CSRFToken': '{{ csrf_token }}' } })
-                        .then(function(res){
-                            return res.json();
-                        })
-                        .then(function(res){
-                            if (res.status == 0){
-                                $('.cr-help-block').html(res.msg);
-                                $('.input-loader').hide();
-                            }
-                            else if (res.status == 1){
-                                var cr = res.data.cr;
-                                $('#cr-value')[0].readonly = true;
-                                $('#cr-value').attr('readonly', 'readonly');
-                                $('[name=_crno]').val(cr.CR);
-                                crValid = true;
-                                $('.cr-read-btn').hide();
-                                $('.cr-read-btn').attr('disabled', 'disabled');
-                                $('#cr-info').find('tbody').html('<tr>' +
-                                    '<td>' + cr.CR + '</td>' +
-                                    '<td>' + cr.BusType + '</td>' +
-                                    '<td>' + cr.RelationName + '</td>' +
-                                    '</tr>');
-                                $('#review-cr-info').find('tbody').html('<tr>' +
-                                    '<td>' + cr.CR + '</td>' +
-                                    '<td>' + cr.BusType + '</td>' +
-                                    '<td>' + cr.RelationName + '</td>' +
-                                    '</tr>');
-                                $('#docs').slideDown('fast');
-                                updateInputVerifyIcon();
-                            }
-                        });
-                }
+                {#$('.input-loader').show();#}
+                fetch('{% url 'main:api:cr_validate' %}', { method: 'POST', body: JSON.stringify({ 'crno': val }), headers: { 'X-CSRFToken': '{{ csrf_token }}' } })
+                    .then(function(res){
+                        return res.json();
+                    })
+                    .then(function(res){
+                        if (res.status == 0){
+                            $('.cr-help-block').html(res.msg);
+                            deactivateInputLoader();
+                        }
+                        else if (res.status == 1){
+                            crData(val);
+                            {% comment %}
+                            var cr = res.data.cr;
+                            $('#cr-value')[0].readonly = true;
+                            $('#cr-value').attr('readonly', 'readonly');
+                            $('[name=_crno]').val(cr.CR);
+                            crValid = true;
+                            $('.cr-read-btn').hide();
+                            $('.cr-read-btn').attr('disabled', 'disabled');
+                            $('#cr-info').find('tbody').html('<tr>' +
+                                '<td>' + cr.CR + '</td>' +
+                                '<td>' + cr.BusType + '</td>' +
+                                '<td>' + cr.RelationName + '</td>' +
+                                '</tr>');
+                            $('#review-cr-info').find('tbody').html('<tr>' +
+                                '<td>' + cr.CR + '</td>' +
+                                '<td>' + cr.BusType + '</td>' +
+                                '<td>' + cr.RelationName + '</td>' +
+                                '</tr>');
+                            $('#docs').slideDown('fast');
+                            updateInputVerifyIcon();{% endcomment %}
+                        }
+                    });
             }
 
             $('#cr-value').on('input change blur', function(){
@@ -488,18 +488,7 @@
                 $inputloader.hide();
             }
 
-            $crselect.change(function(){
-                var val = $crselect.val();
-                if (val.trim() == ""){
-                    $('.cr-help-block').html('');
-                    $('[name=_crno]').val('');
-                    crValid = false;
-                    $('#docs').slideUp('fast');
-                    return;
-                }
-
-                activateInputLoader();
-
+            function crData(val) {
                 fetch('{% url 'main:api:cr_data' %}', { method: 'POST', body: JSON.stringify({ 'crno': val }), headers: { 'X-CSRFToken': '{{ csrf_token }}' } })
                         .then(function(res){
                             deactivateInputLoader();
@@ -508,7 +497,7 @@
                         .then(function(res){
                             if (res.status == 0){
                                 $('.cr-help-block').html(res.msg);
-                                $('.input-loader').hide();
+                                deactivateInputLoader();
                             }
                             else if (res.status == 1){
                                 var cr = res.data.cr;
@@ -535,6 +524,21 @@
                                 updateInputVerifyIcon();
                             }
                         });
+            }
+
+            $crselect.change(function(){
+                var val = $crselect.val();
+                if (val.trim() == ""){
+                    $('.cr-help-block').html('');
+                    $('[name=_crno]').val('');
+                    crValid = false;
+                    $('#docs').slideUp('fast');
+                    return;
+                }
+
+                activateInputLoader();
+
+                crValidate(val);
             });
         });
     </script>

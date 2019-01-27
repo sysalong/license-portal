@@ -39,6 +39,7 @@ def cr_validate(request):
         if not_allowed_msg:
             return JsonResponse({'status': 0, 'msg': not_allowed_msg})
 
+        print(hit['CR'], Application.objects.filter(serial='C' + hit['CR']).exists())
         if Application.objects.filter(serial='C' + hit['CR']).exists():
             return JsonResponse({'status': 0, 'msg': 'عفواً، هناك طلب سابق بخصوص هذا الرقم'})
 
