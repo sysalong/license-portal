@@ -697,6 +697,18 @@ def company_signup(request):
                             application.save()
                             action_history_log(application, None, 'قام بتحديث طلبه')
 
+                        try:
+                            subject = 'التراخيص الاحصائية | تم استلام طلبك'
+                            sender = 'support@email.com'
+                            # receiver = [applicant.email]  # for after dev
+                            receiver = ['oyounis@stats.gov.sa']  # for test purposes TODO: remove in production -- and staging when asked
+                            email_context = {'applicant': applicant, 'request_host': request.get_host()}
+
+                            message = get_template('email/new_request.html').render(email_context)
+                            send_mail(subject, message, sender, receiver, fail_silently=False, html_message=message)
+                        except:
+                            pass
+
                         return redirect(reverse('main:success'))
 
     if updating and not all_valid and application:

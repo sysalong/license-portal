@@ -218,7 +218,7 @@
                   <tr>
                     <td align="center" style="font-size:0px;padding:10px 25px;padding-top:0;padding-right:25px;padding-bottom:0px;padding-left:25px;word-break:break-word;">
                       <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:center;color:#000000;">
-                        <p><span style="color: rgb(106, 138, 162);"><span style="font-weight: bold;"><span style="font-size: 16px;">تم استلام طلبك</span></span>
+                        <p style="direction: rtl;"><span style="color: rgb(106, 138, 162);"><span style="font-weight: bold;"><span style="font-size: 16px;">تم إصدار ترخيص برقم {{ application.serial }}</span></span>
                           </span>
                         </p>
                       </div>
@@ -229,11 +229,11 @@
                       <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.2rem;text-align:center;color:#000000;direction: rtl">
                         <p>
                             <span style="color: rgb(57, 63, 76);">عزيزنا العميل </span>
-                            <span style="font-weight: bold;"><span style="color: rgb(57, 63, 76);">{{ applicant.fullname }}</span></span>،<span style="color: rgb(57, 63, 76);"> لقد تم استلام طلبك وسيتم مراجعته من قبل الموظف المختص. </span>
+                            <span style="font-weight: bold;"><span style="color: rgb(57, 63, 76);">{{ applicant.fullname }}</span></span>،<span style="color: rgb(57, 63, 76);"> لقد تم إصدار ترخيص رقم <b>{{ application.serial }}</b> بنجاح. </span>
 
                             <br>
 
-                            <span style="color: rgb(57, 63, 76);">يمكنك متابعة حالة طلبك عن طريق الضغط على الزر أدناه.</span>
+                            <span style="color: rgb(57, 63, 76);">يمكنك عرض وتحميل الترخيص الالكتروني عن طريق الضغط على الزر أدناه.</span>
                         </p>
                       </div>
                     </td>
@@ -242,9 +242,9 @@
                     <td align="center" vertical-align="middle" style="font-size:0px;padding:15px 30px;padding-top:10px;padding-right:25px;padding-bottom:10px;padding-left:25px;word-break:break-word;">
                       <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:separate;line-height:100%;">
                         <tr>
-                          <td align="center" bgcolor="#00639a" role="presentation" style="border:none;border-radius:3px;cursor:auto;padding:10px 25px;" valign="middle"> <a href="https://{{ request_host }}" style="background:#00639a;color:#FFFFFF;font-family:Ubuntu, Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif;font-size:13px;font-weight:normal;line-height:120%;Margin:0;text-decoration:underline;text-transform:none;"
+                          <td align="center" bgcolor="#00639a" role="presentation" style="border:none;border-radius:3px;cursor:auto;padding:10px 25px;" valign="middle"> <a href="https://{{ request_host }}{% url 'main:licenses' %}" style="background:#00639a;color:#FFFFFF;font-family:Ubuntu, Helvetica, Arial, sans-serif, Helvetica, Arial, sans-serif;font-size:13px;font-weight:normal;line-height:120%;Margin:0;text-decoration:underline;text-transform:none;"
                               target="_blank">
-              متابعة طلبك
+              الذهاب لصفحة المتابعة
             </a> </td>
                         </tr>
                       </table>

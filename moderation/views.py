@@ -11,6 +11,7 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages, success, error, SUCCESS, ERROR
 from django.core.paginator import Paginator, PageNotAnInteger
+from django.core.mail import send_mail
 
 from weasyprint import HTML
 
@@ -254,6 +255,21 @@ def action_application(request, id):
                         else:
                             new_status = ApplicationStatus.FINISHED
                             log_message = 'قام بإعتماد الطلب وإصدار الترخيص للمتقدم'
+
+                            try:
+                                subject = 'التراخيص الاحصائية | تم إصدار ترخيص برقم %s' % application.serial
+                                sender = 'support@email.com'
+                                # receiver = [applicant.email]  # for after dev
+                                receiver = [
+                                    'oyounis@stats.gov.sa']  # for test purposes TODO: remove in production -- and staging when asked
+                                email_context = {'applicant': application.applicant, 'application': application,
+                                                 'request_host': request.get_host()}
+
+                                message = get_template('email/license_issued.html').render(email_context)
+                                send_mail(subject, message, sender, receiver, fail_silently=False, html_message=message)
+                            except Exception as e:
+                                print(e)
+                                pass
                     else:
                         new_status = ApplicationStatus.IN_MANAGER
                         log_message = 'قام بالموافقة على الطلب ونقله لمدير الأكاديمية للمراجعة'
@@ -263,6 +279,21 @@ def action_application(request, id):
                 elif user_has_group(request.user, PRESIDENT):
                     new_status = ApplicationStatus.PENDING_PAYMENT
                     log_message = 'قام بالموافقة على الطلب وفي إنتظار اكتمال الدفع للاعتماد'
+
+                    try:
+                        subject = 'التراخيص الاحصائية | طلبك رقم %s في إنتظار الدفع' % application.serial
+                        sender = 'support@email.com'
+                        # receiver = [applicant.email]  # for after dev
+                        receiver = [
+                            'oyounis@stats.gov.sa']  # for test purposes TODO: remove in production -- and staging when asked
+                        email_context = {'applicant': application.applicant, 'application': application,
+                                         'request_host': request.get_host()}
+
+                        message = get_template('email/pending_payment.html').render(email_context)
+                        send_mail(subject, message, sender, receiver, fail_silently=False, html_message=message)
+                    except Exception as e:
+                        print(e)
+                        pass
                 elif user_has_group(request.user, FINANCE):
                     new_status = ApplicationStatus.PAYMENT_APPROVED
                     log_message = 'قام بالموافقة على إيصال الدفع المقدم'
