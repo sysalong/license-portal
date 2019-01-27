@@ -60,7 +60,7 @@ RELATION_TYPE = {
     31: 'عضو مجلس رقابة',
 }
 
-ALLOWED_BUSINESSES = (201, 203, 206)
+ALLOWED_BUSINESSES = [key for key in BUSINESS_TYPE]  # (201, 203, 206)
 ALLOWED_RELATIONS = (1, 2, 3, 5, 10, 11, 12, 13, 19, 20, 24, 25, 29)
 
 # CR Info Object Sample:
