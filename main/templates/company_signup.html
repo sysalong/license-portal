@@ -415,6 +415,9 @@
                         if (res.status == 0){
                             $('.cr-help-block').html(res.msg);
                             deactivateInputLoader();
+                            $('[name=_crno]').val('');
+                            crValid = false;
+                            $('#docs').slideUp('fast');
                         }
                         else if (res.status == 1){
                             crData(val);
@@ -498,6 +501,9 @@
                             if (res.status == 0){
                                 $('.cr-help-block').html(res.msg);
                                 deactivateInputLoader();
+                                $('[name=_crno]').val('');
+                                crValid = false;
+                                $('#docs').slideUp('fast');
                             }
                             else if (res.status == 1){
                                 var cr = res.data.cr;
